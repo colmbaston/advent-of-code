@@ -1,7 +1,6 @@
 
 pub const DIGITS : usize = 6;
 
-#[derive(Clone)]
 pub struct NonDescending
 {
     pub digits : [u8 ; DIGITS]
