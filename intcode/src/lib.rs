@@ -1,5 +1,7 @@
 pub mod intcode
 {
+    use std::io::{ stdin, stdout, Write };
+
     pub fn parse_file(fp : &str) -> Vec<i64>
     {
         std::fs::read_to_string(fp).unwrap().trim_end().split(',').map(|x| x.parse().unwrap()).collect()
@@ -66,11 +68,13 @@ pub mod intcode
     {
         loop
         {
-            use std::io::Write;
+
             print!("input: ");
-            std::io::stdout().flush();
+            stdout().flush();
+
             let mut input = String::new();
-            std::io::stdin().read_line(&mut input).unwrap();
+            stdin().read_line(&mut input).unwrap();
+
             match input.trim_end().parse::<i64>()
             {
                 Ok(x)  => { *index_modal(modes[0], *ip+1, memory) = x; break }
