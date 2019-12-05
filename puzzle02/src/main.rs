@@ -1,16 +1,25 @@
-use intcode::interpret_intcode;
+use ::intcode::intcode;
 
 fn main()
 {
-    let input : Vec<i64> = std::fs::read_to_string("input.txt").unwrap().trim_end().split(',').map(|x| x.parse().unwrap()).collect();
+    let input = intcode::parse_file("input.txt");
 
-    println!("{}", interpret_intcode(12, 2, &input));
+    let mut memory = input.clone();
+    memory[1] = 12;
+    memory[2] = 2;
+    intcode::interpret(&mut memory);
+    println!("{}", memory[0]);
 
     for i in 0..100
     {
         for j in 0..100
         {
-            if interpret_intcode(i, j, &input) == 19690720
+            memory = input.clone();
+            memory[1] = i;
+            memory[2] = j;
+            intcode::interpret(&mut memory);
+
+            if memory[0] == 19690720
             {
                 println!("{}", 100 * i + j);
                 return
