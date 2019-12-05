@@ -75,7 +75,7 @@ pub mod intcode
             let mut input = String::new();
             stdin().read_line(&mut input).unwrap();
 
-            match input.trim_end().parse::<i64>()
+            match input.trim_end().parse()
             {
                 Ok(x)  => { *index_modal(modes[0], *ip+1, memory) = x; break }
                 Err(_) => println!("parse error!")
