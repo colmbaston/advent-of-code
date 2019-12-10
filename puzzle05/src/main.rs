@@ -1,7 +1,10 @@
-use ::intcode::intcode;
+use intcode;
 
 fn main()
 {
-    let mut code = intcode::parse_file("input.txt");
-    intcode::interpret(&mut code);
+    let mut code1 = intcode::parse_file("input.txt");
+    let mut code2 = code1.clone();
+
+    println!("{}", intcode::interpret_vecio(&mut code1, vec![1]).iter().rev().next().unwrap());
+    println!("{}", intcode::interpret_vecio(&mut code2, vec![5])[0]);
 }

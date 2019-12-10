@@ -5,6 +5,6 @@ members = [ "puzzle01",
             "puzzle03",
             "puzzle04",
             "puzzle05",
-            "puzzle06",
             "puzzle07",
-            "puzzle08" ]
+            "puzzle08",
+            "puzzle09" ]

@@ -1,4 +1,4 @@
-use ::intcode::intcode;
+use intcode;
 
 fn main()
 {
@@ -7,7 +7,7 @@ fn main()
     let mut memory = input.clone();
     memory[1] = 12;
     memory[2] = 2;
-    intcode::interpret(&mut memory);
+    intcode::interpret_noio(&mut memory);
     println!("{}", memory[0]);
 
     for i in 0..100
@@ -17,7 +17,7 @@ fn main()
             memory = input.clone();
             memory[1] = i;
             memory[2] = j;
-            intcode::interpret(&mut memory);
+            intcode::interpret_noio(&mut memory);
 
             if memory[0] == 19690720
             {
