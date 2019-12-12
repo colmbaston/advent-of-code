@@ -3,13 +3,13 @@ use std::cmp::Ordering;
 
 fn main()
 {
-    let input = vec![(vec![  4, 12, 13], vec![0, 0, 0]),
-                     (vec![ -9, 14, -3], vec![0, 0, 0]),
-                     (vec![ -7, -1,  2], vec![0, 0, 0]),
-                     (vec![-11, 17, -1], vec![0, 0, 0])];
+    let input = [([  4, 12, 13], [0, 0, 0]),
+                 ([ -9, 14, -3], [0, 0, 0]),
+                 ([ -7, -1,  2], [0, 0, 0]),
+                 ([-11, 17, -1], [0, 0, 0])];
 
     let mut moons  = input.clone();
-    let mut cycles = vec![None, None, None];
+    let mut cycles = [None, None, None];
 
     for i in 1 .. 1001
     {
@@ -21,7 +21,7 @@ fn main()
 
     for i in 1001 ..
     {
-        if let [Some(a), Some(b), Some(c)] = cycles[..]
+        if let [Some(a), Some(b), Some(c)] = cycles
         {
             println!("{}", a.lcm(&b).lcm(&c));
             break
@@ -32,7 +32,7 @@ fn main()
     }
 }
 
-fn step(moons : &mut [(Vec<i64>, Vec<i64>)])
+fn step(moons : &mut [([i64 ; 3], [i64 ; 3])])
 {
     for i in 0 .. moons.len()
     {
@@ -46,17 +46,16 @@ fn step(moons : &mut [(Vec<i64>, Vec<i64>)])
                     Ordering::Equal   =>  0,
                     Ordering::Greater =>  1
                 }
-            })
-            .collect::<Vec<_>>();
+            });
 
-            moons[i].1 = moons[i].1.iter().zip(g.iter()).map(|(a, b)| a - b).collect();
-            moons[j].1 = moons[j].1.iter().zip(g.iter()).map(|(a, b)| a + b).collect();
+            moons[i].1.iter_mut().zip(g.clone()).for_each(|(a, b)| *a -= b);
+            moons[j].1.iter_mut().zip(g        ).for_each(|(a, b)| *a += b);
         }
-        moons[i].0 = moons[i].0.iter().zip(moons[i].1.iter()).map(|(a, b)| a + b).collect();
+        moons[i].0.iter_mut().zip(moons[i].1.iter()).for_each(|(a, b)| *a += b);
     }
 }
 
-fn check_cycles(i : u64, input : &Vec<(Vec<i64>, Vec<i64>)>, moons : &Vec<(Vec<i64>, Vec<i64>)>, cycles : &mut Vec<Option<u64>>)
+fn check_cycles(i : u64, input : &[([i64 ; 3], [i64 ; 3])], moons :  &[([i64 ; 3], [i64 ; 3])], cycles : &mut [Option<u64> ; 3])
 {
     for j in 0 .. 3
     {
