@@ -30,7 +30,7 @@ fn main()
                         print!(" ");
                         for x in min_x .. max_x + 1
                         {
-                            print!("{}", match canvas.get(&(x, y)) { None => '.', Some(&c) => if c { '#' } else { '.' }});
+                            print!("{}", match canvas.get(&(x, y)) { None => ' ', Some(&c) => if c { '#' } else { ' ' }});
                         }
                         print!("\n");
                     }
@@ -51,13 +51,13 @@ fn run_robot(init : bool, send_in : SyncSender<i64>, recv_out : Receiver<i64>) -
     let mut direction = direction::Dir::Up;
     let mut position  = (0, 0);
 
-    send_in.send(if init { 1 } else { 0 });
+    send_in.send(if init { 1 } else { 0 }).expect("fatal");
     for (c, d) in recv_out.iter().tuples()
     {
         canvas.insert(position, c == 1);
         if d == 1 { direction.turn_right() } else { direction.turn_left() }
         direction.advance(&mut position);
-        send_in.send(if *canvas.entry(position).or_insert(false) { 1 } else { 0 });
+        send_in.send(if *canvas.entry(position).or_insert(false) { 1 } else { 0 }).expect("fatal error! brain disconnected");
     }
 
     canvas
