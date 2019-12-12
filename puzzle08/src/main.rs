@@ -29,7 +29,7 @@ fn decode_image(layers : &Vec<&[u8]>)
         print!(" ");
         for x in 0 .. 25
         {
-            print!("{}", if image[x][y] == b'0' { '#' } else { ' ' });
+            print!("{}", if image[x][y] == b'0' { ' ' } else { '#' });
         }
         print!("\n")
     }
