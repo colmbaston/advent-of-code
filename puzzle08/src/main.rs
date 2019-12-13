@@ -1,6 +1,6 @@
 fn main()
 {
-    let input = std::fs::read_to_string("input.txt").unwrap();
+    let input = include_str!("../input.txt");
     let layers : Vec<&[u8]> = input.trim_end().as_bytes().chunks(25 * 6).collect();
 
     let f = |x : &[u8]| x.iter().filter(|y| **y == b'0').count();

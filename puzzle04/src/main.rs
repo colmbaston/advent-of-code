@@ -1,9 +1,9 @@
 mod non_descending;
-use crate::non_descending::{ NonDescending, DIGITS };
+use non_descending::{ NonDescending, DIGITS };
 
 fn main()
 {
-    let input = std::fs::read_to_string("input.txt").unwrap();
+    let input = include_str!("../input.txt");
     let mut i = input.trim_end().split('-');
     let mut parse_next = || i.next().unwrap().parse::<u64>().unwrap();
     let mut lower = parse_next();

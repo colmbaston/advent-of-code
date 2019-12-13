@@ -1,10 +1,9 @@
 mod coords;
-use crate::coords::{ Coords, Coords::* };
-use std::cmp::{ min, max };
+use coords::{ Coords, Coords::* };
 
 fn main()
 {
-    let input  = std::fs::read_to_string("input.txt").unwrap();
+    let input  = include_str!("../input.txt");
     let mut ls = input.lines();
     let mut parse_next = || ls.next().unwrap().split(',').scan(((0,0), 0), parse_segment).collect::<Vec<Segment>>();
     let wire_one = parse_next();
@@ -25,8 +24,8 @@ fn main()
                 let vj = if j.vertical { y } else { x };
 
                 let steps = i.length + j.length + (vi - i.start).abs() as u64 + (vj - j.start).abs() as u64;
-                minhattan = min(minhattan, (x.abs() + y.abs()) as u64);
-                min_steps = min(min_steps, steps);
+                minhattan = minhattan.min((x.abs() + y.abs()) as u64);
+                min_steps = min_steps.min(steps);
             }
         }
     }
@@ -67,13 +66,13 @@ fn parse_segment(((sx, sy), a) : &mut ((i64, i64), u64), s : &str) -> Option<Seg
 
 fn intersection(p : &Segment, q : &Segment) -> Coords
 {
-    let p_min = min(p.start, p.end);
-    let q_min = min(q.start, q.end);
-    let p_max = max(p.start, p.end);
-    let q_max = max(q.start, q.end);
+    let p_min = p.start.min(p.end);
+    let q_min = q.start.min(q.end);
+    let p_max = p.start.max(p.end);
+    let q_max = q.start.max(q.end);
 
-    let pq_min = max(p_min, q_min);
-    let pq_max = min(p_max, q_max);
+    let pq_min = p_min.max(q_min);
+    let pq_max = p_max.min(q_max);
 
     if p.vertical == q.vertical
     {

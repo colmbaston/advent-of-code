@@ -1,4 +1,4 @@
-use intcode::*;
+use intcode::Memory;
 use itertools::Itertools;
 use std::{ thread, sync::mpsc::sync_channel };
 

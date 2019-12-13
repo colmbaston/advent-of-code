@@ -4,7 +4,7 @@ use std::collections::{ BTreeMap, BTreeSet };
 
 fn main()
 {
-    let asteroids = coords(std::fs::read_to_string("input.txt").unwrap().chars(), |x| x == '#');
+    let asteroids = coords(include_str!("../input.txt").chars(), |x| x == '#');
 
     if let Some(visible) = asteroids.iter().map(|a| detect(a, &asteroids)).max_by(|x, y| x.len().cmp(&y.len()))
     {
