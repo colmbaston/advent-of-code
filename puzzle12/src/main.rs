@@ -1,5 +1,5 @@
-use num::Integer;
 use std::cmp::Ordering;
+use num_integer::Integer;
 
 fn main()
 {

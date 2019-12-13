@@ -1,4 +1,4 @@
-use num::Integer;
+use num_integer::Integer;
 use std::f64::consts::PI;
 use std::collections::{ BTreeMap, BTreeSet };
 
