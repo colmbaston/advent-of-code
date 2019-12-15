@@ -1,12 +1,10 @@
+use parsing::*;
 use std::cmp::Ordering;
 use num_integer::Integer;
 
 fn main()
 {
-    let input = [([  4, 12, 13], [0, 0, 0]),
-                 ([ -9, 14, -3], [0, 0, 0]),
-                 ([ -7, -1,  2], [0, 0, 0]),
-                 ([-11, 17, -1], [0, 0, 0])];
+    let input : Vec<_> = include_str!("../input.txt").lines().map(|s| parse_moon(s).unwrap().1).collect();
 
     let mut moons  = input.clone();
     let mut cycles = [None, None, None];
@@ -30,6 +28,12 @@ fn main()
         step(&mut moons);
         check_cycles(i, &input, &moons, &mut cycles);
     }
+}
+
+fn parse_moon(s : &str) -> IResult<&str, ([i64 ; 3], [i64 ; 3])>
+{
+    let (s, (_, x, _, y, _, z)) = tuple((tag("<x="), integer, tag(", y="), integer, tag(", z="), integer))(s)?;
+    Ok((s, ([x, y, z], [0, 0, 0])))
 }
 
 fn step(moons : &mut [([i64 ; 3], [i64 ; 3])])
