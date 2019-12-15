@@ -4,7 +4,7 @@ use std::{ thread, sync::mpsc::sync_channel };
 
 fn main()
 {
-    let input = intcode::parse_file("input.txt");
+    let input = intcode::parse_file!("../input.txt");
     run(&input, false);
     run(&input, true);
 }

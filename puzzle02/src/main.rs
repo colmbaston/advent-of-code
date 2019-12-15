@@ -2,7 +2,7 @@ use intcode;
 
 fn main()
 {
-    let input = intcode::parse_file("input.txt");
+    let input = intcode::parse_file!("../input.txt");
 
     let mut memory = input.clone();
     memory[1] = 12;

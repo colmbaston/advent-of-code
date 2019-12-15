@@ -5,9 +5,10 @@ use std::thread;
 use std::sync::mpsc::sync_channel;
 use std::io::{ stdin, stdout, Write };
 
-pub fn parse_file(fp : &str) -> Memory
+#[macro_export]
+macro_rules! parse_file
 {
-    std::fs::read_to_string(fp).unwrap().trim_end().split(',').map(|x| x.parse().unwrap()).collect()
+    ($file:expr) => { include_str!($file).trim_end().split(',').map(|x| x.parse().unwrap()).collect::<Vec<i64>>() }
 }
 
 pub fn interpret_noio(memory : &mut Memory)

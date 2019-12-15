@@ -4,7 +4,7 @@ use std::sync::mpsc::{ sync_channel, SyncSender, Receiver };
 
 fn main()
 {
-    let mut code1 = intcode::parse_file("input.txt");
+    let mut code1 = intcode::parse_file!("../input.txt");
     let mut code2 = code1.clone();
     code2[0] = 2;
 
