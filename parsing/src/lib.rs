@@ -1,9 +1,9 @@
 pub use nom::{ IResult,
                bytes::complete::{ tag },
-               character::complete::{ alpha1, digit1, char, one_of },
+               character::complete::{ alpha1, alphanumeric1, digit1, char, one_of, newline },
                combinator::{ opt },
                sequence::{ tuple, separated_pair },
-               multi::{ separated_list }};
+               multi::{ fold_many0, separated_list }};
 
 pub fn natural(s : &str) -> IResult<&str, u64>
 {
