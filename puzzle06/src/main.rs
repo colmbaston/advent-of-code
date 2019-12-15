@@ -33,10 +33,10 @@ fn parse_orbits(s : &str) -> IResult<&str, (HashMap<&str, Vec<&str>>, HashMap<&s
 
 fn count_orbits(orbits : &HashMap<&str, Vec<&str>>, body : &str, depth : u64) -> u64
 {
-    depth + match orbits.get(body)
+    match orbits.get(body)
     {
-        None    => 0,
-        Some(v) => v.iter().map(|x| count_orbits(orbits, x, depth + 1)).sum()
+        None    => depth,
+        Some(v) => v.iter().fold(depth, |a, x| a + count_orbits(orbits, x, depth + 1))
     }
 }
 
