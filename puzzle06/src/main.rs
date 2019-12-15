@@ -43,5 +43,5 @@ fn count_orbits(orbits : &HashMap<&str, Vec<&str>>, body : &str, depth : u64) ->
 fn path_to_root<'a>(orbits : &'a HashMap<&str, &str>, source : &'a str) -> impl Iterator<Item = &'a str>
 {
     let mut current = source;
-    return std::iter::from_fn(move || { current = orbits.get(current)?; Some(current) })
+    std::iter::from_fn(move || { current = orbits.get(current)?; Some(current) })
 }
