@@ -24,7 +24,7 @@ fn main()
             {
                 if let (MinMaxResult::MinMax(&(min_x, _), &(max_x, _)), MinMaxResult::MinMax(&(_, min_y), &(_, max_y))) = (canvas.keys().minmax_by(|a, b| a.0.cmp(&b.0)), canvas.keys().minmax_by(|a, b| a.1.cmp(&b.1)))
                 {
-                    print!("\n");
+                    println!();
                     for y in min_y .. max_y + 1
                     {
                         print!(" ");
@@ -32,9 +32,9 @@ fn main()
                         {
                             print!("{}", match canvas.get(&(x, y)) { None => ' ', Some(&c) => if c { '#' } else { ' ' }});
                         }
-                        print!("\n");
+                        println!();
                     }
-                    print!("\n");
+                    println!();
                 }
             }
             else
