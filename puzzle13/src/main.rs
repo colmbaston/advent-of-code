@@ -25,12 +25,11 @@ fn run_game(send_in : SyncSender<i64>, recv_out : Receiver<i64>, recv_req : Rece
     let mut ball_x = 0;
     let mut padd_x = 0;
 
-    loop
+    for r in recv_req.iter()
     {
-        match recv_req.recv()
+        match r
         {
-            Err(_)              => break,
-            Ok(Request::Input)  =>
+            Request::Input  =>
             {
                 send_in.send(match ball_x.cmp(&padd_x)
                 {
@@ -40,7 +39,7 @@ fn run_game(send_in : SyncSender<i64>, recv_out : Receiver<i64>, recv_req : Rece
                 })
                 .unwrap();
             },
-            Ok(Request::Output) =>
+            Request::Output =>
             {
                 let x = recv_out.recv().unwrap();
                 recv_req.recv().unwrap();

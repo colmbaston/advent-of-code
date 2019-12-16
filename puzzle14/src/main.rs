@@ -7,24 +7,18 @@ fn main()
     let mut leftover = HashMap::new();
 
     println!("{}", ore_required(1, "FUEL", &reactions, &mut leftover));
+    leftover.clear();
 
     let mut upper = 1;
-    loop
+    while ore_required(upper, "FUEL", &reactions, &mut leftover) <= 1_000_000_000_000
     {
         leftover.clear();
-        if ore_required(upper, "FUEL", &reactions, &mut leftover) > 1_000_000_000_000
-        {
-            break
-        }
         upper *= 2;
     }
 
     let mut lower = upper / 2;
-    loop
+    while upper - lower > 1
     {
-        if upper - lower <= 1 { break }
-
-        leftover.clear();
         let middle = (lower + upper) / 2;
         if ore_required(middle, "FUEL", &reactions, &mut leftover) > 1_000_000_000_000
         {
@@ -34,6 +28,7 @@ fn main()
         {
             lower = middle;
         }
+        leftover.clear();
     }
 
     println!("{}", lower);
