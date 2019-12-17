@@ -1,5 +1,5 @@
 use intcode;
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 fn main()
 {
@@ -7,22 +7,26 @@ fn main()
     let mut code2 = code1.clone();
     code2[0] = 2;
 
-    let camera = intcode::interpret_vecio(&mut code1, Vec::new()).iter().fold(((0, 0), HashMap::new()), |((x, y), mut m), p|
+    let scaffold = intcode::interpret_vecio(&mut code1, Vec::new()).iter().fold(((0, 0), HashSet::new()), |((x, y), mut s), &p|
     {
-        match *p as u8
+        if p == 10
         {
-            b'\n' => ((0, y+1), m),
-            b'.'  => ((x+1, y), m),
-            b     => { m.insert((x, y), b); ((x+1, y), m) }
+            return ((0, y+1), s)
         }
+        else if p != 46
+        {
+            s.insert((x, y));
+        }
+
+        ((x + 1, y), s)
     })
     .1;
 
-    println!("{}", camera.keys().fold(0, |a, &(x, y)|
+    println!("{}", scaffold.iter().fold(0, |a, &(x, y)|
     {
         for c in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)].iter()
         {
-            if camera.get(c).is_none() { return a }
+            if !scaffold.contains(c) { return a }
         }
 
         a + x * y
