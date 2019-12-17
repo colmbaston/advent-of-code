@@ -1,6 +1,5 @@
 use std::sync::mpsc::{ SyncSender, Receiver };
 
-pub type Modes  = Vec<u8>;
 pub type Memory = Vec<i64>;
 pub enum Request { Input, Output }
 
@@ -32,6 +31,8 @@ pub fn interpret(memory : &mut Memory, recv_in : Receiver<i64>, send_out : SyncS
         }
     }
 }
+
+type Modes  = Vec<u8>;
 
 fn decode(i : &i64) -> (i64, Modes)
 {
