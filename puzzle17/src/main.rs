@@ -18,7 +18,7 @@ fn main()
             s.insert((x, y));
         }
 
-        ((x + 1, y), s)
+        ((x+1, y), s)
     })
     .1;
 
