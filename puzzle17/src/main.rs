@@ -18,11 +18,11 @@ fn main()
     })
     .1;
 
-    println!("{}", camera.keys().fold(0, |a, (x, y)|
+    println!("{}", camera.keys().fold(0, |a, &(x, y)|
     {
-        for c in ortho((*x, *y)).iter()
+        for c in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)].iter()
         {
-            if camera.get(&c).is_none() { return a }
+            if camera.get(c).is_none() { return a }
         }
 
         a + x * y
@@ -34,12 +34,7 @@ fn main()
                           L,6,R,12,R,12,L,8\n\
                           L,6,L,10,L,10,L,6\n\
                           n\n"
-                          .bytes().map(|b| b as i64).collect();
+                         .bytes().map(|b| b as i64).collect();
 
     println!("{}", intcode::interpret_vecio(&mut code2, vacuum_program).last().unwrap());
-}
-
-fn ortho((x, y) : (i64, i64)) -> [(i64, i64) ; 4]
-{
-    [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
 }
