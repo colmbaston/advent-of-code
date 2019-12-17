@@ -51,7 +51,7 @@ fn decode(i : &i64) -> (i64, Modes)
         09 => 1,
         _  => 0
     };
-    let modes  = (0 .. args).map(|_| if *(&k) == 0 { 0 } else { let m = *(&k) % 10 ; *(&mut k) /= 10; m as u8 }).collect();
+    let modes  = (0 .. args).map(|_| if k == 0 { 0 } else { let m = k % 10 ; k /= 10; m as u8 }).collect();
 
     (opcode, modes)
 }
