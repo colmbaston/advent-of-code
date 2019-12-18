@@ -1,13 +1,11 @@
-use intcode;
+use intcode::Interpreter;
 use std::collections::HashSet;
 
 fn main()
 {
-    let mut code1 = intcode::parse_file!("../input.txt");
-    let mut code2 = code1.clone();
-    code2[0] = 2;
+    let mut input = intcode::parse_file!("../input.txt");
 
-    let scaffold = intcode::interpret_vecio(&mut code1, Vec::new()).iter().fold(((0, 0), HashSet::new()), |((x, y), mut s), &p|
+    let scaffold = Interpreter::new(input.clone(), std::iter::empty()).iter().fold(((0, 0), HashSet::new()), |((x, y), mut s), p|
     {
         if p == 10
         {
@@ -38,7 +36,8 @@ fn main()
                           L,6,R,12,R,12,L,8\n\
                           L,6,L,10,L,10,L,6\n\
                           n\n"
-                         .bytes().map(|b| b as i64).collect();
+                         .bytes().map(|b| b as i64);
 
-    println!("{}", intcode::interpret_vecio(&mut code2, vacuum_program).last().unwrap());
+    input[0] = 2;
+    println!("{}", Interpreter::new(input, vacuum_program).last().unwrap());
 }

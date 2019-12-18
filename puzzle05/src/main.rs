@@ -1,10 +1,9 @@
-use intcode;
+use std::iter::once;
+use intcode::Interpreter;
 
 fn main()
 {
-    let mut code1 = intcode::parse_file!("../input.txt");
-    let mut code2 = code1.clone();
-
-    println!("{}", intcode::interpret_vecio(&mut code1, vec![1]).iter().rev().next().unwrap());
-    println!("{}", intcode::interpret_vecio(&mut code2, vec![5])[0]);
+    let input = intcode::parse_file!("../input.txt");
+    println!("{}", Interpreter::new(input.clone(), once(1)).iter().last().unwrap());
+    println!("{}", Interpreter::new(input        , once(5)).iter().next().unwrap());
 }

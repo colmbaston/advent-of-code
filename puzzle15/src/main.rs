@@ -1,16 +1,16 @@
-use intcode;
+use intcode::Interpreter;
 use std::collections::{ HashSet, HashMap, VecDeque };
-use std::sync::mpsc::{ sync_channel, SyncSender, Receiver };
+use std::sync::mpsc::{ channel, Sender, Receiver };
 
 fn main()
 {
-    let mut input = intcode::parse_file!("../input.txt");
+    let input = intcode::parse_file!("../input.txt");
 
-    let (send_in,  recv_in)  = sync_channel(1);
-    let (send_out, recv_out) = sync_channel(1);
-    let drone  = std::thread::spawn(move || intcode::interpret(&mut input, recv_in, send_out, None));
+    let (send_in,  recv_in)  = channel();
+    let (send_out, recv_out) = channel();
+    let handle = Interpreter::with_channel(input, recv_in, send_out, None);
     let canvas = explore_dfs(send_in, recv_out);
-    drone.join().unwrap();
+    handle.join().unwrap();
 
     if let (steps, Some(oxygen)) = bfs(&canvas, |pos| canvas.get(pos) == Some(&2), (0, 0))
     {
@@ -28,7 +28,7 @@ fn ortho((x, y) : (i64, i64)) -> [(i64, i64) ; 4]
     [(x, y+1), (x, y-1), (x-1, y), (x+1, y)]
 }
 
-fn explore_dfs(send_in : SyncSender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64, i64), i64>
+fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64, i64), i64>
 {
     let mut stack  = Vec::new();
     let mut canvas = HashMap::new();

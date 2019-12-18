@@ -1,26 +1,19 @@
-use intcode::Request;
+use intcode::{ Interpreter, Request };
 use std::cmp::Ordering;
-use std::sync::mpsc::{ sync_channel, SyncSender, Receiver };
+use std::sync::mpsc::channel;
 
 fn main()
 {
-    let mut code1 = intcode::parse_file!("../input.txt");
-    let mut code2 = code1.clone();
-    code2[0] = 2;
+    let mut input = intcode::parse_file!("../input.txt");
 
-    let v = intcode::interpret_vecio(&mut code1, Vec::new());
-    println!("{}", v.iter().skip(2).step_by(3).filter(|&x| *x == 2).count());
+    println!("{}", Interpreter::new(input.clone(), std::iter::empty()).iter().skip(2).step_by(3).filter(|&x| x == 2).count());
 
-    let (send_in,  recv_in)  = sync_channel(1);
-    let (send_out, recv_out) = sync_channel(1);
-    let (send_req, recv_req) = sync_channel(1);
-    let game = std::thread::spawn(move || run_game(send_in, recv_out, recv_req));
-    intcode::interpret(&mut code2, recv_in, send_out, Some(send_req));
-    game.join().unwrap();
-}
+    input[0] = 2;
+    let (send_in,  recv_in)  = channel();
+    let (send_out, recv_out) = channel();
+    let (send_req, recv_req) = channel();
+    let handle = Interpreter::with_channel(input, recv_in, send_out, Some(send_req));
 
-fn run_game(send_in : SyncSender<i64>, recv_out : Receiver<i64>, recv_req : Receiver<Request>)
-{
     let mut score  = 0;
     let mut ball_x = 0;
     let mut padd_x = 0;
@@ -29,7 +22,7 @@ fn run_game(send_in : SyncSender<i64>, recv_out : Receiver<i64>, recv_req : Rece
     {
         match r
         {
-            Request::Input  =>
+            Request::Input =>
             {
                 send_in.send(match ball_x.cmp(&padd_x)
                 {
@@ -62,5 +55,7 @@ fn run_game(send_in : SyncSender<i64>, recv_out : Receiver<i64>, recv_req : Rece
             }
         }
     }
+    handle.join().unwrap();
+
     println!("{}", score);
 }

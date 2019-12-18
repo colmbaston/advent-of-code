@@ -1,25 +1,26 @@
-use intcode;
+use std::iter::empty;
+use intcode::Interpreter;
 
 fn main()
 {
     let input = intcode::parse_file!("../input.txt");
 
-    let mut memory = input.clone();
-    memory[1] = 12;
-    memory[2] = 2;
-    intcode::interpret_noio(&mut memory);
-    println!("{}", memory[0]);
+    let mut interpreter = Interpreter::new(input.clone(), empty());
+    interpreter.memory[1] = 12;
+    interpreter.memory[2] = 2;
+    interpreter.iter().next();
+    println!("{}", interpreter.memory[0]);
 
     for i in 0..100
     {
         for j in 0..100
         {
-            memory = input.clone();
-            memory[1] = i;
-            memory[2] = j;
-            intcode::interpret_noio(&mut memory);
+            interpreter = Interpreter::new(input.clone(), empty());
+            interpreter.memory[1] = i;
+            interpreter.memory[2] = j;
+            interpreter.iter().next();
 
-            if memory[0] == 19690720
+            if interpreter.memory[0] == 19690720
             {
                 println!("{}", 100 * i + j);
                 return
