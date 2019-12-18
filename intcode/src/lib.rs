@@ -91,6 +91,18 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
         }
     }
 
+    pub fn iter(&mut self) -> &mut Interpreter<I>
+    {
+        self
+    }
+
+    fn binop(&mut self, op : impl Fn(i64, i64) -> i64, modes : &Modes)
+    {
+        *self.index_modal(modes[2], self.ip + 3) = op(*self.index_modal(modes[0], self.ip + 1),
+                                                      *self.index_modal(modes[1], self.ip + 2));
+        self.ip += 4;
+    }
+
     fn input(&mut self, modes : &Modes)
     {
         if let Some(req) = &self.send_req
@@ -104,18 +116,6 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
             None    => panic!("input iterator yielded nothing")
         }
         self.ip += 2;
-    }
-
-    pub fn iter(&mut self) -> &mut Interpreter<I>
-    {
-        self
-    }
-
-    fn binop(&mut self, op : impl Fn(i64, i64) -> i64, modes : &Modes)
-    {
-        *self.index_modal(modes[2], self.ip + 3) = op(*self.index_modal(modes[0], self.ip + 1),
-                                                      *self.index_modal(modes[1], self.ip + 2));
-        self.ip += 4;
     }
 
     fn output(&mut self, modes : &Modes) -> i64
