@@ -60,19 +60,7 @@ fn decode(i : &i64) -> (i64, Modes)
     let opcode = i % 100;
     let mut k  = i / 100;
 
-    let args = match opcode
-    {
-        01 => 3,
-        02 => 3,
-        03 => 1,
-        04 => 1,
-        05 => 2,
-        06 => 2,
-        07 => 3,
-        08 => 3,
-        09 => 1,
-        _  => 0
-    };
+    let args = match opcode { 01 => 3, 02 => 3, 03 => 1, 04 => 1, 05 => 2, 06 => 2, 07 => 3, 08 => 3, 09 => 1, _ => 0 };
     let modes  = (0 .. args).map(|_| if k == 0 { 0 } else { let m = k % 10 ; k /= 10; m as u8 }).collect();
 
     (opcode, modes)
