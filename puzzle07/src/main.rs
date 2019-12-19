@@ -11,7 +11,7 @@ fn main()
 
 fn run(input : &Memory, feedback : bool)
 {
-    let mut max = i64::min_value();
+    let mut max = std::i64::MIN;
     for ps in if feedback { 5 .. 10 } else { 0 .. 5 }.permutations(5)
     {
         let (first_send, first_recv) = channel();

@@ -2,7 +2,7 @@ use std::iter::repeat;
 
 fn main()
 {
-    let input : Vec<i64> = include_str!("../input.txt").trim_end().chars().map(|x| x.to_digit(10).unwrap() as i64).collect();
+    let input : Vec<i64> = include_str!("../input.txt").trim_end().bytes().map(|x| (x - b'0') as i64).collect();
 
     {
         let mut fft_one = input.clone();

@@ -4,7 +4,7 @@ use std::collections::{ BTreeMap, BTreeSet };
 
 fn main()
 {
-    let asteroids = coords(include_str!("../input.txt").chars(), |x| x == '#');
+    let asteroids = coords(include_str!("../input.txt").bytes(), |x| x == b'#');
 
     if let Some(visible) = asteroids.iter().map(|a| detect(a, &asteroids)).max_by(|x, y| x.len().cmp(&y.len()))
     {
@@ -16,14 +16,14 @@ fn main()
     }
 }
 
-fn coords(iter : impl Iterator<Item = char>, f : impl Fn(char) -> bool) -> BTreeSet<(i64, i64)>
+fn coords(iter : impl Iterator<Item = u8>, f : impl Fn(u8) -> bool) -> BTreeSet<(i64, i64)>
 {
-    let step = |((x, y), mut s) : (_, BTreeSet<_>), c|
+    let step = |((x, y), mut s) : (_, BTreeSet<_>), b|
     {
-        match c
+        match b
         {
-            '\n' => ((0, y+1), s),
-            _    => ((x+1, y), if f(c) { s.insert((x, y)) ; s } else { s })
+            b'\n' => ((0, y+1), s),
+            _     => ((x+1, y), if f(b) { s.insert((x, y)) ; s } else { s })
         }
     };
 

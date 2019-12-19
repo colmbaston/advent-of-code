@@ -1,6 +1,6 @@
 use intcode::Interpreter;
-use std::collections::{ HashSet, HashMap, VecDeque };
 use std::sync::mpsc::{ channel, Sender, Receiver };
+use std::collections::{ HashSet, HashMap, VecDeque };
 
 fn main()
 {

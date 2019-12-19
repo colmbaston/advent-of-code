@@ -3,7 +3,7 @@ mod direction;
 use intcode::Interpreter;
 use itertools::{ Itertools, MinMaxResult };
 use std::sync::mpsc::channel;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 fn main()
 {
@@ -15,7 +15,7 @@ fn main()
         let (send_out, recv_out) = channel();
         let handle = Interpreter::with_channel(input.clone(), recv_in, send_out, None);
 
-        let mut canvas    = BTreeMap::new();
+        let mut canvas    = HashMap::new();
         let mut direction = direction::Dir::Up;
         let mut position  = (0, 0);
 
@@ -31,6 +31,7 @@ fn main()
 
         if *init
         {
+            canvas.retain(|_, v| *v);
             if let (MinMaxResult::MinMax(&(min_x, _), &(max_x, _)), MinMaxResult::MinMax(&(_, min_y), &(_, max_y))) = (canvas.keys().minmax_by(|a, b| a.0.cmp(&b.0)), canvas.keys().minmax_by(|a, b| a.1.cmp(&b.1)))
             {
                 println!();
@@ -39,7 +40,7 @@ fn main()
                     print!(" ");
                     for x in min_x .. max_x + 1
                     {
-                        print!("{}", match canvas.get(&(x, y)) { None => ' ', Some(&c) => if c { '#' } else { ' ' }});
+                        print!("{}", if canvas.contains_key(&(x, y)) { '#' } else { ' ' });
                     }
                     println!();
                 }
