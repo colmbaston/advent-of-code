@@ -8,6 +8,7 @@ type     Modes  = Vec<u8>;
 pub enum Request { Input, Output }
 
 pub struct Interpreter<I>
+where I : Iterator<Item = i64>
 {
     pub memory : Memory,
     ip         : usize,
