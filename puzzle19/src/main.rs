@@ -21,5 +21,5 @@ fn main()
 
 fn test_coord(input : &Memory, (x, y) : (i64, i64)) -> i64
 {
-    Interpreter::new(input.clone(), vec![x, y].into_iter()).iter().next().unwrap()
+    Interpreter::new(input.clone(), [x, y].iter().copied()).iter().next().unwrap()
 }
