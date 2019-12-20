@@ -31,7 +31,7 @@ fn main()
 
     let mut cache = HashMap::new();
     let matrix = adjacency_matrix(vec![entrance], &vault, &keys);
-    println!("{}", collect_keys(vec![b'0', b'1', b'2', b'3'], keys.keys().copied().collect(), &matrix, &mut cache));
+    println!("{}", collect_keys(vec![b'0'], keys.keys().copied().collect(), &matrix, &mut cache));
 
     cache.clear();
     let (x, y) = entrance;
