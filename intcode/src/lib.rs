@@ -3,14 +3,12 @@ use std::io::{ stdin, stdout, Write };
 use std::thread::{ spawn, JoinHandle };
 use std::sync::mpsc::{ channel, Sender, Receiver };
 
-pub type Memory = Vec<i64>;
-type     Modes  = Vec<u8>;
 pub enum Request { Input, Output }
 
 pub struct Interpreter<I>
 where I : Iterator<Item = i64>
 {
-    pub memory : Memory,
+    pub memory : Vec<i64>,
     ip         : usize,
     bp         : usize,
     input_iter : I,
@@ -33,21 +31,21 @@ impl<I : Iterator<Item = i64>> Iterator for &mut Interpreter<I>
         {
             let (opcode, modes) = match self.memory.get(self.ip)
             {
-                None    => panic!("overran code buffer"),
-                Some(k) => decode(k)
+                None     => panic!("overran code buffer"),
+                Some(&k) => decode(k)
             };
 
             match opcode
             {
-                01 => self.binop(|x, y| x + y, &modes),
-                02 => self.binop(|x, y| x * y, &modes),
-                03 => self.input(&modes),
-                04 => return Some(self.output(&modes)),
-                05 => self.jump(|x| x != 0, &modes),
-                06 => self.jump(|x| x == 0, &modes),
-                07 => self.binop(|x, y| if x <  y { 1 } else { 0 }, &modes),
-                08 => self.binop(|x, y| if x == y { 1 } else { 0 }, &modes),
-                09 => self.adjust_bp(&modes),
+                 1 => self.binop(|x, y| x + y, &modes),
+                 2 => self.binop(|x, y| x * y, &modes),
+                 3 => self.input(&modes),
+                 4 => return Some(self.output(&modes)),
+                 5 => self.jump(|x| x != 0, &modes),
+                 6 => self.jump(|x| x == 0, &modes),
+                 7 => self.binop(|x, y| if x <  y { 1 } else { 0 }, &modes),
+                 8 => self.binop(|x, y| if x == y { 1 } else { 0 }, &modes),
+                 9 => self.adjust_bp(&modes),
                 99 => return None,
                 _  => panic!("invalid opcode: {}", opcode)
             }
@@ -55,12 +53,12 @@ impl<I : Iterator<Item = i64>> Iterator for &mut Interpreter<I>
     }
 }
 
-fn decode(i : &i64) -> (i64, Modes)
+fn decode(i : i64) -> (i64, Vec<u8>)
 {
     let opcode = i % 100;
     let mut k  = i / 100;
 
-    let args = match opcode { 01 => 3, 02 => 3, 03 => 1, 04 => 1, 05 => 2, 06 => 2, 07 => 3, 08 => 3, 09 => 1, _ => 0 };
+    let args = match opcode { 1 => 3, 2 => 3, 3 => 1, 4 => 1, 5 => 2, 6 => 2, 7 => 3, 8 => 3, 9 => 1, _ => 0 };
     let modes  = (0 .. args).map(|_| if k == 0 { 0 } else { let m = k % 10 ; k /= 10; m as u8 }).collect();
 
     (opcode, modes)
@@ -68,15 +66,15 @@ fn decode(i : &i64) -> (i64, Modes)
 
 impl<I : Iterator<Item = i64>> Interpreter<I>
 {
-    pub fn new(memory : Memory, input_iter : I) -> Interpreter<I>
+    pub fn new(memory : Vec<i64>, input_iter : I) -> Interpreter<I>
     {
         Interpreter
         {
-            memory:     memory,
-            ip:         0,
-            bp:         0,
-            input_iter: input_iter,
-            send_req:   None
+            memory,
+            ip: 0,
+            bp: 0,
+            input_iter,
+            send_req: None
         }
     }
 
@@ -85,14 +83,14 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
         self
     }
 
-    fn binop(&mut self, op : impl Fn(i64, i64) -> i64, modes : &Modes)
+    fn binop(&mut self, op : impl Fn(i64, i64) -> i64, modes : &[u8])
     {
         *self.index_modal(modes[2], self.ip + 3) = op(*self.index_modal(modes[0], self.ip + 1),
                                                       *self.index_modal(modes[1], self.ip + 2));
         self.ip += 4;
     }
 
-    fn input(&mut self, modes : &Modes)
+    fn input(&mut self, modes : &[u8])
     {
         if let Some(req) = &self.send_req
         {
@@ -107,7 +105,7 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
         self.ip += 2;
     }
 
-    fn output(&mut self, modes : &Modes) -> i64
+    fn output(&mut self, modes : &[u8]) -> i64
     {
         if let Some(req) = &self.send_req
         {
@@ -118,7 +116,7 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
         *self.index_modal(modes[0], self.ip - 1)
     }
 
-    fn jump(&mut self, f : impl Fn(i64) -> bool, modes : &Modes)
+    fn jump(&mut self, f : impl Fn(i64) -> bool, modes : &[u8])
     {
         if f(*self.index_modal(modes[0], self.ip + 1))
         {
@@ -130,7 +128,7 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
         }
     }
 
-    fn adjust_bp(&mut self, modes : &Modes)
+    fn adjust_bp(&mut self, modes : &[u8])
     {
         self.bp = (self.bp as i64 + *self.index_modal(modes[0], self.ip + 1)) as usize;
         self.ip += 2;
@@ -157,7 +155,7 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
 
 impl Interpreter<Empty<i64>>
 {
-    pub fn with_channel(memory : Memory, recv_in : Receiver<i64>, send_out : Sender<i64>, send_req : Option<Sender<Request>>) -> JoinHandle<Interpreter<Empty<i64>>>
+    pub fn with_channel(memory : Vec<i64>, recv_in : Receiver<i64>, send_out : Sender<i64>, send_req : Option<Sender<Request>>) -> JoinHandle<Interpreter<Empty<i64>>>
     {
         spawn(move ||
         {
@@ -184,7 +182,7 @@ impl Interpreter<Empty<i64>>
         })
     }
 
-    pub fn stdio(memory : Memory) -> Interpreter<Empty<i64>>
+    pub fn stdio(memory : Vec<i64>) -> Interpreter<Empty<i64>>
     {
         let (send_in,  recv_in ) = channel();
         let (send_out, recv_out) = channel();
@@ -208,7 +206,7 @@ impl Interpreter<Empty<i64>>
                         match input.trim_end().parse()
                         {
                             Ok(x)  => { send_in.send(x).unwrap(); break },
-                            Err(_) => println!("parse error!")
+                            Err(e) => println!("parse error: {}", e)
                         }
                     }
                 }

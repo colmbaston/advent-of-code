@@ -35,10 +35,10 @@ fn main()
             if let (MinMaxResult::MinMax(&(min_x, _), &(max_x, _)), MinMaxResult::MinMax(&(_, min_y), &(_, max_y))) = (canvas.keys().minmax_by(|a, b| a.0.cmp(&b.0)), canvas.keys().minmax_by(|a, b| a.1.cmp(&b.1)))
             {
                 println!();
-                for y in min_y .. max_y + 1
+                for y in min_y ..= max_y
                 {
                     print!(" ");
-                    for x in min_x .. max_x + 1
+                    for x in min_x ..= max_x
                     {
                         print!("{}", if canvas.contains_key(&(x, y)) { '#' } else { ' ' });
                     }

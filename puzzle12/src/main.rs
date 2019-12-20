@@ -63,12 +63,9 @@ fn check_cycles(i : u64, input : &[([i64 ; 3], [i64 ; 3])], moons :  &[([i64 ; 3
 {
     for j in 0 .. 3
     {
-        if let None = cycles[j]
+        if cycles[j].is_none() && input.iter().zip(moons.iter()).all(|((pa, va), (pb, vb))| pa[j] == pb[j] && va[j] == vb[j])
         {
-            if input.iter().zip(moons.iter()).all(|((pa, va), (pb, vb))| pa[j] == pb[j] && va[j] == vb[j])
-            {
                 cycles[j] = Some(i);
-            }
         }
     }
 }

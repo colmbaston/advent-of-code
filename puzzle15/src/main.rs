@@ -1,6 +1,6 @@
 use intcode::Interpreter;
 use std::sync::mpsc::{ channel, Sender, Receiver };
-use std::collections::{ HashSet, HashMap, VecDeque };
+use std::collections::{ HashMap, hash_map::Entry, HashSet, VecDeque };
 
 fn main()
 {
@@ -39,12 +39,12 @@ fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64,
     {
         for (i, &dir) in ortho(pos).iter().enumerate()
         {
-            if !canvas.contains_key(&dir)
+            if let Entry::Vacant(e) = canvas.entry(dir)
             {
                 send_in.send((i+1) as i64).unwrap();
                 if let Ok(status) = recv_out.recv()
                 {
-                    canvas.insert(dir, status);
+                    e.insert(status);
                     if status != 0
                     {
                         stack.push((pos, (i+1) as i64));
@@ -60,7 +60,7 @@ fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64,
             None             => break,
             Some((pos, dir)) =>
             {
-                send_in.send((dir - 1 ^ 1) + 1).unwrap();
+                send_in.send(((dir - 1) ^ 1) + 1).unwrap();
                 recv_out.recv().unwrap();
                 pos
             }
@@ -90,7 +90,13 @@ fn bfs(canvas : &HashMap<(i64, i64), i64>, f : impl Fn(&(i64, i64)) -> bool, sta
             queue.extend(ortho(pos).iter().filter_map(|next|
             {
                 canvas.get(next)?;
-                if visited.contains(next) { None } else { Some((steps+1, *next)) }
+                if visited.contains(next)
+                {
+                    None
+                } else
+                {
+                    Some((steps+1, *next))
+                }
             }));
 
             if queue.is_empty()

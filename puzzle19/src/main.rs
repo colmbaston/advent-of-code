@@ -1,5 +1,5 @@
+use intcode::Interpreter;
 use itertools::Itertools;
-use intcode::{ Interpreter, Memory };
 
 fn main()
 {
@@ -19,7 +19,7 @@ fn main()
     }
 }
 
-fn test_coord(input : &Memory, (x, y) : (i64, i64)) -> i64
+fn test_coord(input : &[i64], (x, y) : (i64, i64)) -> i64
 {
-    Interpreter::new(input.clone(), [x, y].iter().copied()).iter().next().unwrap()
+    Interpreter::new(input.to_vec(), [x, y].iter().copied()).iter().next().unwrap()
 }

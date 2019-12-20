@@ -20,7 +20,7 @@ fn main()
             interpreter.memory[2] = j;
             interpreter.iter().next();
 
-            if interpreter.memory[0] == 19690720
+            if interpreter.memory[0] == 19_690_720
             {
                 println!("{}", 100 * i + j);
                 return

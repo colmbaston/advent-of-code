@@ -116,7 +116,7 @@ fn collect_keys(current : Vec<u8>, keys : BTreeSet<u8>, matrix : &HashMap<(u8, u
             let mut adj = None;
             for x in current.iter_mut()
             {
-                if let Some((d, p)) = matrix.get(&(*x, k)).or(matrix.get(&(k, *x)))
+                if let Some((d, p)) = matrix.get(&(*x, k)).or_else(|| matrix.get(&(k, *x)))
                 {
                     *x  = k;
                     adj = Some((*d, p.clone()));

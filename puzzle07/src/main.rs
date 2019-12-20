@@ -1,6 +1,6 @@
+use intcode::Interpreter;
 use itertools::Itertools;
 use std::sync::mpsc::channel;
-use intcode::{ Interpreter, Memory };
 
 fn main()
 {
@@ -9,7 +9,7 @@ fn main()
     run(&input, true);
 }
 
-fn run(input : &Memory, feedback : bool)
+fn run(input : &[i64], feedback : bool)
 {
     let mut max = std::i64::MIN;
     for ps in if feedback { 5 .. 10 } else { 0 .. 5 }.permutations(5)
@@ -24,7 +24,7 @@ fn run(input : &Memory, feedback : bool)
             last_send.send(x).unwrap();
             let (sender, receiver) = channel();
             last_send = sender.clone();
-            handles.push(Interpreter::with_channel(input.clone(), last_recv, sender, None));
+            handles.push(Interpreter::with_channel(input.to_vec(), last_recv, sender, None));
             last_recv = receiver;
         }
 

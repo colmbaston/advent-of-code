@@ -58,7 +58,7 @@ fn parse_segment(((sx, sy), a) : &mut ((i64, i64), u64), s : &str) -> Option<Seg
 
     let result = Segment { length: *a, vertical: v, fixed: f, start: s, end: e };
 
-    *a  = *a + l as u64;
+    *a  += l as u64;
     if v { *sy = e } else { *sx = e };
 
     Some(result)

@@ -24,7 +24,7 @@ fn parse_orbits(s : &str) -> IResult<&str, (HashMap<&str, Vec<&str>>, HashMap<&s
                (HashMap::new(), HashMap::new()),
                |(mut direct, mut inverse) : (HashMap<_, Vec<_>>, _), (a, _, b, _)|
                {
-                   direct.entry(a).and_modify(|v| v.push(b)).or_insert(vec![b]);
+                   direct.entry(a).and_modify(|v| v.push(b)).or_insert_with(|| vec![b]);
                    inverse.insert(b, a);
                    (direct, inverse)
                })
