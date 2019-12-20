@@ -19,5 +19,3 @@ then
   done
   printf "\e[0m")
 fi
-
-cargo clean

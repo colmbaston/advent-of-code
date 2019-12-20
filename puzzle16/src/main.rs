@@ -37,7 +37,7 @@ fn main()
 
     {
         let message_offset = input[..7].iter().fold(0, |a, &d| a * 10 + d as usize);
-        let suffix_len     = input.len() * 10000 - message_offset;
+        let suffix_len     = input.len() * 10_000 - message_offset;
 
         if message_offset < suffix_len
         {

@@ -14,7 +14,7 @@ fn main()
         {
             if      test_coord(&input, (x,    y   )) != 1 { y += 1 }
             else if test_coord(&input, (x-99, y+99)) != 1 { continue 'outer }
-            else  { println!("{}", (x-99) * 10000 + y);     break    'outer }
+            else  { println!("{}", (x-99) * 10_000 + y);    break    'outer }
         }
     }
 }

@@ -9,7 +9,7 @@ fn main()
     let mut moons  = input.clone();
     let mut cycles = [None, None, None];
 
-    for i in 1 .. 1001
+    for i in 1 ..= 1000
     {
         step(&mut moons);
         check_cycles(i, &input, &moons, &mut cycles);

@@ -11,9 +11,9 @@ fn main()
     interpreter.iter().next();
     println!("{}", interpreter.memory[0]);
 
-    for i in 0..100
+    for i in 0 .. 100
     {
-        for j in 0..100
+        for j in 0 .. 100
         {
             interpreter = Interpreter::new(input.clone(), empty());
             interpreter.memory[1] = i;
