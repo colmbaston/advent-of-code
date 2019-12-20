@@ -1,6 +1,6 @@
-use intcode::{ Interpreter, Request };
 use std::cmp::Ordering;
 use std::sync::mpsc::channel;
+use intcode::{ Interpreter, Request };
 
 fn main()
 {

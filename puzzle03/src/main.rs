@@ -1,5 +1,5 @@
 mod coords;
-use coords::{ Coords, Coords::* };
+use coords::Coords;
 
 fn main()
 {
@@ -80,24 +80,24 @@ fn intersection(p : &Segment, q : &Segment) -> Coords
         {
             if p.vertical
             {
-                FixedX(p.fixed, pq_min, pq_max)
+                Coords::FixedX(p.fixed, pq_min, pq_max)
             }
             else
             {
-                FixedY(p.fixed, pq_min, pq_max)
+                Coords::FixedY(p.fixed, pq_min, pq_max)
             }
         }
         else
         {
-            Empty
+            Coords::Empty
         }
     }
 
     if q_min <= p.fixed && p.fixed <= q_max && p_min <= q.fixed && q.fixed <= p_max
     {
         let (v, h) = if p.vertical { (p, q) } else { (q, p) };
-        return Single(v.fixed, h.fixed)
+        return Coords::Single(v.fixed, h.fixed)
     }
 
-    Empty
+    Coords::Empty
 }
