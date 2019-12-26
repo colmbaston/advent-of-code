@@ -12,7 +12,7 @@ fn main()
     let canvas = explore_dfs(send_in, recv_out);
     handle.join().unwrap();
 
-    let adjacent = |c : &(i64, i64)| ortho(*c).into_iter().filter(|c| canvas.get(&c).is_some());
+    let adjacent = |&c : &(i64, i64)| search::ortho(c).filter(|c| canvas.get(&c).is_some());
     if let (steps, Some((oxygen, _))) = search::bfs((0, 0), adjacent, |c| canvas.get(c) == Some(&2), |_| None::<()>)
     {
         println!("{}", steps);
@@ -24,11 +24,6 @@ fn main()
     }
 }
 
-fn ortho((x, y) : (i64, i64)) -> Vec<(i64, i64)>
-{
-    vec![(x, y+1), (x, y-1), (x-1, y), (x+1, y)]
-}
-
 fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64, i64), i64>
 {
     let mut stack  = Vec::new();
@@ -38,7 +33,7 @@ fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64,
 
     'outer: loop
     {
-        for (i, dir) in ortho(pos).into_iter().enumerate()
+        for (i, dir) in search::ortho(pos).into_iter().enumerate()
         {
             if let Entry::Vacant(e) = canvas.entry(dir)
             {

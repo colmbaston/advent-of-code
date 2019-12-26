@@ -39,3 +39,35 @@ where S : Eq + std::hash::Hash, I : Iterator<Item = S>, P : Clone
         }
     }
 }
+
+struct Ortho
+{
+    origin  : (i64,  i64),
+    current : (bool, bool)
+}
+
+impl Iterator for Ortho
+{
+    type Item = (i64, i64);
+
+    fn next(&mut self) -> Option<(i64, i64)>
+    {
+        match self.current
+        {
+            (false, false) => { self.current = (false, true);  Some((self.origin.0 + 1, self.origin.1))     },
+            (false, true)  => { self.current = (true,  false); Some((self.origin.0 - 1, self.origin.1))     },
+            (true,  false) => { self.current = (true,  true);  Some((self.origin.0,     self.origin.1 + 1)) },
+            (true,  true)  => { self.current = (false, false); Some((self.origin.0,     self.origin.1 - 1)) }
+        }
+    }
+}
+
+pub fn ortho(origin : (i64, i64)) -> impl Iterator<Item = (i64, i64)>
+{
+    Ortho { origin, current : (false, false) }.take(4)
+}
+
+pub fn ortho_origin(origin : (i64, i64)) -> impl Iterator<Item = ((i64, i64), (i64, i64))>
+{
+    Ortho { origin, current : (false, false) }.map(move |c| (origin, c)).take(4)
+}

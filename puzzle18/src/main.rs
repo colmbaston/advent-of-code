@@ -49,7 +49,7 @@ fn adjacency_matrix(entrances : Vec<(i64, i64)>, vault : &HashMap<(i64, i64), u8
     {
         for (k2, v2) in keys.iter().map(|(k, v)| (*k, *v)).skip((1+i).saturating_sub(l))
         {
-            if let (steps, Some((_, path))) = search::bfs(v1, |&(x, y)| vec![(x+1, y), (x-1, y), (x, y+1), (x, y-1)].into_iter().filter_map(|c| vault.get(&c).map(|_| c)), |c| *c == v2, |c| vault.get(c).filter(|b| b.is_ascii_uppercase()).copied())
+            if let (steps, Some((_, path))) = search::bfs(v1, |&c| search::ortho(c).filter_map(|c| vault.get(&c).map(|_| c)), |c| *c == v2, |c| vault.get(c).filter(|b| b.is_ascii_uppercase()).copied())
             {
                 matrix.insert((k1, k2), (steps, path));
             }
