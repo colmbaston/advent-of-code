@@ -1,6 +1,6 @@
 use intcode::Interpreter;
 use std::sync::mpsc::{ channel, Sender, Receiver };
-use std::collections::{ HashMap, hash_map::Entry, HashSet, VecDeque };
+use std::collections::{ HashMap, hash_map::Entry };
 
 fn main()
 {
@@ -12,20 +12,21 @@ fn main()
     let canvas = explore_dfs(send_in, recv_out);
     handle.join().unwrap();
 
-    if let (steps, Some(oxygen)) = bfs(&canvas, |pos| canvas.get(pos) == Some(&2), (0, 0))
+    let adjacent = |c : &(i64, i64)| ortho(*c).into_iter().filter(|c| canvas.get(&c).is_some());
+    if let (steps, Some((oxygen, _))) = search::bfs((0, 0), adjacent, |c| canvas.get(c) == Some(&2), |_| None::<()>)
     {
         println!("{}", steps);
 
-        if let (steps, None) = bfs(&canvas, |_| false, oxygen)
+        if let (steps, None) = search::bfs(oxygen, adjacent, |_| false, |_| None::<()>)
         {
             println!("{}", steps);
         }
     }
 }
 
-fn ortho((x, y) : (i64, i64)) -> [(i64, i64) ; 4]
+fn ortho((x, y) : (i64, i64)) -> Vec<(i64, i64)>
 {
-    [(x, y+1), (x, y-1), (x-1, y), (x+1, y)]
+    vec![(x, y+1), (x, y-1), (x-1, y), (x+1, y)]
 }
 
 fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64, i64), i64>
@@ -37,7 +38,7 @@ fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64,
 
     'outer: loop
     {
-        for (i, &dir) in ortho(pos).iter().enumerate()
+        for (i, dir) in ortho(pos).into_iter().enumerate()
         {
             if let Entry::Vacant(e) = canvas.entry(dir)
             {
@@ -70,41 +71,4 @@ fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64,
     send_in.send(0).unwrap();
     canvas.retain(|_, x| *x != 0);
     canvas
-}
-
-fn bfs(canvas : &HashMap<(i64, i64), i64>, f : impl Fn(&(i64, i64)) -> bool, start : (i64, i64)) -> (u64, Option<(i64, i64)>)
-{
-    let mut visited = HashSet::new();
-    let mut queue   = VecDeque::new();
-    queue.push_back((0, start));
-
-    loop
-    {
-        if let Some((steps, pos)) = queue.pop_front()
-        {
-            if f(&pos)
-            {
-                return (steps, Some(pos))
-            }
-
-            queue.extend(ortho(pos).iter().filter_map(|next|
-            {
-                canvas.get(next)?;
-                if visited.contains(next)
-                {
-                    None
-                } else
-                {
-                    Some((steps+1, *next))
-                }
-            }));
-
-            if queue.is_empty()
-            {
-                return (steps, None)
-            }
-
-            visited.insert(pos);
-        }
-    }
 }
