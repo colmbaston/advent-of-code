@@ -1,5 +1,5 @@
 use std::iter::{ empty, Empty };
-use std::io::{ stdin, stdout, Write };
+use std::io::{ stdin, stdout, Read, Write };
 use std::thread::{ spawn, JoinHandle };
 use std::sync::mpsc::{ channel, Sender, Receiver };
 
@@ -182,7 +182,7 @@ impl Interpreter<Empty<i64>>
         })
     }
 
-    pub fn stdio(memory : Vec<i64>) -> Interpreter<Empty<i64>>
+    pub fn io_fn(memory : Vec<i64>, input : impl Fn() -> i64, output : impl Fn(i64) -> ()) -> Interpreter<Empty<i64>>
     {
         let (send_in,  recv_in ) = channel();
         let (send_out, recv_out) = channel();
@@ -193,25 +193,40 @@ impl Interpreter<Empty<i64>>
         {
             match r
             {
-                Request::Output => if let Ok(x) = recv_out.recv() { println!("{}", x) },
-                Request::Input  =>
-                {
-                    loop
-                    {
-                        print!("input: ");
-                        stdout().flush().expect("failed to flush stdout");
-
-                        let mut input = String::new();
-                        stdin().read_line(&mut input).unwrap();
-                        match input.trim_end().parse()
-                        {
-                            Ok(x)  => { send_in.send(x).unwrap(); break },
-                            Err(e) => println!("parse error: {}", e)
-                        }
-                    }
-                }
+                Request::Output => output(recv_out.recv().unwrap()),
+                Request::Input  => send_in.send(input()).unwrap()
             }
         }
         handle.join().unwrap()
+    }
+
+    pub fn stdio(memory : Vec<i64>) -> Interpreter<Empty<i64>>
+    {
+        let i_fn = ||
+        {
+            loop
+            {
+                print!("input: ");
+                stdout().flush().unwrap();
+
+                let mut input = String::new();
+                stdin().read_line(&mut input).unwrap();
+                match input.trim_end().parse()
+                {
+                    Ok(x)  => return x,
+                    Err(e) => println!("parse error: {}", e)
+                }
+            }
+
+        };
+        let o_fn =  |x| println!("{}", x);
+        Interpreter::io_fn(memory, i_fn, o_fn)
+    }
+
+    pub fn ascii(memory : Vec<i64>) -> Interpreter<Empty<i64>>
+    {
+        let i_fn = || stdin().bytes().next().unwrap().unwrap() as i64;
+        let o_fn = |x| if x <= 128 { print!("{}", x as u8 as char) } else { println!("{}", x) };
+        Interpreter::io_fn(memory, i_fn, o_fn)
     }
 }
