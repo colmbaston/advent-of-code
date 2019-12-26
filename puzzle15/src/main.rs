@@ -33,7 +33,7 @@ fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64,
 
     'outer: loop
     {
-        for (i, dir) in search::ortho(pos).into_iter().enumerate()
+        for (i, dir) in search::ortho(pos).enumerate()
         {
             if let Entry::Vacant(e) = canvas.entry(dir)
             {
