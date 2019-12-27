@@ -39,7 +39,7 @@ impl<I : Iterator<Item = i64>> Iterator for &mut Interpreter<I>
             {
                  1 => self.binop(|x, y| x + y, &modes),
                  2 => self.binop(|x, y| x * y, &modes),
-                 3 => self.input(&modes),
+                 3 => if !self.input(&modes) { return None },
                  4 => return Some(self.output(&modes)),
                  5 => self.jump(|x| x != 0, &modes),
                  6 => self.jump(|x| x == 0, &modes),
@@ -90,7 +90,7 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
         self.ip += 4;
     }
 
-    fn input(&mut self, modes : &[u8])
+    fn input(&mut self, modes : &[u8]) -> bool
     {
         if let Some(req) = &self.send_req
         {
@@ -100,9 +100,10 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
         match self.input_iter.next()
         {
             Some(x) => *self.index_modal(modes[0], self.ip + 1) = x,
-            None    => panic!("input iterator yielded nothing")
+            None    => return false
         }
         self.ip += 2;
+        true
     }
 
     fn output(&mut self, modes : &[u8]) -> i64
@@ -138,9 +139,9 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
     {
         let ix = match mode
         {
-            0 => self.memory[v] as usize,
+            0 => *self.memory.get(v).unwrap_or(&0) as usize,
             1 => v,
-            2 => (self.memory[v] + self.bp as i64) as usize,
+            2 => (*self.memory.get(v).unwrap_or(&0) + self.bp as i64) as usize,
             _ => panic!("invalid addressing mode: {}", mode)
         };
 
@@ -182,7 +183,7 @@ impl Interpreter<Empty<i64>>
         })
     }
 
-    pub fn io_fn(memory : Vec<i64>, input : impl Fn() -> i64, output : impl Fn(i64) -> ()) -> Interpreter<Empty<i64>>
+    pub fn with_fn(memory : Vec<i64>, input : impl Fn() -> i64, output : impl Fn(i64) -> ()) -> Interpreter<Empty<i64>>
     {
         let (send_in,  recv_in ) = channel();
         let (send_out, recv_out) = channel();
@@ -220,13 +221,13 @@ impl Interpreter<Empty<i64>>
 
         };
         let o_fn =  |x| println!("{}", x);
-        Interpreter::io_fn(memory, i_fn, o_fn)
+        Interpreter::with_fn(memory, i_fn, o_fn)
     }
 
     pub fn ascii(memory : Vec<i64>) -> Interpreter<Empty<i64>>
     {
         let i_fn = || stdin().bytes().next().unwrap().unwrap() as i64;
         let o_fn = |x| if x <= 128 { print!("{}", x as u8 as char) } else { println!("{}", x) };
-        Interpreter::io_fn(memory, i_fn, o_fn)
+        Interpreter::with_fn(memory, i_fn, o_fn)
     }
 }
