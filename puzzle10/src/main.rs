@@ -1,6 +1,6 @@
 use num_integer::Integer;
 use std::f64::consts::PI;
-use std::collections::{ BTreeMap, BTreeSet };
+use std::collections::{ HashMap, HashSet };
 
 fn main()
 {
@@ -16,9 +16,9 @@ fn main()
     }
 }
 
-fn coords(iter : impl Iterator<Item = u8>, f : impl Fn(u8) -> bool) -> BTreeSet<(i64, i64)>
+fn coords(iter : impl Iterator<Item = u8>, f : impl Fn(u8) -> bool) -> HashSet<(i64, i64)>
 {
-    let step = |((x, y), mut s) : (_, BTreeSet<_>), b|
+    let step = |((x, y), mut s) : (_, HashSet<_>), b|
     {
         match b
         {
@@ -27,10 +27,10 @@ fn coords(iter : impl Iterator<Item = u8>, f : impl Fn(u8) -> bool) -> BTreeSet<
         }
     };
 
-    iter.fold(((0, 0), BTreeSet::new()), step).1
+    iter.fold(((0, 0), HashSet::new()), step).1
 }
 
-fn detect((x, y) : &(i64, i64), s : &BTreeSet<(i64, i64)>) -> BTreeMap<(i64, i64), (i64, i64)>
+fn detect((x, y) : &(i64, i64), s : &HashSet<(i64, i64)>) -> HashMap<(i64, i64), (i64, i64)>
 {
     s.iter().filter(|(a, b)| (a, b) != (x, y)).map(|&(a, b)|
     {
@@ -38,7 +38,7 @@ fn detect((x, y) : &(i64, i64), s : &BTreeSet<(i64, i64)>) -> BTreeMap<(i64, i64
         let gcd      = dx.gcd(&dy);
         ((dx / gcd, dy / gcd), (a, b))
     })
-    .fold(BTreeMap::new(), |mut m, ((a, b), (c, d))|
+    .fold(HashMap::new(), |mut m, ((a, b), (c, d))|
     {
         let (e, f) = m.entry((a, b)).or_insert((c, d));
         if (x-c).abs() < (x-*e).abs() || (y-d).abs() < (y-*f).abs()

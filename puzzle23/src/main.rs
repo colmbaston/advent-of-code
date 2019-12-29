@@ -1,7 +1,7 @@
 use std::time::Duration;
 use intcode::Interpreter;
 use std::sync::mpsc::channel;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
 const THREADS : usize = 50;
 
@@ -24,7 +24,7 @@ fn main()
     let mut nat_intervention = false;
     loop
     {
-        let mut active : BTreeSet<usize> = (0 .. THREADS).collect();
+        let mut active : HashSet<usize> = (0 .. THREADS).collect();
         while let Some(i) = active.iter().next().copied()
         {
             let mut interpreter = threads[i as usize].0.iter();
