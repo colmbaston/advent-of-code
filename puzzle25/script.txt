@@ -1,0 +1,24 @@
+west
+take hypercube
+west
+west
+north
+take shell
+west
+south
+take festive hat
+north
+east
+south
+east
+east
+east
+east
+north
+west
+north
+west
+west
+take astronaut ice cream
+south
+south
