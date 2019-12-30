@@ -22,4 +22,4 @@ then
 fi
 
 diff -w --color answers.txt output.txt
-rm output.txt
+rm -f output.txt
