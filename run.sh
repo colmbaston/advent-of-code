@@ -5,8 +5,8 @@ cd "`dirname \"$0\"`"
 COLOUR1="\e[1;31m"
 COLOUR2="\e[1;32m"
 
-cargo build --release
 rm -f output.txt
+cargo build --release
 
 if [ $? -eq 0 ];
 then
