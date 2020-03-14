@@ -10,10 +10,10 @@ cargo build --release
 
 if [ $? -eq 0 ];
 then
-  time (for puzzle in $(ls | grep puzzle)
+  time (for PUZZLE in $(ls | grep puzzle)
   do
     printf $COLOUR1
-    ./target/release/$puzzle | tee -a output.txt
+    ./target/release/$PUZZLE | tee -a output.txt
     TEMP=$COLOUR1
     COLOUR1=$COLOUR2
     COLOUR2=$TEMP
