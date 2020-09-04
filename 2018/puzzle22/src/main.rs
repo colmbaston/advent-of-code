@@ -14,7 +14,7 @@ fn main()
     geologic_index(&mut cache, (TARGET.0 - 1, TARGET.1));
 
     // part one: sum the risk levels of the rectangle from (0, 0) to TARGET
-    println!("{}", cache.values().fold(0, |a, x| a + region_type(*x) % 3));
+    println!("{}", cache.values().fold(0, |a, x| a + region_type(*x)));
 
     // part two: use A* search to find the number of minutes to reach TARGET
     println!("{}", astar(&mut cache));
