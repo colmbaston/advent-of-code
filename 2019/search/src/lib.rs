@@ -2,8 +2,8 @@ use std::collections::{ HashSet, VecDeque };
 
 struct Ortho
 {
-    origin  : (i64,  i64),
-    current : (bool, bool)
+    origin  : (i64, i64),
+    current : u8
 }
 
 impl Iterator for Ortho
@@ -12,19 +12,24 @@ impl Iterator for Ortho
 
     fn next(&mut self) -> Option<(i64, i64)>
     {
-        match self.current
+        let (x, y) = self.origin;
+        let result = match self.current % 4
         {
-            (false, false) => { self.current = (false, true);  Some((self.origin.0 + 1, self.origin.1))     },
-            (false, true)  => { self.current = (true,  false); Some((self.origin.0 - 1, self.origin.1))     },
-            (true,  false) => { self.current = (true,  true);  Some((self.origin.0,     self.origin.1 + 1)) },
-            (true,  true)  => { self.current = (false, false); Some((self.origin.0,     self.origin.1 - 1)) }
-        }
+            0 => Some((x+1, y  )),
+            1 => Some((x-1, y  )),
+            2 => Some((x,   y+1)),
+            3 => Some((x,   y-1)),
+            _ => panic!("impossible")
+        };
+        self.current += 1;
+
+        result
     }
 }
 
 pub fn ortho(origin : (i64, i64)) -> impl Iterator<Item = (i64, i64)>
 {
-    Ortho { origin, current : (false, false) }.take(4)
+    Ortho { origin, current: 0 }.take(4)
 }
 
 pub fn bfs<S, I, P>(start : S, adjacent : impl Fn(&S) -> I, complete : impl Fn(&S) -> bool, append_path : impl Fn(&S) -> Option<P>) -> (u64, Option<(S, Vec<P>)>)
