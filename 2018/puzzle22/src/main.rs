@@ -14,13 +14,22 @@ fn main()
     geologic_index(&mut cache, (TARGET.0 - 1, TARGET.1));
 
     // part one: sum the risk levels of the rectangle from (0, 0) to TARGET
-    println!("{}", cache.values().fold(0, |a, x| a + region_type(*x)));
+    println!("{}", cache.values().fold(0, |a, x| a + region_type(*x) as u32));
 
     // part two: use A* search to find the number of minutes to reach TARGET
     println!("{}", astar(&mut cache));
 }
 
-fn geologic_index(cache : &mut HashMap<(i32, i32), u32>, position : (i32, i32)) -> u32
+type Cache = HashMap<(i32, i32), u32>;
+
+enum Region
+{
+    Rocky,
+    Wet,
+    Narrow
+}
+
+fn geologic_index(cache : &mut Cache, position : (i32, i32)) -> u32
 {
     match cache.get(&position)
     {
@@ -52,9 +61,14 @@ fn erosion_level(geologic_index : u32) -> u32
 }
 
 #[inline]
-fn region_type(geologic_index : u32) -> u32
+fn region_type(geologic_index : u32) -> Region
 {
-    erosion_level(geologic_index) % 3
+    match erosion_level(geologic_index) % 3
+    {
+        0 => Region::Rocky,
+        1 => Region::Wet,
+        _ => Region::Narrow
+    }
 }
 
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -75,7 +89,7 @@ enum Tool
 impl State
 {
     // generate possible moves from one state to the next, along with how many minutes each move takes
-    fn moves(&self, cache : &mut HashMap<(i32, i32), u32>) -> Vec<(State, u32)>
+    fn moves(&self, cache : &mut Cache) -> Vec<(State, u32)>
     {
         let (x, y) = self.position;
 
@@ -93,10 +107,10 @@ impl State
                 // you can only move into the adjacent region with an appropriate tool equipped
                 match (region_type(geologic_index(cache, position)), &self.tool)
                 {
-                    (0, Tool::Neither)      => None,  // must use torch or climbing gear in rocky regions
-                    (1, Tool::Torch)        => None,  // must use climbing gear or neither in wet regions
-                    (2, Tool::ClimbingGear) => None,  // must use torch or neither in narrow regions
-                    _                       => Some((State { position, tool: self.tool.clone() }, 1))
+                    (Region::Rocky,  Tool::Neither)      => None,
+                    (Region::Wet,    Tool::Torch)        => None,
+                    (Region::Narrow, Tool::ClimbingGear) => None,
+                    _                                    => Some((State { position, tool: self.tool.clone() }, 1))
                 }
             }
         })
@@ -105,13 +119,13 @@ impl State
         // you can switch to the other tool available for the current region in seven minutes
         let tool = match (region_type(geologic_index(cache, self.position)), &self.tool)
         {
-            (0, Tool::Torch)        => Tool::ClimbingGear,
-            (0, Tool::ClimbingGear) => Tool::Torch,
-            (1, Tool::ClimbingGear) => Tool::Neither,
-            (1, Tool::Neither)      => Tool::ClimbingGear,
-            (2, Tool::Torch)        => Tool::Neither,
-            (2, Tool::Neither)      => Tool::Torch,
-            _                       => panic!("impossible combination of region type and tool")
+            (Region::Rocky,  Tool::Torch)        => Tool::ClimbingGear,
+            (Region::Rocky,  Tool::ClimbingGear) => Tool::Torch,
+            (Region::Wet,    Tool::ClimbingGear) => Tool::Neither,
+            (Region::Wet,    Tool::Neither)      => Tool::ClimbingGear,
+            (Region::Narrow, Tool::Torch)        => Tool::Neither,
+            (Region::Narrow, Tool::Neither)      => Tool::Torch,
+            _                                    => panic!("impossible combination of region type and tool")
         };
         result.push((State { position: self.position, tool }, 7));
 
@@ -126,7 +140,7 @@ fn manhattan(&(x, y) : &(i32, i32)) -> u32
     ((x - TARGET.0).abs() + (y - TARGET.1).abs()) as u32
 }
 
-fn astar(cache : &mut HashMap<(i32, i32), u32>) -> u32
+fn astar(cache : &mut Cache) -> u32
 {
     use std::cmp::Reverse;
 
