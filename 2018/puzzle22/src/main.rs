@@ -1,6 +1,6 @@
 use std::collections::{ HashSet, HashMap, BinaryHeap };
 
-const DEPTH  :  u32       = 10914;
+const DEPTH  :  u32       =  10914;
 const TARGET : (i32, i32) = (9, 739);
 
 fn main()
@@ -21,13 +21,6 @@ fn main()
 }
 
 type Cache = HashMap<(i32, i32), u32>;
-
-enum Region
-{
-    Rocky,
-    Wet,
-    Narrow
-}
 
 fn geologic_index(cache : &mut Cache, position : (i32, i32)) -> u32
 {
@@ -58,6 +51,13 @@ fn geologic_index(cache : &mut Cache, position : (i32, i32)) -> u32
 fn erosion_level(geologic_index : u32) -> u32
 {
     (geologic_index + DEPTH) % 20183
+}
+
+enum Region
+{
+    Rocky  = 0,
+    Wet    = 1,
+    Narrow = 2
 }
 
 #[inline]
