@@ -147,7 +147,7 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
 
         if ix >= self.memory.len()
         {
-            self.memory.extend(std::iter::repeat(0).take(1 + ix - self.memory.len()))
+            self.memory.resize(ix + 1, 0);
         }
 
         &mut self.memory[ix]
