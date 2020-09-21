@@ -154,7 +154,19 @@ fn astar(cache : &mut Cache) -> u32
     {
         if visited.contains(&state) { continue }
         if let State { position: TARGET, tool: Tool::Torch } = state { return steps }
-        queue.extend(state.moves(cache).into_iter().map(|(state, k)| (Reverse(steps + k + manhattan(&state.position)), steps + k, state)));
+
+        queue.extend(state.moves(cache).into_iter().filter_map(|(state, k)|
+        {
+            if visited.contains(&state)
+            {
+                None
+            }
+            else
+            {
+                Some((Reverse(steps + k + manhattan(&state.position)), steps + k, state))
+            }
+        }));
+
         visited.insert(state);
     }
 
