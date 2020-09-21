@@ -163,7 +163,8 @@ fn astar(cache : &mut Cache) -> u32
             }
             else
             {
-                Some((Reverse(steps + k + manhattan(&state.position)), steps + k, state))
+                let steps = steps + k;
+                Some((Reverse(steps + manhattan(&state.position)), steps, state))
             }
         }));
 
