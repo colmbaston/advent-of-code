@@ -18,13 +18,10 @@ fn main()
         {
             if c != d
             {
-                if diff.is_none()
+                diff = match diff
                 {
-                    diff = Some(i);
-                }
-                else
-                {
-                    continue 'outer
+                    None => Some(i),
+                    _    => continue 'outer
                 }
             }
         }
