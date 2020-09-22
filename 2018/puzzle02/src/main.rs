@@ -18,7 +18,7 @@ fn main()
         })
         .unwrap_or_else(|x| x);
 
-        (if a { x+1 } else { x }, if b { y+1 } else { y })
+        (x + a as u32, y + b as u32)
     });
     println!("{}", x * y);
 
