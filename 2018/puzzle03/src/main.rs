@@ -15,14 +15,17 @@ fn main()
             {
                 match areas.entry((i, j))
                 {
+                    Entry::Vacant(e) =>
+                    {
+                        e.insert((id, false));
+                    },
                     Entry::Occupied(mut e) =>
                     {
                         let (other, intersects) = e.get_mut();
                         intersecting.insert(id);
                         intersecting.insert(*other);
                         *intersects = true;
-                    },
-                    Entry::Vacant(e)   => { e.insert((id, false)); }
+                    }
                 }
             }
         }
