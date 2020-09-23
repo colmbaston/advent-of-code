@@ -4,9 +4,8 @@ fn main()
 {
     let input = include_str!("../input.txt").lines().map(|s| parse_claim(s).unwrap().1).collect::<Vec<_>>();
 
-    let mut areas        = HashMap::new();
-    let mut intersecting = HashSet::new();
-
+    let mut areas       = HashMap::new();
+    let mut uncontested = input.iter().map(|c| c.id).collect::<HashSet<_>>();
     for &Claim { id, position: (x, y), area: (w, h) } in input.iter()
     {
         for i in x .. x+w
@@ -22,8 +21,8 @@ fn main()
                     Entry::Occupied(mut e) =>
                     {
                         let (other, intersects) = e.get_mut();
-                        intersecting.insert(id);
-                        intersecting.insert(*other);
+                        uncontested.remove(&id);
+                        uncontested.remove(other);
                         *intersects = true;
                     }
                 }
@@ -32,7 +31,7 @@ fn main()
     }
 
     println!("{}", areas.values().fold(0, |a, &(_, x)| a + x as u32));
-    println!("{}", input.iter().map(|c| c.id).collect::<HashSet<_>>().difference(&intersecting).next().unwrap());
+    println!("{}", uncontested.iter().next().unwrap());
 }
 
 #[derive(PartialEq, Eq, Hash)]
