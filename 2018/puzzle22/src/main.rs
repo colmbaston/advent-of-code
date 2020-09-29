@@ -1,24 +1,8 @@
 use std::collections::{ HashSet, HashMap, BinaryHeap };
 
-fn main()
+lazy_static::lazy_static!
 {
-    // parse input from statically-included file
-    let (_, cave) = parse_cave(include_str!("../input.txt")).unwrap();
-    let (tx, ty)  = cave.target;
-
-    // a cache of the cave's erosion levels
-    let mut cache = HashMap::new();
-
-    // force the caching of the rectangle from (0, 0) to the target
-    // (0, 0) and the target won't be present in the cache, but they don't change the result
-    erosion_level(&mut cache, (tx, ty - 1), &cave);
-    erosion_level(&mut cache, (tx - 1, ty), &cave);
-
-    // part one: sum the risk levels of the rectangle from (0, 0) to the target
-    println!("{}", cache.values().fold(0, |a, x| a + region_type(*x) as u32));
-
-    // part two: use A* search to find the number of minutes to reach target
-    println!("{}", astar(&mut cache, &cave));
+    static ref CAVE : Cave = parse_cave(include_str!("../input.txt")).unwrap().1;
 }
 
 struct Cave
@@ -42,9 +26,27 @@ fn parse_cave(s : &str) -> nom::IResult<&str, Cave>
     }))
 }
 
+fn main()
+{
+    // a cache of the cave's erosion levels
+    let mut cache = HashMap::new();
+
+    // force the caching of the rectangle from (0, 0) to the target
+    // (0, 0) and the target won't be present in the cache, but they don't change the result
+    let (tx, ty)  = CAVE.target;
+    erosion_level(&mut cache, (tx, ty-1));
+    erosion_level(&mut cache, (tx-1, ty));
+
+    // part one: sum the risk levels of the rectangle from (0, 0) to the target
+    println!("{}", cache.values().fold(0, |a, x| a + region_type(*x) as u32));
+
+    // part two: use A* search to find the number of minutes to reach target
+    println!("{}", astar(&mut cache));
+}
+
 type Cache = HashMap<(i32, i32), u32>;
 
-fn erosion_level(cache : &mut Cache, position : (i32, i32), cave : &Cave) -> u32
+fn erosion_level(cache : &mut Cache, position : (i32, i32)) -> u32
 {
     match cache.get(&position)
     {
@@ -55,13 +57,13 @@ fn erosion_level(cache : &mut Cache, position : (i32, i32), cave : &Cave) -> u32
             // otherwise compute it
             let geologic = match position
             {
-                t if t == cave.target => 0,
+                t if t == CAVE.target => 0,
                 (x, 0)                => x as u32 * 16807,
                 (0, y)                => y as u32 * 48271,
-                (x, y)                => erosion_level(cache, (x-1, y), cave)
-                                       * erosion_level(cache, (x, y-1), cave)
+                (x, y)                => erosion_level(cache, (x-1, y))
+                                       * erosion_level(cache, (x, y-1))
             };
-            let erosion = (geologic + cave.depth) % 20183;
+            let erosion = (geologic + CAVE.depth) % 20183;
 
             // and insert it into the cache before returning it
             cache.insert(position, erosion);
@@ -107,7 +109,7 @@ enum Tool
 impl State
 {
     // generate possible moves from one state to the next, along with how many minutes each move takes
-    fn moves(&self, cache : &mut Cache, cave : &Cave) -> Vec<(State, u32)>
+    fn moves(&self, cache : &mut Cache) -> Vec<(State, u32)>
     {
         let (x, y) = self.position;
 
@@ -123,7 +125,7 @@ impl State
             else
             {
                 // you can only move into the adjacent region with an appropriate tool equipped
-                match (region_type(erosion_level(cache, position, cave)), &self.tool)
+                match (region_type(erosion_level(cache, position)), &self.tool)
                 {
                     (Region::Rocky,  Tool::Neither)      => None,
                     (Region::Wet,    Tool::Torch)        => None,
@@ -135,7 +137,7 @@ impl State
         .collect::<Vec<_>>();
 
         // you can switch to the other tool available for the current region in seven minutes
-        let tool = match (region_type(erosion_level(cache, self.position, cave)), &self.tool)
+        let tool = match (region_type(erosion_level(cache, self.position)), &self.tool)
         {
             (Region::Rocky,  Tool::Torch)        => Tool::ClimbingGear,
             (Region::Rocky,  Tool::ClimbingGear) => Tool::Torch,
@@ -158,7 +160,7 @@ fn manhattan((x1, y1) : (i32, i32), (x2, y2) : (i32, i32)) -> u32
     ((x1 - x2).abs() + (y1 - y2).abs()) as u32
 }
 
-fn astar(cache : &mut Cache, cave : &Cave) -> u32
+fn astar(cache : &mut Cache) -> u32
 {
     use std::cmp::Reverse;
 
@@ -171,9 +173,9 @@ fn astar(cache : &mut Cache, cave : &Cave) -> u32
     while let Some((_, steps, state)) = queue.pop()
     {
         if visited.contains(&state) { continue }
-        if state.position == cave.target && state.tool == Tool::Torch { return steps }
+        if state.position == CAVE.target && state.tool == Tool::Torch { return steps }
 
-        queue.extend(state.moves(cache, cave).into_iter().filter_map(|(state, k)|
+        queue.extend(state.moves(cache).into_iter().filter_map(|(state, k)|
         {
             if visited.contains(&state)
             {
@@ -182,7 +184,7 @@ fn astar(cache : &mut Cache, cave : &Cave) -> u32
             else
             {
                 let steps = steps + k;
-                Some((Reverse(steps + manhattan(state.position, cave.target)), steps, state))
+                Some((Reverse(steps + manhattan(state.position, CAVE.target)), steps, state))
             }
         }));
 
