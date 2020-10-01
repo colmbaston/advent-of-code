@@ -155,8 +155,9 @@ impl State
 
 #[inline]
 // use Manhattan distance to the target as the A* heuristic
-fn manhattan((x1, y1) : (i32, i32), (x2, y2) : (i32, i32)) -> u32
+fn manhattan((x1, y1) : (i32, i32)) -> u32
 {
+    let (x2, y2) = CAVE.target;
     ((x1 - x2).abs() + (y1 - y2).abs()) as u32
 }
 
@@ -184,7 +185,7 @@ fn astar(cache : &mut Cache) -> u32
             else
             {
                 let steps = steps + k;
-                Some((Reverse(steps + manhattan(state.position, CAVE.target)), steps, state))
+                Some((Reverse(steps + manhattan(state.position)), steps, state))
             }
         }));
 
