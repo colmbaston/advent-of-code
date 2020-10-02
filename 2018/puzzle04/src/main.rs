@@ -1,39 +1,40 @@
-use std::collections::{ HashMap, VecDeque };
+use std::collections::HashMap;
 
 fn main()
 {
     // the lexicographic ordering of the strings is the chronological ordering
     let mut input = include_str!("../input.txt").lines().collect::<Vec<&str>>();
     input.sort_unstable();
-    let mut input = input.into_iter().map(|s| parse_record(s).unwrap().1).collect::<VecDeque<Record>>();
+    let mut input = input.into_iter().map(|s| parse_record(s).unwrap().1).peekable();
+
+    // a mapping of guard ids to the frequency they are asleep per minute
+    let mut sleep_logs = HashMap::new();
 
     // each section of the input begins with a guard
-    let mut histograms = HashMap::new();
-    while let Some(Record::Guard(guard_id)) = input.pop_front()
+    while let Some(Record::Guard(guard_id)) = input.next()
     {
-        // each guard will have an even number of toggles
-        while input.front().map_or(false, |r| r.is_toggle())
+        // each guard will be followed by an even number of toggles
+        while input.peek().map_or(false, |r| r.is_toggle())
         {
             // the first of each pair of toggles denotes the minute the guard
             // falls asleep and the second denotes the minute the guard wakes up
-            let pair = (input.pop_front(), input.pop_front());
-            if let (Some(Record::Toggle(asleep)), Some(Record::Toggle(awake))) = pair
+            let pair = input.next().and_then(|r| input.next().map(|q| (r, q)));
+            if let Some((Record::Toggle(asleep), Record::Toggle(awake))) = pair
             {
                 // for each minute, count the frequency the guard is asleep
-                let h = histograms.entry(guard_id).or_insert([0 ; 60]);
+                let h = sleep_logs.entry(guard_id).or_insert([0 ; 60]);
                 for minute in asleep .. awake { h[minute as usize] += 1 }
-
             }
         }
     }
 
     // part 1: choose the guard who is asleep the most and the minute they are asleep the most
-    let (chosen_guard, log) = histograms.iter().max_by_key(|(_, log)| log.iter().sum::<u32>()).unwrap();
+    let (chosen_guard, log) = sleep_logs.iter().max_by_key(|(_, log)| log.iter().sum::<u32>()).unwrap();
     let  chosen_minute      = log.iter().enumerate().max_by_key(|&(_, k)| k).unwrap().0;
     println!("{}", chosen_guard * chosen_minute as u32);
 
     // part 2: choose the guard who is most frequently asleep on the same minute, and choose that minute
-    let (chosen_guard, (chosen_minute, _)) = histograms.iter().map(|(guard, log)|
+    let (chosen_guard, (chosen_minute, _)) = sleep_logs.iter().map(|(guard, log)|
     {
         (guard, log.iter()
                    .enumerate()
@@ -76,7 +77,7 @@ fn parse_record(s : &str) -> nom::IResult<&str, Record>
             let (_, guard_id) = digit1(&s[9..])?;
             Record::Guard(guard_id.parse().unwrap())
         },
-        _ => Record::Toggle(minute.parse().unwrap()),
+        _ => Record::Toggle(minute.parse().unwrap())
     };
 
     Ok(("", record))
