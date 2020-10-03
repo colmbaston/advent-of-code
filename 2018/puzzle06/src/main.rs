@@ -16,36 +16,47 @@ fn main()
         (min_x.min(x), min_y.min(y), max_x.max(x), max_y.max(y))
     });
 
-    // for each point, find the size of the area, bounded
-    // by the rectangle, that is nearest the point
+    // loop over all points in the bounding rectangle excluding the boundary itself
+    let mut count = 0;
     let mut areas = HashMap::new();
     for x in min_x+1 .. max_x
     {
         for y in min_y+1 .. max_y
         {
+            // for part 1, find the size of the area nearest each point
             if let Some(n) = nearest(input.iter(), &(x, y))
             {
                 *areas.entry(n).or_insert(0) += 1;
             }
+
+            // for part 2, count those points where the manhattan distances sum to < 10_000
+            if input.iter().map(|p| manhattan(p, &(x, y))).sum::<u32>() < 10_000
+            {
+                count += 1
+            }
         }
     }
 
-    // eliminate the points from the map which have infinite areas
-    // by removing those which have a nearest point on the boundary
+    // eliminate the points from the areas map which have infinite
+    // areas by removing those which have a nearest point on the boundary
     let top    = (min_x   ..  max_x).map(|x| (x, min_y));
     let bottom = (min_x   ..  max_x).map(|x| (x, max_y));
     let left   = (min_y+1 ..  max_y).map(|y| (min_x, y));
     let right  = (min_y   ..= max_y).map(|y| (max_x, y));
     for point in top.chain(bottom).chain(left).chain(right)
     {
+        // sanity check for part 2 as I'm assuming all
+        // counted points will be inside the bounding rectangle
+        debug_assert!(input.iter().map(|p| manhattan(p, &point)).sum::<u32>() >= 10_000);
+
         if let Some(n) = nearest(input.iter(), &point)
         {
             areas.remove(&n);
         }
     }
 
-    // part 1: the size of the largest finite area
     println!("{}", areas.values().max().unwrap());
+    println!("{}", count);
 }
 
 #[inline]
