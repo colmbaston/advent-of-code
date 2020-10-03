@@ -44,7 +44,7 @@ fn topological_sort(mut graph : BTreeMap<u8, HashSet<u8>>, workers : usize) -> (
                 let (Reverse(t), k) = queue.pop().unwrap();
                 seconds += t;
 
-                // remove the step that has just finished from the steps' dependencies
+                // remove the step that has just finished from the other steps' dependencies
                 for (_, v) in graph.iter_mut() { v.remove(&k); }
 
                 // reduce the time to wait for the other steps
@@ -61,8 +61,8 @@ fn topological_sort(mut graph : BTreeMap<u8, HashSet<u8>>, workers : usize) -> (
         }
     }
 
-    // all steps have been queued, so wait for them to finish
-    seconds += queue.iter().map(|(Reverse(t), _)| t).max().unwrap();
+    // all steps have now been queued, so wait for them to finish
+    seconds += queue.iter().map(|(Reverse(t), _)| t).max().unwrap_or(&0);
 
     (sorted, seconds)
 }
