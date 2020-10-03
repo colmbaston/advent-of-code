@@ -37,8 +37,7 @@ fn main()
         }
     }
 
-    // eliminate the points from the areas map which have infinite
-    // areas by removing those which have a nearest point on the boundary
+    // loop over the boundary of the rectangle
     let top    = (min_x   ..  max_x).map(|x| (x, min_y));
     let bottom = (min_x   ..  max_x).map(|x| (x, max_y));
     let left   = (min_y+1 ..  max_y).map(|y| (min_x, y));
@@ -46,9 +45,11 @@ fn main()
     for point in top.chain(bottom).chain(left).chain(right)
     {
         // sanity check for part 2 as I'm assuming all
-        // counted points will be inside the bounding rectangle
+        // counted points will be inside the boundary
         debug_assert!(input.iter().map(|p| manhattan(p, &point)).sum::<u32>() >= 10_000);
 
+        // remove those points from the area map which have nearest
+        // points along the boundary as those areas will be infinite
         if let Some(n) = nearest(input.iter(), &point)
         {
             areas.remove(&n);
