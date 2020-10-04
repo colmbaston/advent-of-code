@@ -2,7 +2,7 @@ use std::collections::{ HashSet, HashMap, hash_map::Entry };
 
 fn main()
 {
-    let input = include_str!("../input.txt").lines().map(|s| parse_claim(s).unwrap().1).collect::<Vec<_>>();
+    let input = include_str!("../input.txt").lines().map(|s| parse_claim(s)).collect::<Vec<_>>();
 
     let mut areas       = HashMap::new();
     let mut uncontested = input.iter().map(|c| c.id).collect::<HashSet<_>>();
@@ -42,20 +42,23 @@ struct Claim
     area:     (u32, u32)
 }
 
-fn parse_claim(s : &str) -> nom::IResult<&str, Claim>
+fn parse_claim(s : &str) -> Claim
 {
-    use nom::character::complete::digit1;
+    fn span_digits(s : &str) -> (&str, &str)
+    {
+        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()))
+    }
 
-    let (s, id) = digit1(&s[1..])?;
-    let (s, x)  = digit1(&s[3..])?;
-    let (s, y)  = digit1(&s[1..])?;
-    let (s, w)  = digit1(&s[2..])?;
-    let (s, h)  = digit1(&s[1..])?;
+    let (id, s) = span_digits(&s[1..]);
+    let (x,  s) = span_digits(&s[3..]);
+    let (y,  s) = span_digits(&s[1..]);
+    let (w,  s) = span_digits(&s[2..]);
+    let (h,  _) = span_digits(&s[1..]);
 
-    Ok((s, Claim
+    Claim
     {
         id:       id.parse().unwrap(),
         position: (x.parse().unwrap(), y.parse().unwrap()),
         area:     (w.parse().unwrap(), h.parse().unwrap())
-    }))
+    }
 }
