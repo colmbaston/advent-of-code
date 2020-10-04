@@ -35,7 +35,7 @@ impl Tree
     fn sum_metadata(&self) -> usize
     {
           self.metadata.iter().sum::<usize>()
-        + self.children.iter().map(|t| t.sum_metadata()).sum::<usize>()
+        + self.children.iter().fold(0, |a, t| a + t.sum_metadata())
     }
 
     fn root_value(&self) -> usize
@@ -46,18 +46,17 @@ impl Tree
         }
         else
         {
-            self.metadata.iter().map(|&i|
+            self.metadata.iter().fold(0, |a, &i|
             {
                 if 1 <= i && i <= self.children.len()
                 {
-                    self.children[i - 1].root_value()
+                    a + self.children[i - 1].root_value()
                 }
                 else
                 {
-                    0
+                    a
                 }
             })
-            .sum()
         }
     }
 }
