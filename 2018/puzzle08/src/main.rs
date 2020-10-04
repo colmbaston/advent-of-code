@@ -1,8 +1,8 @@
 fn main()
 {
-    let (_, tree) = Tree::parse(&include_str!("../input.txt").split_ascii_whitespace()
-                                                             .map(|s| s.parse::<usize>().unwrap())
-                                                             .collect::<Vec<usize>>());
+    let tree = Tree::parse(&mut include_str!("../input.txt")
+                               .split_ascii_whitespace()
+                               .map(|s| s.parse::<usize>().unwrap())).unwrap();
 
     println!("{}", tree.sum_metadata());
     println!("{}", tree.root_value());
@@ -16,25 +16,20 @@ struct Tree
 
 impl Tree
 {
-    fn parse(s : &[usize]) -> (&[usize], Tree)
+    fn parse(stream : &mut impl Iterator<Item = usize>) -> Option<Tree>
     {
-        let c_count = s[0];
-        let m_count = s[1];
-        let mut children = Vec::with_capacity(c_count);
-        let mut metadata = Vec::with_capacity(m_count);
-        let mut s = &s[2..];
+        let c_count = stream.next()?;
+        let m_count = stream.next()?;
 
+        let mut children = Vec::with_capacity(c_count);
         for _ in 0 .. c_count
         {
-            let (r, t) = Tree::parse(s);
-            children.push(t);
-            s = r;
+            children.push(Tree::parse(stream)?)
         }
 
-        let (ms, s) = s.split_at(m_count);
-        metadata.extend(ms.iter().copied());
+        let metadata = stream.take(m_count).collect();
 
-        (s, Tree { children, metadata })
+        Some(Tree { children, metadata })
     }
 
     fn sum_metadata(&self) -> usize
