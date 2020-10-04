@@ -5,7 +5,7 @@ fn main()
     // the lexicographic ordering of the strings is the chronological ordering
     let mut input = include_str!("../input.txt").lines().collect::<Vec<&str>>();
     input.sort_unstable();
-    let mut input = input.into_iter().map(|s| parse_record(s).unwrap().1).peekable();
+    let mut input = input.into_iter().map(|s| parse_record(s)).peekable();
 
     // a mapping of guard ids to the frequency they are asleep per minute
     let mut sleep_logs = HashMap::new();
@@ -64,21 +64,22 @@ impl Record
     }
 }
 
-fn parse_record(s : &str) -> nom::IResult<&str, Record>
+fn parse_record(s : &str) -> Record
 {
-    use nom::character::complete::digit1;
+    fn span_digits(s : &str) -> (&str, &str)
+    {
+        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()))
+    }
 
-    let (s, minute) = digit1(&s[15..])?;
+    let (minute, s) = span_digits(&s[15..]);
 
-    let record = match s.as_bytes()[2]
+    match s.as_bytes()[2]
     {
         b'G' =>
         {
-            let (_, guard_id) = digit1(&s[9..])?;
+            let (guard_id, _) = span_digits(&s[9..]);
             Record::Guard(guard_id.parse().unwrap())
         },
         _ => Record::Toggle(minute.parse().unwrap())
-    };
-
-    Ok(("", record))
+    }
 }
