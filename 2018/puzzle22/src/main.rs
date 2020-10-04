@@ -2,7 +2,7 @@ use std::collections::{ HashSet, HashMap, BinaryHeap };
 
 lazy_static::lazy_static!
 {
-    static ref CAVE : Cave = parse_cave(include_str!("../input.txt")).unwrap().1;
+    static ref CAVE : Cave = parse_cave(include_str!("../input.txt"));
 }
 
 struct Cave
@@ -11,19 +11,18 @@ struct Cave
     target : (i32, i32)
 }
 
-fn parse_cave(s : &str) -> nom::IResult<&str, Cave>
+fn parse_cave(s : &str) -> Cave
 {
-    use nom::character::complete::digit1;
-
-    let (s, depth) = digit1(&s[7..])?;
-    let (s, tx)    = digit1(&s[9..])?;
-    let (s, ty)    = digit1(&s[1..])?;
-
-    Ok((s, Cave
+    fn span_digits(s : &str) -> (&str, &str)
     {
-        depth:  depth.parse().unwrap(),
-        target: (tx.parse().unwrap(), ty.parse().unwrap())
-    }))
+        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()))
+    }
+
+    let (depth, s) = span_digits(&s[7..]);
+    let (tx,    s) = span_digits(&s[9..]);
+    let (ty,    _) = span_digits(&s[1..]);
+
+    Cave { depth: depth.parse().unwrap(), target: (tx.parse().unwrap(), ty.parse().unwrap()) }
 }
 
 fn main()
