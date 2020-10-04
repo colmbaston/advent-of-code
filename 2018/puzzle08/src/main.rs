@@ -10,7 +10,7 @@ fn main()
 
 struct Tree
 {
-    children: Vec<Box<Tree>>,
+    children: Vec<Tree>,
     metadata: Vec<usize>
 }
 
@@ -27,7 +27,7 @@ impl Tree
         for _ in 0 .. c_count
         {
             let (r, t) = Tree::parse(s);
-            children.push(Box::new(t));
+            children.push(t);
             s = r;
         }
 
