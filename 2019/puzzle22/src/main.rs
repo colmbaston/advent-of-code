@@ -1,4 +1,3 @@
-use parsing::*;
 use std::ops::RemAssign;
 
 const DECK_ONE : i128 = 10_007;
@@ -7,13 +6,7 @@ const SHUFFLES : u64  = 101_741_582_076_661;
 
 fn main()
 {
-    let input : Vec<Linear> = include_str!("../input.txt").lines().map(|s|
-    {
-        alt((map(tag("deal into new stack"),                     |_| Linear { a: -1,         b: -1         }),
-             map(preceded(tag("cut "),                 integer), |c| Linear { a:  1,         b: -c as i128 }),
-             map(preceded(tag("deal with increment "), integer), |i| Linear { a:  i as i128, b:  0         })))(s).unwrap().1
-    })
-    .collect();
+    let input : Vec<Linear> = include_str!("../input.txt").lines().map(parse_linear).collect();
 
     let mut shuffle = input.iter().fold(Linear::IDENTITY, |mut a, x| { a.compose(x); a %= DECK_ONE; a });
     shuffle.modulus(DECK_ONE);
@@ -30,6 +23,23 @@ struct Linear
 {
     a : i128,
     b : i128
+}
+
+fn parse_linear(s : &str) -> Linear
+{
+    let bs = s.as_bytes();
+    match bs[0]
+    {
+        // cut
+        b'c' => Linear { a : 1, b: -s[4..].parse::<i128>().unwrap() },
+        _    => match bs[5]
+        {
+            // deal into new stack
+            b'i' => Linear { a: -1, b: -1 },
+            // deal with increment
+            _    => Linear { a: s[20..].parse().unwrap(), b: 0 }
+        }
+    }
 }
 
 impl Linear

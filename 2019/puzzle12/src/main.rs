@@ -1,10 +1,9 @@
-use parsing::*;
 use std::cmp::Ordering;
 use num_integer::Integer;
 
 fn main()
 {
-    let input : Vec<_> = include_str!("../input.txt").lines().map(|s| parse_moon(s).unwrap().1).collect();
+    let input : Vec<_> = include_str!("../input.txt").lines().map(|s| parse_moon(s)).collect();
 
     let mut moons  = input.clone();
     let mut cycles = [None, None, None];
@@ -30,10 +29,18 @@ fn main()
     }
 }
 
-fn parse_moon(s : &str) -> IResult<&str, ([i64 ; 3], [i64 ; 3])>
+fn parse_moon(s : &str) -> ([i64 ; 3], [i64 ; 3])
 {
-    let (s, (_, x, _, y, _, z)) = tuple((tag("<x="), integer, tag(", y="), integer, tag(", z="), integer))(s)?;
-    Ok((s, ([x, y, z], [0, 0, 0])))
+    fn span_integer(s : &str) -> (&str, &str)
+    {
+        s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or(s.len()))
+    }
+
+    let (x, s) = span_integer(&s[3..]);
+    let (y, s) = span_integer(&s[4..]);
+    let (z, _) = span_integer(&s[4..]);
+
+    ([x.parse().unwrap(), y.parse().unwrap(), z.parse().unwrap()], [0, 0, 0])
 }
 
 fn step(moons : &mut [([i64 ; 3], [i64 ; 3])])
@@ -65,7 +72,7 @@ fn check_cycles(i : u64, input : &[([i64 ; 3], [i64 ; 3])], moons :  &[([i64 ; 3
     {
         if cycles[j].is_none() && input.iter().zip(moons.iter()).all(|((pa, va), (pb, vb))| pa[j] == pb[j] && va[j] == vb[j])
         {
-                cycles[j] = Some(i);
+            cycles[j] = Some(i);
         }
     }
 }

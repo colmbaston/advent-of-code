@@ -183,7 +183,7 @@ impl Interpreter<Empty<i64>>
         })
     }
 
-    pub fn with_fn(memory : Vec<i64>, input : impl Fn() -> i64, output : impl Fn(i64) -> ()) -> Interpreter<Empty<i64>>
+    pub fn with_fn(memory : Vec<i64>, input : impl Fn() -> i64, output : impl Fn(i64)) -> Interpreter<Empty<i64>>
     {
         let (send_in,  recv_in ) = channel();
         let (send_out, recv_out) = channel();

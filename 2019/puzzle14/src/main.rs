@@ -1,9 +1,8 @@
-use parsing::*;
 use std::collections::HashMap;
 
 fn main()
 {
-    let reactions    = include_str!("../input.txt").lines().map(|s| parse_reaction(s).unwrap().1).collect();
+    let reactions    = include_str!("../input.txt").lines().map(|s| parse_reaction(s)).collect();
     let mut leftover = HashMap::new();
 
     println!("{}", ore_required(1, "FUEL", &reactions, &mut leftover));
@@ -34,14 +33,25 @@ fn main()
     println!("{}", lower);
 }
 
-fn parse_reaction(s : &str) -> IResult<&str, (&str, (u64, Vec<(u64, &str)>))>
+fn parse_reaction(s : &str) -> (&str, (u64, Vec<(u64, &str)>))
 {
-    let chem = |s| separated_pair(natural, char(' '), alpha1)(s);
-    let (s, (inputs, (q, output))) = separated_pair(separated_list(tag(", "), chem), tag(" => "), chem)(s)?;
-    Ok((s, (output, (q, inputs))))
+    fn parse_chem(s : &str) -> (u64, &str)
+    {
+        let (q, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()));
+
+        (q.parse().unwrap(), &s[1..])
+    }
+
+    let mut reaction     = s.split(" => ");
+    let inputs           = reaction.next().unwrap().split(", ").map(parse_chem).collect();
+    let (quantity, chem) = parse_chem(reaction.next().unwrap());
+
+    (chem, (quantity, inputs))
 }
 
-fn ore_required<'a>(mut q_required : u64, chem : &'a str, reactions : &HashMap<&'a str, (u64, Vec<(u64, &'a str)>)>, leftover : &mut HashMap<&'a str, u64>) -> u64
+type Reactions<'a> = HashMap<&'a str, (u64, Vec<(u64, &'a str)>)>;
+
+fn ore_required<'a>(mut q_required : u64, chem : &'a str, reactions : &Reactions<'a>, leftover : &mut HashMap<&'a str, u64>) -> u64
 {
     if let Some(q_left) = leftover.get_mut(chem)
     {

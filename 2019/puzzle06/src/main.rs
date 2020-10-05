@@ -1,9 +1,8 @@
-use parsing::*;
 use std::collections::HashMap;
 
 fn main()
 {
-    let (direct, inverse) = parse_orbits(include_str!("../input.txt")).unwrap().1;
+    let (direct, inverse) = parse_orbits(include_str!("../input.txt"));
     println!("{}", count_orbits(&direct, "COM", 0));
 
     let path_from_you : Vec<_> = path_to_root(&inverse, "YOU").collect();
@@ -18,17 +17,21 @@ fn main()
     }
 }
 
-fn parse_orbits(s : &str) -> IResult<&str, (HashMap<&str, Vec<&str>>, HashMap<&str, &str>)>
+fn parse_orbits(s : &str) -> (HashMap<&str, Vec<&str>>, HashMap<&str, &str>)
 {
-    fold_many0(tuple((alphanumeric1, char(')'), alphanumeric1, newline)),
-               (HashMap::new(), HashMap::new()),
-               |(mut direct, mut inverse) : (HashMap<_, Vec<_>>, _), (a, _, b, _)|
-               {
-                   direct.entry(a).and_modify(|v| v.push(b)).or_insert_with(|| vec![b]);
-                   inverse.insert(b, a);
-                   (direct, inverse)
-               })
-               (s)
+    let mut direct  = HashMap::new();
+    let mut inverse = HashMap::new();
+
+    for l in s.lines()
+    {
+        let a = &l[0..3];
+        let b = &l[4..7];
+
+        direct.entry(a).or_insert_with(Vec::new).push(b);
+        inverse.insert(b, a);
+    }
+
+    (direct, inverse)
 }
 
 fn count_orbits(orbits : &HashMap<&str, Vec<&str>>, body : &str, depth : u64) -> u64
