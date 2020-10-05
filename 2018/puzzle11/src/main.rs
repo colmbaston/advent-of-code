@@ -1,10 +1,9 @@
 const SIZE : usize = 300;
 type Grid = [[i64 ; SIZE+1] ; SIZE+1];
 
-
 fn main()
 {
-    let grid = initialise_grid(include_str!("../input.txt").trim_end().parse::<i64>().unwrap());
+    let grid = initialise_grid(include_str!("../input.txt").trim_end().parse().unwrap());
 
     let (_, (x, y)) = power_square(&grid, 3);
     println!("{},{}", x, y);
