@@ -18,10 +18,10 @@ fn main()
         {
             // the previous iteration was the (local) minimum, so step_backwards
             points.iter_mut().for_each(Point::step_backwards);
-            let (min_x, min_y, max_x, max_y) = last_rect;
-            let canvas = points.into_iter().map(|p| p.position).collect::<HashSet<(i64, i64)>>();
 
             // part 1: display the state of area inside the bounding rectangle
+            let (min_x, min_y, max_x, max_y) = last_rect;
+            let canvas = points.into_iter().map(|p| p.position).collect::<HashSet<(i64, i64)>>();
             println!();
             for y in min_y ..= max_y
             {
