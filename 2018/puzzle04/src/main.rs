@@ -68,7 +68,7 @@ fn parse_record(s : &str) -> Record
 {
     fn span_digits(s : &str) -> (&str, &str)
     {
-        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()))
+        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()))
     }
 
     let (minute, s) = span_digits(&s[15..]);
