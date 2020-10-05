@@ -1,5 +1,5 @@
 const SIZE : usize = 300;
-type Grid = [[i64 ; SIZE+1] ; SIZE+1];
+type Grid = [[i32 ; SIZE+1] ; SIZE+1];
 
 fn main()
 {
@@ -12,16 +12,16 @@ fn main()
     println!("{},{},{}", x, y, s);
 }
 
-fn initialise_grid(serial : i64) -> Grid
+fn initialise_grid(serial : i32) -> Grid
 {
     let mut grid = [[0 ; SIZE+1] ; SIZE+1];
 
     for x in 1 ..= SIZE
     {
-        let rack_id = (x + 10) as i64;
+        let rack_id = (x + 10) as i32;
         for y in 1 ..= SIZE
         {
-            grid[x][y] = (rack_id * y as i64 + serial) * rack_id / 100 % 10 - 5
+            grid[x][y] = (rack_id * y as i32 + serial) * rack_id / 100 % 10 - 5
                        + grid[x-1][y]
                        + grid[x][y-1]
                        - grid[x-1][y-1];
@@ -31,9 +31,9 @@ fn initialise_grid(serial : i64) -> Grid
     grid
 }
 
-fn power_square(grid : &Grid, square_size : usize) -> (i64, (usize, usize))
+fn power_square(grid : &Grid, square_size : usize) -> (i32, (usize, usize))
 {
-    let mut max  = i64::MIN;
+    let mut max  = i32::MIN;
     let mut best = (0, 0);
 
     for x in square_size ..= SIZE
