@@ -18,8 +18,8 @@ fn main()
     state.iter().skip(number).take(10).for_each(|b| print!("{}", b));
     println!();
 
-    // part 2: reset the iterator for part 2 and initialise a
-    // sliding window to compare with the input digits at each step
+    // part 2: reset the iterator and initialise a sliding
+    // window to compare with the input digits at each step
     state.iter_index = digits.len();
     let mut window   = state.scoreboard[.. digits.len()].iter().copied().collect::<VecDeque<u8>>();
     for (i, b) in state.iter().enumerate()
