@@ -158,7 +158,7 @@ impl Direction
 {
     fn turn(&mut self, turn : Turn)
     {
-        *self = match ((*self as i8 + turn as i8 - 1) % 4 + 4) % 4
+        *self = match (*self as u8 + turn as u8 + 3) % 4
         {
             0 => Direction::Up,
             1 => Direction::Right,
