@@ -13,4 +13,5 @@ members = [ "puzzle01",
             "puzzle11",
             "puzzle12",
             "puzzle13",
+            "puzzle14",
             "puzzle22" ]
