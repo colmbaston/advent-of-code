@@ -1,42 +1,39 @@
+use std::collections::VecDeque;
+
 fn main()
 {
     let digits = include_str!("../input.txt").trim_end().bytes().map(|b| b - b'0').collect::<Vec<u8>>();
     let number = digits.iter().fold(0, |a, &x| 10*a + x as usize);
 
     // initialise capacity to number+11 in case the final step gives two recipes
-    let mut state = State { elf_one: 0, elf_two: 1, scoreboard: Vec::with_capacity(number+11) };
-    state.scoreboard.extend(&[3, 7]);
+    let mut state = State
+    {
+        elf_one:    0,
+        elf_two:    1,
+        scoreboard: vec![3, 7],
+        iter_index: 0
+    };
 
-    // part 1: generate (at least) number+10 recipes
-    // and print the scores of the first 10 after number
-    while state.scoreboard.len() < number+10 { state.generate() }
-    state.scoreboard[number .. number+10].iter().for_each(|b| print!("{}", b));
+    // part 1: print the scores of the first 10 recipes immediately after number
+    state.iter().skip(number).take(10).for_each(|b| print!("{}", b));
     println!();
 
-    // part 2: check if the windows of the scoreboard match the input digits; if no
-    // match is found, generate more recipes and recheck the newly-generated subslice
-    let mut prev_checked = 0;
-    'outer: loop
+    // part 2: reset the iterator for part 2 and initialise a
+    // sliding window to compare with the input digits at each step
+    state.iter_index = digits.len();
+    let mut window   = state.scoreboard[.. digits.len()].iter().copied().collect::<VecDeque<u8>>();
+    for (i, b) in state.iter().enumerate()
     {
-        for (i, w) in state.scoreboard[prev_checked..].windows(digits.len()).enumerate()
+        // if the current window matches the input digits, print the index and terminate
+        if digits.iter().zip(window.iter()).all(|(x, y)| x == y)
         {
-            // check if this i
-            if w == digits.as_slice()
-            {
-                println!("{}", prev_checked+i);
-                break 'outer
-            }
+            println!("{}", i);
+            break
         }
 
-        // update the number of indices that have previously been checked
-        prev_checked = state.scoreboard.len() - digits.len() + 1;
-
-        // generate recipes until the new length is double the old capacity
-        state.scoreboard.reserve(state.scoreboard.capacity());
-        while state.scoreboard.capacity() > state.scoreboard.len()+1
-        {
-            state.generate();
-        }
+        // otherwise, slide the window to the right one step
+        window.pop_front();
+        window.push_back(b);
     }
 }
 
@@ -44,7 +41,8 @@ struct State
 {
     elf_one    : usize,
     elf_two    : usize,
-    scoreboard : Vec<u8>
+    scoreboard : Vec<u8>,
+    iter_index : usize
 }
 
 impl State
@@ -60,5 +58,27 @@ impl State
 
         self.elf_one = (self.elf_one + 1 + r_one as usize) % self.scoreboard.len();
         self.elf_two = (self.elf_two + 1 + r_two as usize) % self.scoreboard.len();
+    }
+
+    fn iter(&mut self) -> &mut State
+    {
+        self
+    }
+}
+
+impl Iterator for State
+{
+    type Item = u8;
+
+    fn next(&mut self) -> Option<u8>
+    {
+        while self.scoreboard.len() <= self.iter_index
+        {
+            self.generate()
+        }
+
+        let result = self.scoreboard[self.iter_index];
+        self.iter_index += 1;
+        Some(result)
     }
 }
