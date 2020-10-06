@@ -5,14 +5,16 @@ fn main()
     let digits = include_str!("../input.txt").trim_end().bytes().map(|b| b - b'0').collect::<Vec<u8>>();
     let number = digits.iter().fold(0, |a, &x| 10*a + x as usize);
 
+    // give the vector an initial capacity since we need at least number+10 terms
     // initialise capacity to number+11 in case the final step gives two recipes
     let mut recipes = Recipes
     {
         elf_one:    0,
         elf_two:    1,
-        scoreboard: vec![3, 7],
+        scoreboard: Vec::with_capacity(number+11),
         iter_index: 0
     };
+    recipes.scoreboard.extend(&[3, 7]);
 
     // part 1: print the scores of the first 10 recipes immediately after number
     recipes.iter().skip(number).take(10).for_each(|b| print!("{}", b));
