@@ -5,15 +5,13 @@ fn main()
     let (units, walls) = parse(include_str!("../input.txt"));
 
     // part 1: find the outcome of the combat
-    println!("{}", combat(units.clone(), &walls, 3).2);
+    println!("{}", combat(units.clone(), &walls, None).unwrap());
 
     // part 2: find the outcome of the combat where the elves' attack
     // power is the minimum it can be while having all elves survive
-    let elf_count = units.values().filter(|u| u.team == Team::Elf).count();
     for elf_attack in 4 ..
     {
-        let (winner, remaining, outcome) = combat(units.clone(), &walls, elf_attack);
-        if winner == Team::Elf && remaining == elf_count
+        if let Some(outcome) = combat(units.clone(), &walls, Some(elf_attack))
         {
             println!("{}", outcome);
             break
@@ -63,7 +61,7 @@ fn parse(s : &str) -> (HashMap<(u32, u32), Unit>, HashSet<(u32, u32)>)
     (units, walls)
 }
 
-fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, elf_attack : u32) -> (Team, usize, u32)
+fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, elf_attack : Option<u32>) -> Option<u32>
 {
     let mut round          = 0;
     let mut unit_positions = Vec::new();
@@ -82,10 +80,8 @@ fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, e
                 let targets = units.iter().filter(|(_, t)| current_u.team != t.team).collect::<Vec<_>>();
                 if targets.is_empty()
                 {
-                    let winner    = current_u.team;
-                    let remaining = 1 + units.len();
-                    let outcome   = round * units.values().fold(current_u.hit_points, |a, u| a + u.hit_points);
-                    return (winner, remaining, outcome)
+                    // current_u has been removed from the map, so seed the fold with current_u.hit_points
+                    return Some(round * units.values().fold(current_u.hit_points, |a, u| a + u.hit_points))
                 }
 
                 // identify all unique open squares that are adjacent to targets
@@ -102,23 +98,29 @@ fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, e
                     current_p = bfs(&sources, &sinks, |p| moves(p, &walls, &units)).unwrap_or(current_p);
                 }
 
-                // find the first target (if any) orthogonally adjacent to current_u
+                // find the adjacent target (if any) with the lowest hit points
                 let target_p = ortho(current_p).filter_map(|p|
                 {
                     units.get(&p).and_then(|u| if current_u.team != u.team { Some((p, u)) } else { None })
                 })
                 .min_by_key(|(_, u)| u.hit_points).map(|(p, _)| p);
 
-                // if an adjacent target exists, attack them
+                // if a target was found, attack them
                 if let Some(Entry::Occupied(mut e)) = target_p.map(|p| units.entry(p))
                 {
                     let target       = e.get_mut();
-                    let attack_power = if let Team::Elf = current_u.team { elf_attack } else { 3 };
+                    let attack_power = match current_u.team
+                    {
+                        Team::Elf    => elf_attack.unwrap_or(3),
+                        Team::Goblin => 3
+                    };
 
                     // if the target would die, remove their
                     // entry, otherwise reduce their hit points
                     if target.hit_points <= attack_power
                     {
+                        // for part two, terminate the simulation as soon as one elf dies
+                        if elf_attack.is_some() && target.team == Team::Elf { return None }
                         e.remove();
                     }
                     else
@@ -127,6 +129,8 @@ fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, e
                     }
                 }
 
+                // remember to put the current unit back into
+                // the map with a potentially updated position
                 units.insert(current_p, current_u);
             }
         }
