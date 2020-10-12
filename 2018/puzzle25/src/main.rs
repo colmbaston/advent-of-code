@@ -6,11 +6,11 @@ fn main()
     let mut queue  = Vec::new();
     let mut count  = 0;
 
-    while !points.is_empty()
+    // while the set is not empty, select an arbitrary member
+    while let Some(&arbitrary) = points.iter().next()
     {
-        // the set is not empty, so choose an arbitrary member
-        // and queue its constellation for removal from the set
-        queue.push(*points.iter().next().unwrap());
+        // queue the chosen element for removal
+        queue.push(arbitrary);
 
         // purge the chosen element's constellation
         while let Some(point) = queue.pop()
