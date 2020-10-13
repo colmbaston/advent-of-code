@@ -48,16 +48,16 @@ fn main()
     }
 }
 
-fn manhattan((x1, y1, z1) : (i32, i32, i32), (x2, y2, z2) : (i32, i32, i32)) -> u32
+type Pos = (i32, i32, i32);
+
+fn manhattan((x1, y1, z1) : Pos, (x2, y2, z2) : Pos) -> u32
 {
     ((x1 - x2).abs() + (y1 - y2).abs() + (z1 - z2).abs()) as u32
 }
 
-type Pos = (i32, i32, i32);
-
 struct Bot
 {
-    position: (i32, i32, i32),
+    position: Pos,
     radius:   u32
 }
 
@@ -79,7 +79,7 @@ impl Bot
         Bot { position: (x, y, z), radius: r as u32 }
     }
 
-    fn contains(&self, position : (i32, i32, i32)) -> bool
+    fn contains(&self, position : Pos) -> bool
     {
         manhattan(position, self.position) <= self.radius
     }
@@ -105,7 +105,7 @@ impl Bot
 struct OctreeNode
 {
     size:       u32,
-    min_corner: (i32, i32, i32)
+    min_corner: Pos
 }
 
 impl OctreeNode
