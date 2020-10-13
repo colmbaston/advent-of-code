@@ -83,7 +83,7 @@ fn generation(area : &Area) -> Area
     new
 }
 
-fn adjacents<'a>((x, y) : (usize, usize), area : &'a Area) -> impl Iterator<Item = &'a Tile>
+fn adjacents((x, y) : (usize, usize), area : &Area) -> impl Iterator<Item = &Tile>
 {
     let left  = x.wrapping_sub(1);
     let above = y.wrapping_sub(1);
