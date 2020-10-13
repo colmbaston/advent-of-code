@@ -132,7 +132,7 @@ impl OctreeNode
     }
 
     // a node is in range of a bot if the manhattan distance from
-    // the bo to any of the node;s edges is at most the bot's radius
+    // the bot to any of the node;s edges is at most the bot's radius
     fn in_range(&self, bot : &Bot) -> bool
     {
         let (min_x, min_y, min_z) = self.min_corner;
