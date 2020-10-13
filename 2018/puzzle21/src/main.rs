@@ -1,18 +1,46 @@
+use std::collections::HashSet;
+
 fn main()
 {
     let (pc_reg, program) = parse(include_str!("../input.txt"));
 
-    // part 1: run the program and print the
-    // value left in register 0 when it halts
-    let mut regs = [0 ; 6];
-    run(pc_reg, &program, &mut regs);
-    println!("{}", regs[0]);
+    // these values were found by reverse-engineering my inut
+    // program, so they likely won't work for a different input
+    const INSTRUCTION : usize = 28;
+    const REGISTER    : usize =  5;
 
-    // part 2: by reverse-engineering the program, I learned that it was
-    // computing the sum of the factors of VALUE; since, in principle, another
-    // input could implement a different function, I leave this result hard-coded
-    const VALUE : usize = 10_551_326;
-    println!("{}", (1 ..= VALUE).filter(|n| VALUE % n == 0).sum::<usize>());
+    // part 1: dump the value inside REGISTER after executing
+    // the instruction at index INSTRUCTION for the first time
+    let mut regs = [0 ; 6];
+    while let Some(instr) = program.get(regs[pc_reg])
+    {
+        step(pc_reg, instr, &mut regs);
+        if regs[pc_reg] == INSTRUCTION
+        {
+            println!("{}", regs[REGISTER]);
+            break
+        }
+    }
+
+    // part 2: dump the final value inside REGISTER after executing
+    // the instruction at index INSTRUCTION before the value repeats
+    let mut regs    = [0 ; 6];
+    let mut last    = 0;
+    let mut visited = HashSet::new();
+    while let Some(instr) = program.get(regs[pc_reg])
+    {
+        step(pc_reg, instr, &mut regs);
+        if regs[pc_reg] == INSTRUCTION
+        {
+            let value = regs[REGISTER];
+            if !visited.insert(value)
+            {
+                break
+            }
+            last = value;
+        }
+    }
+    println!("{}", last)
 }
 
 type Registers = [usize ; 6];
@@ -75,14 +103,6 @@ fn parse_instruction(s : &str) -> Instruction
     let c = it.next().unwrap().parse().unwrap();
 
     Instruction { op, a, b, c }
-}
-
-fn run(pc_reg : usize, program : &[Instruction], regs : &mut Registers)
-{
-    while let Some(instr) = program.get(regs[pc_reg])
-    {
-        step(pc_reg, instr, regs)
-    }
 }
 
 fn step(pc_reg : usize, &Instruction { op, a, b, c } : &Instruction, regs : &mut Registers)
