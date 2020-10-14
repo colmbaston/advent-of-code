@@ -1,4 +1,4 @@
-use std::collections::{ HashMap, BTreeSet };
+use std::collections::{ VecDeque, HashSet, HashMap, BTreeSet };
 
 fn main()
 {
@@ -49,9 +49,29 @@ fn adjacency_matrix(entrances : Vec<(i64, i64)>, vault : &HashMap<(i64, i64), u8
     {
         for (k2, v2) in keys.iter().map(|(k, v)| (*k, *v)).skip((1+i).saturating_sub(l))
         {
-            if let (steps, Some((_, path))) = search::bfs(v1, |&c| search::ortho(c).filter_map(|c| vault.get(&c).map(|_| c)), |c| *c == v2, |c| vault.get(c).filter(|b| b.is_ascii_uppercase()).copied())
+            let mut visited = HashSet::new();
+            let mut queue   = VecDeque::new();
+            queue.push_back((v1, 0, Vec::new()));
+
+            while let Some(((x, y), steps, path)) = queue.pop_front()
             {
-                matrix.insert((k1, k2), (steps, path));
+                if !visited.insert((x, y)) { continue }
+                if (x, y) == v2
+                {
+                    matrix.insert((k1, k2), (steps, path));
+                    break
+                }
+
+                for c in vec![(x+1, y), (x-1, y), (x, y+1), (x, y-1)].into_iter().filter_map(|c| vault.get(&c).map(|_| c))
+                {
+                    let mut p = path.clone();
+                    if let Some(&b) = vault.get(&c).filter(|b| b.is_ascii_uppercase())
+                    {
+                        p.push(b)
+                    }
+
+                    queue.push_back((c, steps+1, p))
+                }
             }
         }
     }

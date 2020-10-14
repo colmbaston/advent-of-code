@@ -1,6 +1,6 @@
 use intcode::Interpreter;
 use std::sync::mpsc::{ channel, Sender, Receiver };
-use std::collections::{ HashMap, hash_map::Entry };
+use std::collections::{ VecDeque, HashSet, HashMap, hash_map::Entry };
 
 fn main()
 {
@@ -12,16 +12,41 @@ fn main()
     let canvas = explore_dfs(send_in, recv_out);
     handle.join().unwrap();
 
-    let adjacent = |&c : &(i64, i64)| search::ortho(c).filter(|c| canvas.get(&c).is_some());
-    if let (steps, Some((oxygen, _))) = search::bfs((0, 0), adjacent, |c| canvas.get(c) == Some(&2), |_| None::<()>)
+    // part 1: bfs from the origin to the oxygen
+    let mut visited = HashSet::new();
+    let mut queue   = VecDeque::new();
+    queue.push_back(((0, 0), 0));
+    let oxygen = loop
     {
-        println!("{}", steps);
-
-        if let (steps, None) = search::bfs(oxygen, adjacent, |_| false, |_| None::<()>)
+        if let Some((pos, steps)) = queue.pop_front()
         {
-            println!("{}", steps);
+            if !visited.insert(pos) { continue }
+            if let Some(&2) = canvas.get(&pos)
+            {
+                println!("{}", steps);
+                break pos
+            }
+            queue.extend(ortho(pos).filter_map(|p| canvas.get(&p).map(|_| (p, steps+1))));
         }
+    };
+
+    // part 2: bfs from the oxygen until the queue is exhausted
+    let mut max = 0;
+    visited.clear();
+    queue.clear();
+    queue.push_back((oxygen, 0));
+    while let Some((pos, steps)) = queue.pop_front()
+    {
+        if !visited.insert(pos) { continue }
+        if steps > max { max = steps}
+        queue.extend(ortho(pos).filter_map(|p| canvas.get(&p).map(|_| (p, steps+1))));
     }
+    println!("{}", max);
+}
+
+fn ortho((x, y) : (i64, i64)) -> impl Iterator<Item = (i64, i64)>
+{
+    vec![(x, y-1), (x, y+1), (x+1, y), (x-1, y)].into_iter()
 }
 
 fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64, i64), i64>
@@ -33,17 +58,17 @@ fn explore_dfs(send_in : Sender<i64>, recv_out : Receiver<i64>) -> HashMap<(i64,
 
     'outer: loop
     {
-        for (i, dir) in search::ortho(pos).enumerate()
+        for (dir, i) in ortho(pos).zip(1..)
         {
             if let Entry::Vacant(e) = canvas.entry(dir)
             {
-                send_in.send((i+1) as i64).unwrap();
+                send_in.send(i).unwrap();
                 if let Ok(status) = recv_out.recv()
                 {
                     e.insert(status);
                     if status != 0
                     {
-                        stack.push((pos, (i+1) as i64));
+                        stack.push((pos, i));
                         pos = dir;
                         continue 'outer
                     }

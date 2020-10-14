@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{ VecDeque, HashSet, HashMap };
 
 fn main()
 {
@@ -64,7 +64,7 @@ fn main()
         }
         else
         {
-            portals.entry((p, q)).and_modify(|v : &mut Vec<(i64, i64)>| v.push(c)).or_insert_with(|| vec![c]);
+            portals.entry((p, q)).and_modify(|v : &mut Vec<(i32, i32)>| v.push(c)).or_insert_with(|| vec![c]);
         }
     }
 
@@ -75,11 +75,11 @@ fn main()
         links.insert(v[1], v[0]);
     }
 
-    let adjacent = |&o : &(i64, i64)|
+    let adjacent = |&o : &(i32, i32)|
     {
         let maze  = &maze;
         let links = &links;
-        search::ortho(o).filter_map(move |c|
+        ortho(o).filter_map(move |c|
         {
             match maze.get(&c)
             {
@@ -90,11 +90,11 @@ fn main()
         })
     };
 
-    let adjacent_rec = |&((x, y), l) : &((i64, i64), u64)|
+    let adjacent_rec = |&((x, y), l) : &((i32, i32), u64)|
     {
         let maze  = &maze;
         let links = &links;
-        search::ortho((x, y)).filter_map(move |c|
+        ortho((x, y)).filter_map(move |c|
         {
             match maze.get(&c)
             {
@@ -122,6 +122,28 @@ fn main()
         })
     };
 
-    println!("{}", search::bfs( start,     adjacent,     |&c|      c == end,           |_| None::<()>).0);
-    println!("{}", search::bfs((start, 0), adjacent_rec, |&(c, l)| c == end && l == 0, |_| None::<()>).0);
+    println!("{}", bfs( start,     adjacent,     |&c|      c == end,         ));
+    println!("{}", bfs((start, 0), adjacent_rec, |&(c, l)| c == end && l == 0));
+}
+
+fn ortho((x, y) : (i32, i32)) -> impl Iterator<Item = (i32, i32)>
+{
+    vec![(x+1, y), (x-1, y), (x, y+1), (x, y-1)].into_iter()
+}
+
+fn bfs<S, I>(start : S, adjacent : impl Fn(&S) -> I, finish : impl Fn(&S) -> bool) -> u32
+where S : Clone + Eq + std::hash::Hash, I : Iterator<Item = S>
+{
+    let mut visited = HashSet::new();
+    let mut queue   = VecDeque::new();
+    queue.push_back((start, 0));
+
+    while let Some((state, steps)) = queue.pop_front()
+    {
+        if !visited.insert(state.clone()) { continue }
+        if finish(&state) { return steps }
+        queue.extend(adjacent(&state).map(|s| (s, steps+1)));
+    }
+
+    panic!("exhausted search")
 }
