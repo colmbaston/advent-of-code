@@ -80,7 +80,7 @@ fn ore_required<'a>(mut q_required : u64, chem : &'a str, reactions : &Reactions
             let runs     = (q_required + q_output - 1) / q_output;
             let produced = q_output * runs;
             let left     = produced - q_required;
-            leftover.entry(chem).and_modify(|q_left| *q_left += left).or_insert(left);
+            *leftover.entry(chem).or_insert(0) += left;
             inputs.iter().map(|&(q_input, chem_input)| ore_required(q_input * runs, chem_input, reactions, leftover)).sum()
         }
     }

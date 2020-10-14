@@ -64,7 +64,7 @@ fn main()
         }
         else
         {
-            portals.entry((p, q)).and_modify(|v : &mut Vec<(i32, i32)>| v.push(c)).or_insert_with(|| vec![c]);
+            portals.entry((p, q)).or_insert_with(Vec::new).push(c);
         }
     }
 
