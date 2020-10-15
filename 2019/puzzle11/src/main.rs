@@ -1,7 +1,6 @@
 mod direction;
 
 use intcode::Interpreter;
-use itertools::{ Itertools, MinMaxResult };
 use std::sync::mpsc::channel;
 use std::collections::HashMap;
 
@@ -20,7 +19,8 @@ fn main()
         let mut position  = (0, 0);
 
         let _ = send_in.send(if *init { 1 } else { 0 });
-        for (c, d) in recv_out.iter().tuples()
+        let mut out = recv_out.iter();
+        while let (Some(c), Some(d)) = (out.next(), out.next())
         {
             canvas.insert(position, c == 1);
             if d == 1 { direction.turn_right() } else { direction.turn_left() }
@@ -32,20 +32,22 @@ fn main()
         if *init
         {
             canvas.retain(|_, v| *v);
-            if let (MinMaxResult::MinMax(&(min_x, _), &(max_x, _)), MinMaxResult::MinMax(&(_, min_y), &(_, max_y))) = (canvas.keys().minmax_by(|a, b| a.0.cmp(&b.0)), canvas.keys().minmax_by(|a, b| a.1.cmp(&b.1)))
+            let (min_x, min_y, max_x, max_y) = canvas.keys().fold((i64::MAX, i64::MAX, i64::MIN, i64::MIN), |(min_x, min_y, max_x, max_y), &(x, y)|
             {
-                println!();
-                for y in min_y ..= max_y
+                (min_x.min(x), min_y.min(y), max_x.max(x), max_y.max(y))
+            });
+
+            println!();
+            for y in min_y ..= max_y
+            {
+                print!(" ");
+                for x in min_x ..= max_x
                 {
-                    print!(" ");
-                    for x in min_x ..= max_x
-                    {
-                        print!("{}", if canvas.contains_key(&(x, y)) { '#' } else { ' ' });
-                    }
-                    println!();
+                    print!("{}", if canvas.contains_key(&(x, y)) { '#' } else { ' ' });
                 }
                 println!();
             }
+            println!();
         }
         else
         {

@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-use num_integer::Integer;
 
 fn main()
 {
@@ -20,7 +19,8 @@ fn main()
     {
         if let [Some(a), Some(b), Some(c)] = cycles
         {
-            println!("{}", a.lcm(&b).lcm(&c));
+            let lcm_ab = (a * b) / gcd(a, b);
+            println!("{}", (lcm_ab * c) / gcd(lcm_ab, c));
             break
         }
 
@@ -75,4 +75,16 @@ fn check_cycles(i : u64, input : &[([i64 ; 3], [i64 ; 3])], moons :  &[([i64 ; 3
             cycles[j] = Some(i);
         }
     }
+}
+
+fn gcd(mut a : u64, mut b : u64) -> u64
+{
+    while b > 0
+    {
+        let temp = a;
+        a = b;
+        b = temp % b;
+    }
+
+    a
 }

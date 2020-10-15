@@ -1,4 +1,3 @@
-use num_integer::Integer;
 use std::f64::consts::PI;
 use std::collections::{ HashMap, HashSet };
 
@@ -35,7 +34,22 @@ fn detect((x, y) : &(i64, i64), s : &HashSet<(i64, i64)>) -> HashMap<(i64, i64),
     s.iter().filter(|(a, b)| (a, b) != (x, y)).map(|&(a, b)|
     {
         let (dx, dy) = (x - a, y - b);
-        let gcd      = dx.gcd(&dy);
+
+        let gcd =
+        {
+            let mut a = dx.abs();
+            let mut b = dy.abs();
+
+            while b > 0
+            {
+                let temp = a;
+                a = b;
+                b = temp % b;
+            }
+
+            a
+        };
+
         ((dx / gcd, dy / gcd), (a, b))
     })
     .fold(HashMap::new(), |mut m, ((a, b), (c, d))|

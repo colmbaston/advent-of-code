@@ -1,11 +1,10 @@
 use intcode::Interpreter;
-use itertools::Itertools;
 
 fn main()
 {
     let input = intcode::parse_file!("../input.txt");
 
-    println!("{}", (0..50).cartesian_product(0..50).map(|c| test_coord(&input, c)).sum::<i64>());
+    println!("{}", (0..50).fold(0, |sum, x| (0..50).fold(sum, |a, y| a + test_coord(&input, (x, y)))));
 
     let mut y = 0;
     'outer: for x in 99 ..
