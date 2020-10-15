@@ -19,8 +19,7 @@ fn main()
     {
         if let [Some(a), Some(b), Some(c)] = cycles
         {
-            let lcm_ab = (a * b) / gcd(a, b);
-            println!("{}", (lcm_ab * c) / gcd(lcm_ab, c));
+            println!("{}", lcm([a,b,c].iter().copied()));
             break
         }
 
@@ -77,14 +76,28 @@ fn check_cycles(i : u64, input : &[([i64 ; 3], [i64 ; 3])], moons :  &[([i64 ; 3
     }
 }
 
-fn gcd(mut a : u64, mut b : u64) -> u64
+fn lcm(mut values : impl Iterator<Item = u64>) -> u64
 {
-    while b > 0
+    match values.next()
     {
-        let temp = a;
-        a = b;
-        b = temp % b;
-    }
+        None    => 0,
+        Some(x) =>
+        {
+            let mut lcm_c = x;
+            for y in values
+            {
+                let mut a = lcm_c;
+                let mut b = y;
+                while b > 0
+                {
+                    let temp = a;
+                    a = b;
+                    b = temp % b;
+                }
 
-    a
+                lcm_c = (lcm_c * y) / a;
+            }
+            lcm_c
+        }
+    }
 }
