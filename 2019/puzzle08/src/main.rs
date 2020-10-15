@@ -3,10 +3,10 @@ fn main()
     let input = include_str!("../input.txt");
     let layers : Vec<&[u8]> = input.trim_end().as_bytes().chunks(25 * 6).collect();
 
-    let f = |x| bytecount::count(x, b'0');
-    let m = layers.iter().min_by(|x, y| f(x).cmp(&f(y))).unwrap();
+    let count = |b : u8, bs : &[u8]| bs.iter().fold(0, |a, &x| a + (x == b) as u32);
+    let layer = layers.iter().min_by_key(|bs| count(b'0', bs)).unwrap();
 
-    println!("{}", bytecount::count(m, b'1') * bytecount::count(m, b'2'));
+    println!("{}", count(b'1', layer) * count(b'2', layer));
     decode_image(&layers);
 }
 
