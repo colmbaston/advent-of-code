@@ -43,8 +43,8 @@ fn valid_field((k, v) : &(String, String)) -> bool
             Some(cm) =>                                  cm.parse::<u8>().ok().map(|k| 150 <= k && k <= 193),
             None     => v.strip_suffix("in").and_then(|i| i.parse::<u8>().ok().map(|k|  59 <= k && k <=  76))
         },
-        "hcl" => v.strip_prefix('#').map(|hcl| hcl.bytes().all(|c| c.is_ascii_digit() || b'a' <= c && c <= b'f')),
-        "ecl" => ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].iter().find(|s| **s == v.as_str()).map(|_| true),
+        "hcl" => v.strip_prefix('#').map(|hcl| hcl.bytes().all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase())),
+        "ecl" => Some(["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].contains(&v.as_str())),
         "pid" => n_digits(9).map(|_| true),
         _     => Some(true),
     }
