@@ -40,8 +40,8 @@ fn valid_field((k, v) : &(String, String)) -> bool
         "eyr" => n_digits(4).map(|k| 2020 <= k && k <= 2030),
         "hgt" => match v.strip_suffix("cm")
         {
-            Some(cm) =>                                  cm.parse::<u32>().ok().map(|k| 150 <= k && k <= 193),
-            None     => v.strip_suffix("in").and_then(|i| i.parse::<u32>().ok().map(|k|  59 <= k && k <=  76))
+            Some(cm) =>                                  cm.parse::<u8>().ok().map(|k| 150 <= k && k <= 193),
+            None     => v.strip_suffix("in").and_then(|i| i.parse::<u8>().ok().map(|k|  59 <= k && k <=  76))
         },
         "hcl" => v.strip_prefix('#').map(|hcl| hcl.bytes().all(|c| c.is_ascii_digit() || b'a' <= c && c <= b'f')),
         "ecl" => ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].iter().find(|s| **s == v.as_str()).map(|_| true),
