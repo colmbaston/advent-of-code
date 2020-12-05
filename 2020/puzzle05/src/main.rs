@@ -5,6 +5,6 @@ fn main()
                                                 .collect::<Vec<_>>();
 
     input.sort_unstable();
-    println!("{}", input[input.len() - 1]);
+    println!("{}", input.last().unwrap());
     println!("{}", (input[0] ..).zip(input.into_iter()).find(|(s, t)| s != t).unwrap().0);
 }
