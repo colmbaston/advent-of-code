@@ -4,7 +4,7 @@ fn main()
                                                 .map(|s| s.bytes().fold(0, |a, x| 2 * a + (x == b'B' || x == b'R') as u32))
                                                 .collect::<Vec<_>>();
 
-    input.sort();
+    input.sort_unstable();
     println!("{}", input[input.len() - 1]);
     println!("{}", (input[0] ..).zip(input.into_iter()).find(|(s, t)| s != t).unwrap().0);
 }
