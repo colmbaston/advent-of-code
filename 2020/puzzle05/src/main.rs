@@ -6,5 +6,5 @@ fn main()
 
     input.sort();
     println!("{}", input[input.len() - 1]);
-    println!("{}", input.windows(2).find(|w| w[0] + 2 == w[1]).unwrap()[0] + 1);
+    println!("{}", (input[0] ..).zip(input.into_iter()).find(|(s, t)| s != t).unwrap().0);
 }
