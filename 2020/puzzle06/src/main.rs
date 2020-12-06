@@ -11,23 +11,13 @@ fn main()
 fn union<'a>(i : impl Iterator<Item = &'a str>) -> usize
 {
     let mut s = HashSet::new();
-
-    for x in i
-    {
-        x.bytes().for_each(|b| { s.insert(b); })
-    }
-
+    i.for_each(|x| x.bytes().for_each(|b| { s.insert(b); }));
     s.len()
 }
 
 fn intersection<'a>(i : impl Iterator<Item = &'a str>) -> usize
 {
-    let mut s = (b'a' ..= b'z').collect::<HashSet<_>>();
-
-    for x in i
-    {
-        s = x.bytes().collect::<HashSet<_>>().intersection(&s).cloned().collect();
-    }
-
+    let mut s = (b'a' ..= b'z').collect();
+    i.for_each(|x| s = x.bytes().collect::<HashSet<_>>().intersection(&s).cloned().collect());
     s.len()
 }
