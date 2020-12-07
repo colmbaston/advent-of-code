@@ -15,15 +15,15 @@ fn parse_rule(s : &str) -> (&str, Vec<(u32, &str)>)
 {
     let mut i = s.split(" bags contain ");
     let c = i.next().unwrap();
-    let s = i.next().unwrap().strip_suffix('.').unwrap();
+    let s = i.next().unwrap();
 
     (c, match s
     {
-        "no other bags" => Vec::new(),
-        _               => s.split(", ").map(|t|
+        "no other bags." => Vec::new(),
+        _                => s.split(", ").map(|t|
         {
             let (n, d) = t.split_at(t.find(|c : char| !c.is_ascii_digit()).unwrap());
-            (n.parse().unwrap(), d.trim_start().split(" bag").next().unwrap())
+            (n.parse().unwrap(), d[1..].split(" bag").next().unwrap())
         })
         .collect()
     })
