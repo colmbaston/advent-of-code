@@ -60,13 +60,13 @@ impl Inst
 
         loop
         {
-            if !visited.insert(pc) { break Err(acc) }
+            if pc < 0 || !visited.insert(pc) { break Err(acc) }
             match prog.get(pc as usize)
             {
                 None               => break Ok(acc),
-                Some(Inst::NOP(_)) => { pc  += 1 },
-                Some(Inst::ACC(k)) => { acc += k; pc += 1 },
-                Some(Inst::JMP(k)) => { pc  += k }
+                Some(Inst::NOP(_)) => { pc += 1 },
+                Some(Inst::ACC(k)) => { pc += 1; acc += k },
+                Some(Inst::JMP(k)) => { pc += k }
             }
         }
     }
