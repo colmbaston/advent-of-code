@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use std::collections::HashSet;
 
 fn main()
@@ -23,17 +22,21 @@ fn main()
 
     if let Some(target) = invalid
     {
-        let mut start   = 0;
-        let mut end     = 0;
-        let mut sum     = 0;
+        let mut start = 0;
+        let mut end   = 0;
+        let mut sum   = 0;
 
-        loop
+        while sum != target
         {
-            match sum.cmp(&target)
+            if sum < target
             {
-                Ordering::Equal   => break,
-                Ordering::Less    => { sum += input[end];   end   += 1 },
-                Ordering::Greater => { sum -= input[start]; start += 1 }
+                sum += input[end];
+                end += 1;
+            }
+            else
+            {
+                sum   -= input[start];
+                start += 1;
             }
         }
 
