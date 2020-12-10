@@ -3,23 +3,22 @@ use std::collections::HashMap;
 fn main()
 {
     let mut input = include_str!("../input.txt").lines().map(|x| x.parse::<u32>().unwrap()).collect::<Vec<_>>();
-
     input.push(0);
     input.sort();
     input.push(input.last().cloned().unwrap() + 3);
 
-    let mut one   = 0;
-    let mut three = 0;
-    for w in input.windows(2)
+    let mut n1 = 0;
+    let mut n3 = 0;
+    for (i, j) in input.iter().zip(input.iter().skip(1))
     {
-        match w[1] - w[0]
+        match j - i
         {
-            1 => one   += 1,
-            3 => three += 1,
+            1 => n1 += 1,
+            3 => n3 += 1,
             _ => ()
         }
     }
-    println!("{}", one * three);
+    println!("{}", n1 * n3);
 
     let mut cache = HashMap::with_capacity(input.len());
     cache.insert(input.last().cloned().unwrap(), 1u64);
