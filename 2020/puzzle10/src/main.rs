@@ -21,7 +21,7 @@ fn main()
     }
     println!("{}", one * three);
 
-    let mut cache = HashMap::new();
+    let mut cache = HashMap::with_capacity(input.len());
     cache.insert(input.last().cloned().unwrap(), 1u64);
     for i in input.into_iter().rev().skip(1)
     {
