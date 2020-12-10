@@ -25,9 +25,7 @@ fn main()
     cache.insert(input.last().cloned().unwrap(), 1u64);
     for i in input.into_iter().rev().skip(1)
     {
-        cache.insert(i, cache.get(&(i+1)).cloned().unwrap_or(0)
-                      + cache.get(&(i+2)).cloned().unwrap_or(0)
-                      + cache.get(&(i+3)).cloned().unwrap_or(0));
+        cache.insert(i, (1 ..= 3).map(|j| cache.get(&(i+j)).cloned().unwrap_or(0)).sum());
     }
     println!("{}", cache.get(&0).unwrap());
 }
