@@ -7,8 +7,8 @@ fn main()
 
     let mut congs = bs.iter().zip(0..).filter_map(|(b, t)| b.map(|n| (n, (n - t % n) % n))).collect::<Vec<_>>();
     congs.sort_unstable();
-    let (mut acc_n, mut acc_t) = congs[0];
-    for (n, t) in congs.into_iter().skip(1)
+    let (mut acc_n, mut acc_t) = congs.pop().unwrap();
+    for (n, t) in congs.into_iter().rev()
     {
         acc_t  = (0 ..).map(|k| k * acc_n + acc_t).find(|k| k % n == t).unwrap();
         acc_n *= n;
