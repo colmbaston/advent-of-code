@@ -33,12 +33,9 @@ fn main()
 
 fn set_mem_floating(mem : &mut HashMap<u64, u64>, addr : u64, floating : u64, start : u64, val : u64)
 {
-    for bit in start .. 36
+    for bit in (start .. 36).filter(|bit| floating & 1 << bit != 0)
     {
-        if floating & 1 << bit != 0
-        {
-            set_mem_floating(mem, addr | 1 << bit, floating, bit+1, val)
-        }
+        set_mem_floating(mem, addr | 1 << bit, floating, bit+1, val)
     }
 
     mem.insert(addr, val);
