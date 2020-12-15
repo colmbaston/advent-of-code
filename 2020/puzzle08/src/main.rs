@@ -60,7 +60,7 @@ impl Inst
 
         loop
         {
-            if pc < 0 || !visited.insert(pc) { break Err(acc) }
+            if !visited.insert(pc) { break Err(acc) }
             match prog.get(pc as usize)
             {
                 None               => break Ok(acc),
