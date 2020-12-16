@@ -19,21 +19,21 @@ fn main()
         {
             for (f, r) in input.field_ranges.iter()
             {
-                if !r.iter().any(|r| r.contains(k))
-                {
-                    p.remove(f);
-                }
+                if !r.iter().any(|r| r.contains(k)) { p.remove(f); }
             }
         }
     }
 
     let mut departure = 1;
-    while !possible.iter().all(|p| p.is_empty())
+    for _ in 0 .. possible.len()
     {
-        let (i, s) = possible.iter().enumerate().find(|(_, p)| p.len() == 1).unwrap();
-        let s = *s.iter().next().unwrap();
-        possible.iter_mut().for_each(|p| { p.remove(s); });
-        if s.starts_with("departure") { departure *= input.tickets[0][i] }
+        let (i, f) = possible.iter()
+                             .enumerate()
+                             .find_map(|(i, p)| if p.len() == 1 { p.iter().next().map(|&f| (i, f)) } else { None })
+                             .unwrap();
+
+        for p in possible.iter_mut() { p.remove(f); }
+        if f.starts_with("departure") { departure *= input.tickets[0][i] }
     }
     println!("{}", departure);
 }
@@ -47,7 +47,10 @@ struct TicketInfo<'a>
 fn parse_ticket_info(s : &str) -> TicketInfo
 {
     let mut i = s.split("\n\n");
-    let field_ranges = i.next().unwrap().lines().map(parse_field_range).collect();
+    let field_ranges = i.next().unwrap()
+                        .lines()
+                        .map(parse_field_range)
+                        .collect();
     let tickets      = i.next().unwrap()
                         .lines()
                         .skip(1)
