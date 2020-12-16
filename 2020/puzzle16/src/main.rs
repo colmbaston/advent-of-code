@@ -27,15 +27,15 @@ fn main()
         }
     }
 
-    let mut solved = HashMap::new();
+    let mut departure = 1;
     while !possible.iter().all(|p| p.is_empty())
     {
         let (i, s) = possible.iter().enumerate().find(|(_, p)| p.len() == 1).unwrap();
         let s = *s.iter().next().unwrap();
-        solved.insert(s, i);
         possible.iter_mut().for_each(|p| p.retain(|&t| s != t));
+        if s.starts_with("departure") { departure *= input.tickets[0][i] }
     }
-    println!("{}", solved.iter().filter_map(|(s, i)| if s.starts_with("departure") { input.tickets[0].get(*i) } else { None }).product::<u64>());
+    println!("{}", departure);
 }
 
 struct TicketInfo<'a>
