@@ -32,7 +32,7 @@ fn main()
     {
         let (i, s) = possible.iter().enumerate().find(|(_, p)| p.len() == 1).unwrap();
         let s = *s.iter().next().unwrap();
-        possible.iter_mut().for_each(|p| p.retain(|&t| s != t));
+        possible.iter_mut().for_each(|p| { p.remove(s); });
         if s.starts_with("departure") { departure *= input.tickets[0][i] }
     }
     println!("{}", departure);
