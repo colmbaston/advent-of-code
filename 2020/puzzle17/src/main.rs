@@ -41,12 +41,16 @@ fn neighbours(p : &[i32]) -> Vec<Point>
 
 fn cycle(dim : &Dimension) -> Dimension
 {
-    let mut new = HashSet::new();
-    for p in dim.iter().flat_map(|p| neighbours(p).into_iter()).collect::<HashSet<_>>().into_iter()
+    let mut new = dim.iter()
+                     .flat_map(|p| neighbours(p).into_iter())
+                     .collect::<HashSet<_>>();
+
+    new.retain(|p|
     {
-        let count = neighbours(&p).into_iter().filter(|n| p != *n && dim.contains(n)).count();
-        if count == 3 || count == 2 && dim.contains(&p) { new.insert(p); }
-    }
+        let count = neighbours(&p).into_iter().filter(|q| p != q && dim.contains(q)).count();
+        count == 3 || count == 2 && dim.contains(p)
+    });
+
     new
 }
 
