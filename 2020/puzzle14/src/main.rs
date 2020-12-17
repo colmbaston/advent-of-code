@@ -24,7 +24,7 @@ fn main()
     {
         match i
         {
-            Instruction::SetMask(a, o)   => { and = *a; or = *o; floating = and ^ or },
+            Instruction::SetMask(a, o)   => { or = *o; floating = *a ^ or },
             Instruction::SetMem(addr, x) => { set_mem_floating(&mut mem, (addr | or) & !floating, floating, 0, *x); }
         }
     }
@@ -62,7 +62,7 @@ impl Instruction
             },
             Some(s) =>
             {
-                let (and, or) = s.bytes().fold((0, 0), |(and, or), b|
+                let (and, or) = s.bytes().fold((0x0, 0x0), |(and, or), b|
                 {
                     match b
                     {
