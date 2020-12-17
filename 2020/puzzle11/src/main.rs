@@ -54,7 +54,6 @@ fn step_one(seats : &Grid) -> Grid
                         .and_then(|x| r.get(x as usize)))))
                 .filter(|c| **c == Cell::Occupied)
                 .count()
-
     };
 
     seats.iter().enumerate().map(|(y, r)| r.iter().enumerate().map(|(x, c)| match c

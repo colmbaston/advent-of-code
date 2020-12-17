@@ -4,8 +4,9 @@ fn main()
 {
     let input = include_str!("../input.txt").trim_end().split(',').map(|x| x.parse::<u32>().unwrap()).collect::<Vec<_>>();
 
-    let mut prev    = input.last().cloned().unwrap();
-    let mut visited = input[.. input.len() - 1].iter().cloned().zip(1..).collect::<HashMap<u32, u32>>();
+    let (k, rest)   = input.split_last().unwrap();
+    let mut prev    = *k;
+    let mut visited = rest.iter().cloned().zip(1..).collect::<HashMap<u32, u32>>();
 
     for i in input.len() as u32 .. 2020 { prev = step(prev, i, &mut visited) }
     println!("{}", prev);
