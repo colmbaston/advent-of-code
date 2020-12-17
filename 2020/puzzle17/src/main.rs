@@ -8,7 +8,7 @@ fn main()
     for _ in 0 .. 6 { three = cycle(&three) }
     println!("{}", three.len());
 
-    let mut four = input.iter().cloned().map(|mut p| { p.push(0); p.push(0); p }).collect::<HashSet<_>>();
+    let mut four = input.into_iter().map(|mut p| { p.push(0); p.push(0); p }).collect::<HashSet<_>>();
     for _ in 0 .. 6 { four = cycle(&four) }
     println!("{}", four.len());
 }
@@ -18,24 +18,22 @@ type Dimension = HashSet<Point>;
 
 fn neighbours(p : &[i32]) -> Vec<Point>
 {
-    match p.last()
+    match p.split_last()
     {
-        None     => vec![p.to_vec()],
-        Some(&k) =>
+        None             => vec![p.to_vec()],
+        Some((&k, rest)) =>
         {
-            let     prev = neighbours(&p[.. p.len()-1]);
+            let     prev = neighbours(&rest);
             let mut next = Vec::with_capacity(3 * prev.len());
-
-            for mut p in prev.into_iter()
+            for mut q in prev.into_iter()
             {
-                p.push(k-1);
-                next.push(p.clone());
-                *p.last_mut().unwrap() += 1;
-                next.push(p.clone());
-                *p.last_mut().unwrap() += 1;
-                next.push(p);
+                q.push(k-1);
+                next.push(q.clone());
+                *q.last_mut().unwrap() += 1;
+                next.push(q.clone());
+                *q.last_mut().unwrap() += 1;
+                next.push(q);
             }
-
             next
         }
     }
@@ -44,13 +42,11 @@ fn neighbours(p : &[i32]) -> Vec<Point>
 fn cycle(dim : &Dimension) -> Dimension
 {
     let mut new = HashSet::new();
-
     for p in dim.iter().flat_map(|p| neighbours(p).into_iter()).collect::<HashSet<_>>().into_iter()
     {
         let count = neighbours(&p).iter().filter(|&n| p != *n && dim.contains(n)).count();
         if count == 3 || count == 2 && dim.contains(&p) { new.insert(p); }
     }
-
     new
 }
 
