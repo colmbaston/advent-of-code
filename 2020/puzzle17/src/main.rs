@@ -44,7 +44,7 @@ fn cycle(dim : &Dimension) -> Dimension
     let mut new = HashSet::new();
     for p in dim.iter().flat_map(|p| neighbours(p).into_iter()).collect::<HashSet<_>>().into_iter()
     {
-        let count = neighbours(&p).iter().filter(|&n| p != *n && dim.contains(n)).count();
+        let count = neighbours(&p).into_iter().filter(|n| p != *n && dim.contains(n)).count();
         if count == 3 || count == 2 && dim.contains(&p) { new.insert(p); }
     }
     new
