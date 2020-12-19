@@ -5,10 +5,10 @@ fn main()
     let input = include_str!("../input.txt").lines().collect::<Vec<_>>();
 
     let mut ops = HashMap::new();
-    ops.insert('+', (Op::Add, 0));
-    ops.insert('*', (Op::Mul, 0));
+    ops.insert('+', (Op::Add, 0, true));
+    ops.insert('*', (Op::Mul, 0, true));
     println!("{}", input.iter().filter_map(|l| Expr::parse(l, &ops).map(|e| e.eval())).sum::<u64>());
-    ops.insert('+', (Op::Add, 1));
+    ops.insert('+', (Op::Add, 1, true));
     println!("{}", input.iter().filter_map(|l| Expr::parse(l, &ops).map(|e| e.eval())).sum::<u64>());
 }
 
@@ -49,7 +49,7 @@ impl Op
     }
 }
 
-type OpTable = HashMap<char, (Op, u8)>;
+type OpTable = HashMap<char, (Op, u8, bool)>;
 
 impl Expr
 {
@@ -68,14 +68,14 @@ impl Expr
             s = s.trim_start();
             match s.chars().next().and_then(|c| ops.get(&c))
             {
-                None          => break,
-                Some((op, p)) => if *p < prec
+                None             => break,
+                Some((op, p, l)) => if *p < prec
                 {
                     break
                 }
                 else
                 {
-                    let (y, t) = Expr::parse_ops(&s[1..].trim_start(), ops, *p + 1)?;
+                    let (y, t) = Expr::parse_ops(&s[1..].trim_start(), ops, *p + *l as u8)?;
                     x = Expr::Op(op.clone(), Box::new(x), Box::new(y));
                     s = t;
                 }
