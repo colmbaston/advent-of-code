@@ -18,7 +18,7 @@ fn main()
 
 fn parse_schedule(s : &str) -> (u64, Vec<Option<u64>>)
 {
-    let mut i = s.lines();
-    (i.next().unwrap().parse().unwrap(),
-     i.next().unwrap().split(',').map(|x| x.parse().ok()).collect())
+    let mut it = s.lines();
+    (it.next().unwrap().parse().unwrap(),
+     it.next().unwrap().split(',').map(|x| x.parse().ok()).collect())
 }

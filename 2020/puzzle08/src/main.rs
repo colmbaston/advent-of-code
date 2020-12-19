@@ -39,9 +39,9 @@ impl Inst
 {
     fn parse(s : &str) -> Inst
     {
-        let mut i = s.split_whitespace();
-        let op    = i.next().unwrap();
-        let arg   = i.next().unwrap().parse().unwrap();
+        let mut it = s.split_whitespace();
+        let op     = it.next().unwrap();
+        let arg    = it.next().unwrap().parse().unwrap();
 
         match op
         {

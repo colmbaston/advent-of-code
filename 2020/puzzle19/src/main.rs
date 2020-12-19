@@ -21,19 +21,19 @@ enum Rule
 
 fn parse_input(s : &str) -> (HashMap<u32, Rule>, Vec<&str>)
 {
-    let mut i = s.split("\n\n");
+    let mut it = s.split("\n\n");
 
-    (i.next().unwrap().lines().map(Rule::parse).collect(),
-     i.next().unwrap().lines().collect())
+    (it.next().unwrap().lines().map(Rule::parse).collect(),
+     it.next().unwrap().lines().collect())
 }
 
 impl Rule
 {
     fn parse(s : &str) -> (u32, Rule)
     {
-        let mut i = s.split(": ");
-        let id = i.next().unwrap().parse().unwrap();
-        let s  = i.next().unwrap();
+        let mut it = s.split(": ");
+        let id = it.next().unwrap().parse().unwrap();
+        let s  = it.next().unwrap();
 
         (id, match s.strip_prefix('"')
         {

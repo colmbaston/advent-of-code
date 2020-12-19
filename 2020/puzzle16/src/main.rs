@@ -6,10 +6,8 @@ fn main()
     let mut input = parse_ticket_info(include_str!("../input.txt"));
 
     let mut error_rate = 0;
-    let ranges    = input.field_ranges.values().map(|r| r.iter().cloned().flatten()).flatten().collect::<HashSet<_>>();
-    input.tickets = input.tickets.into_iter()
-                                 .filter(|t| t.iter().fold(true, |v, k| if ranges.contains(k) { v } else { error_rate += k; false }))
-                                 .collect();
+    let valid_values   = input.field_ranges.values().map(|r| r.iter().cloned().flatten()).flatten().collect::<HashSet<_>>();
+    input.tickets.retain(|t| t.iter().fold(true, |v, k| if valid_values.contains(k) { v } else { error_rate += k; false }));
     println!("{}", error_rate);
 
     let mut possible = vec![input.field_ranges.keys().cloned().collect::<HashSet<_>>() ; input.field_ranges.len()];
@@ -46,29 +44,30 @@ struct TicketInfo<'a>
 
 fn parse_ticket_info(s : &str) -> TicketInfo
 {
-    let mut i = s.split("\n\n");
-    let field_ranges = i.next().unwrap()
+    let mut it = s.split("\n\n");
+
+    TicketInfo
+    {
+        field_ranges: it.next().unwrap()
                         .lines()
                         .map(parse_field_range)
-                        .collect();
-    let tickets      = i.next().unwrap()
+                        .collect(),
+        tickets:      it.next().unwrap()
                         .lines()
                         .skip(1)
-                        .chain(i.next().unwrap().lines().skip(1))
+                        .chain(it.next().unwrap().lines().skip(1))
                         .map(|l| l.split(',').map(|x| x.parse().unwrap()).collect())
-                        .collect();
-
-    TicketInfo { field_ranges, tickets }
+                        .collect()
+    }
 }
 
 fn parse_field_range(s : &str) -> (&str, Vec<RangeInclusive<u64>>)
 {
-    let mut i = s.split(": ");
-    let field = i.next().unwrap();
-    let range = i.next().unwrap()
-                 .split(" or ")
-                 .map(|r| { let mut j = r.split('-'); j.next().unwrap().parse().unwrap() ..= j.next().unwrap().parse().unwrap() })
-                 .collect();
+    let mut it = s.split(": ");
 
-    (field, range)
+    (it.next().unwrap(),
+     it.next().unwrap()
+       .split(" or ")
+       .map(|r| { let mut j = r.split('-'); j.next().unwrap().parse().unwrap() ..= j.next().unwrap().parse().unwrap() })
+       .collect())
 }

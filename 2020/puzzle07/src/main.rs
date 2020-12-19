@@ -13,9 +13,9 @@ fn main()
 
 fn parse_rule(s : &str) -> (&str, Vec<(u32, &str)>)
 {
-    let mut i = s.split(" bags contain ");
-    let c = i.next().unwrap();
-    let s = i.next().unwrap();
+    let mut it = s.split(" bags contain ");
+    let c = it.next().unwrap();
+    let s = it.next().unwrap();
 
     (c, match s
     {
