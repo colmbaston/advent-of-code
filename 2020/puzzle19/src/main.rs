@@ -5,6 +5,7 @@ fn main()
     let (mut rules, strings) = parse_input(include_str!("../input.txt"));
 
     println!("{}", strings.iter().filter(|src| rules.get(&0).unwrap().full_match(src, &rules)).count());
+
     rules.insert(8,  Rule::SubRules(vec![vec![42],     vec![42, 8]]));
     rules.insert(11, Rule::SubRules(vec![vec![42, 31], vec![42, 11, 31]]));
     println!("{}", strings.iter().filter(|src| rules.get(&0).unwrap().full_match(src, &rules)).count());
@@ -46,25 +47,20 @@ impl Rule
 
     fn prefix_match<'a>(&self, src : &'a str, rules : &HashMap<u32, Rule>) -> Vec<&'a str>
     {
-        let mut matches = Vec::new();
-
         match self
         {
-            Rule::Char(c)      => matches.extend(src.strip_prefix(|d| *c == d).into_iter()),
-            Rule::SubRules(rs) => for alt in rs.iter()
+            Rule::Char(c)      => src.strip_prefix(|d| *c == d).into_iter().collect(),
+            Rule::SubRules(rs) => rs.iter().flat_map(|alt|
             {
                 let mut t = vec![src];
-
                 for id in alt.iter()
                 {
                     let r = rules.get(&id).unwrap();
                     t = t.into_iter().flat_map(|s| r.prefix_match(s, rules).into_iter()).collect();
                 }
-
-                matches.extend(t.into_iter())
-            }
+                t.into_iter()
+            })
+            .collect()
         }
-
-        matches
     }
 }
