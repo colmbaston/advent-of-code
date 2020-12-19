@@ -2,13 +2,21 @@ use std::collections::HashMap;
 
 fn main()
 {
-    let (mut rules, strings) = parse_input(include_str!("../input.txt"));
+    let (mut rules, input) = parse_input(include_str!("../input.txt"));
 
-    println!("{}", strings.iter().filter(|src| rules.get(&0).unwrap().full_match(src, &rules)).count());
+    let root_rule = rules.get(&0).unwrap().clone();
+    println!("{}", input.iter().filter(|src| root_rule.full_match(src, &rules)).count());
 
     rules.insert(8,  Rule::SubRules(vec![vec![42],     vec![42, 8]]));
     rules.insert(11, Rule::SubRules(vec![vec![42, 31], vec![42, 11, 31]]));
-    println!("{}", strings.iter().filter(|src| rules.get(&0).unwrap().full_match(src, &rules)).count());
+    println!("{}", input.iter().filter(|src| root_rule.full_match(src, &rules)).count());
+}
+
+#[derive(Clone)]
+enum Rule
+{
+    Char(char),
+    SubRules(Vec<Vec<u32>>)
 }
 
 fn parse_input(s : &str) -> (HashMap<u32, Rule>, Vec<&str>)
@@ -17,12 +25,6 @@ fn parse_input(s : &str) -> (HashMap<u32, Rule>, Vec<&str>)
 
     (i.next().unwrap().lines().map(Rule::parse).collect(),
      i.next().unwrap().lines().collect())
-}
-
-enum Rule
-{
-    Char(char),
-    SubRules(Vec<Vec<u32>>)
 }
 
 impl Rule
