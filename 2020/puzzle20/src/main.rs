@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 fn main()
 {
-    let image = build_image(include_str!("../input.txt").split("\n\n").map(parse_tile).collect::<HashMap<_, _>>());
+    let image = build_image(include_str!("../input.txt").split("\n\n")
+                                                        .map(parse_tile)
+                                                        .collect::<HashMap<_, _>>());
 
     let &(min_x, min_y) = image.keys().min().unwrap();
     let &(max_x, max_y) = image.keys().max().unwrap();
@@ -10,6 +12,43 @@ fn main()
                  * image.get(&(min_x, max_y)).unwrap().0
                  * image.get(&(max_x, min_y)).unwrap().0
                  * image.get(&(max_x, max_y)).unwrap().0);
+
+    const MONSTER_WIDTH  : usize = 20;
+    const MONSTER_HEIGHT : usize =  3;
+    const MONSTER : &[(usize, usize)] = &[(18, 0), ( 0, 1), ( 5, 1), ( 6, 1), (11, 1),
+                                          (12, 1), (17, 1), (18, 1), (19, 1), ( 1, 2),
+                                          ( 4, 2), ( 7, 2), (10, 2), (13, 2), (16, 2)];
+
+    let size_tile  = image.values().next().unwrap().1.len() - 2;
+    let size_image = size_tile * (1 + max_x - min_x) as usize;
+    let monsters   = Orientation::new().take(8).map(|o|
+    {
+        (0 ..= 1 + size_image - MONSTER_WIDTH).map(|x|
+        {
+            (0 ..= 1 + size_image - MONSTER_HEIGHT).filter(|y|
+            {
+                MONSTER.iter().all(|&(ox, oy)|
+                {
+                    let (x, y)    = o.transform((x + ox, y + oy), size_image);
+                    let (_, t, o) = image.get(&(min_x + (x / size_tile) as i32,
+                                                min_y + (y / size_tile) as i32)).unwrap();
+                    let (x, y)    = o.transform((1 + x % size_tile,
+                                                 1 + y % size_tile), size_tile+2);
+
+                    t[y][x]
+                })
+            })
+            .count()
+        })
+        .sum::<usize>()
+    })
+    .max().unwrap();
+
+    println!("{}", image.values()
+                        .flat_map(|(_, t, _)| t[1 ..= size_tile].iter())
+                        .flat_map(|    r    | r[1 ..= size_tile].iter())
+                        .filter(|&&x| x)
+                        .count() - monsters * MONSTER.len());
 }
 
 type Tile = Vec<Vec<bool>>;
