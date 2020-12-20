@@ -5,7 +5,7 @@ fn main()
     let input = include_str!("../input.txt").lines().map(Instruction::parse).collect::<Vec<_>>();
 
     let mut mem = HashMap::new();
-    let mut or  = 0xfffffffff;
+    let mut or  = 0x000000000;
     let mut and = 0xfffffffff;
     for i in input.iter()
     {
@@ -19,13 +19,13 @@ fn main()
 
     mem.clear();
     let mut floating = 0x000000000;
-    or               = 0xfffffffff;
+    or               = 0x000000000;
     for i in input.iter()
     {
         match i
         {
             Instruction::SetMask(a, o)   => { or = *o; floating = *a ^ or },
-            Instruction::SetMem(addr, x) => { set_mem_floating(&mut mem, (addr | or) & !floating, floating, 0, *x); }
+            Instruction::SetMem(addr, x) => { set_mem_floating(&mut mem, (addr | or) & !floating, floating, 0, *x) }
         }
     }
     println!("{}", mem.values().sum::<u64>());
@@ -33,12 +33,11 @@ fn main()
 
 fn set_mem_floating(mem : &mut HashMap<u64, u64>, addr : u64, floating : u64, start : u64, val : u64)
 {
+    mem.insert(addr, val);
     for bit in (start .. 36).filter(|bit| floating & 1 << bit != 0)
     {
         set_mem_floating(mem, addr | 1 << bit, floating, bit+1, val)
     }
-
-    mem.insert(addr, val);
 }
 
 enum Instruction
