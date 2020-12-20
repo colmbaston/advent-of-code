@@ -6,6 +6,7 @@ fn main()
     let mut image = HashMap::new();
     build_image(&mut image, &mut input);
 
+
     let &(min_x, min_y) = image.keys().min().unwrap();
     let &(max_x, max_y) = image.keys().max().unwrap();
     println!("{}", image.get(&(min_x, min_y)).unwrap().0
@@ -77,29 +78,21 @@ fn build_image(image : &mut HashMap<(i32, i32), (u64, Tile, Orientation)>, tiles
     let mut queue = vec![(0, 0)];
     while let Some((x, y)) = queue.pop()
     {
-        if tiles.is_empty()            {  return  }
         if image.contains_key(&(x, y)) { continue }
 
-        let mut fitting_tile = None;
-        for (id, t1, o1) in tiles.iter().flat_map(|(id, t)| Orientation::new().take(8).map(move |o| (id, t, o)))
+        if let Some((id, o)) = tiles.iter().find_map(|(&id, t1)| Orientation::new().take(8).find(|o1|
         {
-            let fits = image.get(&(x-1, y)).map(|(_, t2, o2)| match_left_right( t2,  o2, t1, &o1)).unwrap_or(true)
-                    && image.get(&(x+1, y)).map(|(_, t2, o2)| match_left_right( t1, &o1, t2,  o2)).unwrap_or(true)
-                    && image.get(&(x, y-1)).map(|(_, t2, o2)| match_above_below(t2,  o2, t1, &o1)).unwrap_or(true)
-                    && image.get(&(x, y+1)).map(|(_, t2, o2)| match_above_below(t1, &o1, t2,  o2)).unwrap_or(true);
-
-            if fits
-            {
-                fitting_tile = Some((*id, o1));
-                break
-            }
-        }
-
-        if let Some((id, o)) = fitting_tile
+            image.get(&(x-1, y)).map(|(_, t2, o2)| match_left_right( t2, o2, t1, o1)).unwrap_or(true) &&
+            image.get(&(x+1, y)).map(|(_, t2, o2)| match_left_right( t1, o1, t2, o2)).unwrap_or(true) &&
+            image.get(&(x, y-1)).map(|(_, t2, o2)| match_above_below(t2, o2, t1, o1)).unwrap_or(true) &&
+            image.get(&(x, y+1)).map(|(_, t2, o2)| match_above_below(t1, o1, t2, o2)).unwrap_or(true)
+        })
+        .map(|o| (id, o)))
         {
             if let Some(t) = tiles.remove(&id)
             {
                 image.insert((x, y), (id, t, o));
+                if tiles.is_empty() { return }
                 queue.extend(vec![(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
             }
         }
