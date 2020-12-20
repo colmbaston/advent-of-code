@@ -2,10 +2,7 @@ use std::collections::HashMap;
 
 fn main()
 {
-    let mut input = include_str!("../input.txt").split("\n\n").map(parse_tile).collect::<HashMap<_, _>>();
-    let mut image = HashMap::new();
-    build_image(&mut image, &mut input);
-
+    let image = build_image(include_str!("../input.txt").split("\n\n").map(parse_tile).collect::<HashMap<_, _>>());
 
     let &(min_x, min_y) = image.keys().min().unwrap();
     let &(max_x, max_y) = image.keys().max().unwrap();
@@ -73,9 +70,11 @@ impl Orientation
     }
 }
 
-fn build_image(image : &mut HashMap<(i32, i32), (u64, Tile, Orientation)>, tiles : &mut HashMap<u64, Tile>)
+fn build_image(mut tiles : HashMap<u64, Tile>) -> HashMap<(i32, i32), (u64, Tile, Orientation)>
 {
+    let mut image = HashMap::new();
     let mut queue = vec![(0, 0)];
+
     while let Some((x, y)) = queue.pop()
     {
         if image.contains_key(&(x, y)) { continue }
@@ -92,11 +91,13 @@ fn build_image(image : &mut HashMap<(i32, i32), (u64, Tile, Orientation)>, tiles
             if let Some(t) = tiles.remove(&id)
             {
                 image.insert((x, y), (id, t, o));
-                if tiles.is_empty() { return }
+                if tiles.is_empty() { return image }
                 queue.extend(vec![(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
             }
         }
     }
+
+    unreachable!()
 }
 
 fn match_first_row(t1 : &Tile, o1 : &Orientation, t2 : &Tile, o2 : &Orientation) -> bool
