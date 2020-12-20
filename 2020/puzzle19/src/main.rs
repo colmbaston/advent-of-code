@@ -44,7 +44,7 @@ impl Rule
 
     fn full_match(&self, src : &str, rules : &HashMap<u32, Rule>) -> bool
     {
-        self.prefix_match(src, rules).into_iter().any(|s| s.is_empty())
+        self.prefix_match(src, rules).contains(&"")
     }
 
     fn prefix_match<'a>(&self, src : &'a str, rules : &HashMap<u32, Rule>) -> Vec<&'a str>
