@@ -1,8 +1,8 @@
 #[derive(Clone)]
 pub struct Orientation
 {
-    pub reflect: bool,
-    pub rotate:  u8
+    reflect: bool,
+    rotate:  u8
 }
 
 impl Iterator for Orientation
@@ -20,9 +20,14 @@ impl Iterator for Orientation
 
 impl Orientation
 {
-    pub fn new() -> Orientation
+    pub fn identity() -> Orientation
     {
         Orientation { reflect: false, rotate: 0 }
+    }
+
+    pub fn new(reflect : bool, rotate : u8) -> Orientation
+    {
+        Orientation { reflect, rotate: rotate % 4 }
     }
 
     pub fn compose(&self, other : &Orientation) -> Orientation

@@ -23,7 +23,7 @@ fn main()
 
     let size_tile  = image.values().next().unwrap().1.len() - 2;
     let size_image = size_tile * (1 + max_x - min_x) as usize;
-    let monsters   = Orientation::new().take(8).map(|o|
+    let monsters   = Orientation::identity().take(8).map(|o|
     {
         (0 ..= 1 + size_image - MONSTER_WIDTH).map(|x|
         {
@@ -72,7 +72,7 @@ fn build_image(mut tiles : HashMap<u64, Tile>) -> HashMap<(i32, i32), (u64, Tile
     {
         if image.contains_key(&(x, y)) { continue }
 
-        if let Some((id, o)) = tiles.iter().find_map(|(&id, t1)| Orientation::new().take(8).find(|o1|
+        if let Some((id, o)) = tiles.iter().find_map(|(&id, t1)| Orientation::identity().take(8).find(|o1|
         {
             image.get(&(x-1, y)).map(|(_, t2, o2)| match_left_right( t2, o2, t1, o1)).unwrap_or(true) &&
             image.get(&(x+1, y)).map(|(_, t2, o2)| match_left_right( t1, o1, t2, o2)).unwrap_or(true) &&
@@ -108,12 +108,12 @@ fn match_first_row(t1 : &Tile, o1 : &Orientation, t2 : &Tile, o2 : &Orientation)
 
 fn match_above_below(t1 : &Tile, o1 : &Orientation, t2 : &Tile, o2 : &Orientation) -> bool
 {
-    match_first_row(t1, &Orientation { reflect: true, rotate: 2 }.compose(o1),
+    match_first_row(t1, &Orientation::new(true, 2).compose(o1),
                     t2,  o2)
 }
 
 fn match_left_right(t1 : &Tile, o1 : &Orientation, t2 : &Tile, o2 : &Orientation) -> bool
 {
-    match_first_row(t1, &Orientation { reflect: false, rotate: 1 }.compose(o1),
-                    t2, &Orientation { reflect: true,  rotate: 3 }.compose(o2))
+    match_first_row(t1, &Orientation::new(false, 1).compose(o1),
+                    t2, &Orientation::new(true,  3).compose(o2))
 }
