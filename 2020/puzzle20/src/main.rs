@@ -1,3 +1,5 @@
+mod orientation;
+use orientation::Orientation;
 use std::collections::HashMap;
 
 fn main()
@@ -61,54 +63,6 @@ fn parse_tile(s : &str) -> (u64, Tile)
      it.map(|l| l.bytes().map(|b| b == b'#').collect()).collect())
 }
 
-#[derive(Clone)]
-struct Orientation
-{
-    reflect: bool,
-    rotate:  u8
-}
-
-impl Iterator for Orientation
-{
-    type Item = Orientation;
-
-    fn next(&mut self) -> Option<Orientation>
-    {
-        let result  = self.clone();
-        self.rotate = (self.rotate + 1) % 4;
-        if self.rotate == 0 { self.reflect = !self.reflect }
-        Some(result)
-    }
-}
-
-impl Orientation
-{
-    fn new() -> Orientation
-    {
-        Orientation { reflect: false, rotate: 0 }
-    }
-
-    fn compose(&self, other : &Orientation) -> Orientation
-    {
-        Orientation
-        {
-            reflect: self.reflect ^ other.reflect,
-            rotate:  (if other.reflect { 4 - self.rotate } else { self.rotate } + other.rotate) % 4
-        }
-    }
-
-    fn transform(&self, (mut x, mut y) : (usize, usize), size : usize) -> (usize, usize)
-    {
-        if self.reflect { x = size - x - 1 }
-        for _ in 0 .. self.rotate
-        {
-            std::mem::swap(&mut x, &mut y);
-            x = size - x - 1
-        }
-        (x, y)
-    }
-}
-
 fn build_image(mut tiles : HashMap<u64, Tile>) -> HashMap<(i32, i32), (u64, Tile, Orientation)>
 {
     let mut image = HashMap::new();
@@ -148,7 +102,7 @@ fn match_first_row(t1 : &Tile, o1 : &Orientation, t2 : &Tile, o2 : &Orientation)
         let (x1, y1) = o1.transform((x, 0), size);
         let (x2, y2) = o2.transform((x, 0), size);
 
-        t1.get(y1).and_then(|r| r.get(x1)) == t2.get(y2).and_then(|r| r.get(x2))
+        t1[y1][x1] == t2[y2][x2]
     })
 }
 
