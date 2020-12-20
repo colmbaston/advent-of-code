@@ -91,13 +91,13 @@ fn build_image(mut tiles : HashMap<u64, Tile>) -> HashMap<(i32, i32), (u64, Tile
             if let Some(t) = tiles.remove(&id)
             {
                 image.insert((x, y), (id, t, o));
-                if tiles.is_empty() { return image }
+                if tiles.is_empty() { break }
                 queue.extend(vec![(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
             }
         }
     }
 
-    unreachable!()
+    image
 }
 
 fn match_first_row(t1 : &Tile, o1 : &Orientation, t2 : &Tile, o2 : &Orientation) -> bool
