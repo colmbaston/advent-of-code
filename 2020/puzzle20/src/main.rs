@@ -24,7 +24,7 @@ fn parse_tile(s : &str) -> (u64, Tile)
      it.map(|l| l.bytes().map(|b| b == b'#').collect()).collect())
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 struct Orientation
 {
     reflect: bool,
@@ -49,11 +49,6 @@ impl Orientation
     fn new() -> Orientation
     {
         Orientation { reflect: false, rotate: 0 }
-    }
-
-    fn orientations() -> impl Iterator<Item = Orientation>
-    {
-        Orientation::new().take(8)
     }
 
     fn compose(&self, other : &Orientation) -> Orientation
@@ -86,7 +81,7 @@ fn build_image(image : &mut HashMap<(i32, i32), (u64, Tile, Orientation)>, tiles
         if image.contains_key(&(x, y)) { continue }
 
         let mut fitting_tile = None;
-        for (id, t1, o1) in tiles.iter().flat_map(|(id, t)| Orientation::orientations().map(move |o| (id, t, o)))
+        for (id, t1, o1) in tiles.iter().flat_map(|(id, t)| Orientation::new().take(8).map(move |o| (id, t, o)))
         {
             let fits = image.get(&(x-1, y)).map(|(_, t2, o2)| match_left_right( t2,  o2, t1, &o1)).unwrap_or(true)
                     && image.get(&(x+1, y)).map(|(_, t2, o2)| match_left_right( t1, &o1, t2,  o2)).unwrap_or(true)
