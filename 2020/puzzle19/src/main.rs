@@ -4,15 +4,13 @@ fn main()
 {
     let (mut rules, input) = parse_input(include_str!("../input.txt"));
 
-    let root_rule = rules.get(&0).unwrap().clone();
-    println!("{}", input.iter().filter(|src| root_rule.full_match(src, &rules)).count());
+    println!("{}", input.iter().filter(|src| rules.get(&0).unwrap().full_match(src, &rules)).count());
 
     rules.insert(8,  Rule::SubRules(vec![vec![42],     vec![42, 8]]));
     rules.insert(11, Rule::SubRules(vec![vec![42, 31], vec![42, 11, 31]]));
-    println!("{}", input.iter().filter(|src| root_rule.full_match(src, &rules)).count());
+    println!("{}", input.iter().filter(|src| rules.get(&0).unwrap().full_match(src, &rules)).count());
 }
 
-#[derive(Clone)]
 enum Rule
 {
     Char(char),
