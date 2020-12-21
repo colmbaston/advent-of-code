@@ -4,31 +4,36 @@ fn main()
 {
     let input = include_str!("../input.txt").lines().map(parse_allergens).collect::<Vec<_>>();
 
-    let mut allergens : HashMap<&str, HashSet<&str>> = HashMap::new();
-    for (a, is) in input.iter().flat_map(|m| m.iter())
+    let mut possible : HashMap<&str, HashSet<&str>> = HashMap::new();
+    for (is, als) in input.iter()
     {
-        match allergens.entry(a)
+        let is = is.iter().cloned().collect::<HashSet<_>>();
+        for a in als.iter()
         {
-            Entry::Occupied(mut e) => { e.get_mut().retain(|i| is.contains(i)) },
-            Entry::Vacant(e)       => { e.insert(is.clone()); }
+            match possible.entry(a)
+            {
+                Entry::Occupied(mut e) => { e.get_mut().retain(|i| is.contains(i)) },
+                Entry::Vacant(e)       => { e.insert(is.clone()); }
+            }
         }
     }
 
-    let mut solved = Vec::with_capacity(allergens.len());
-    for _ in 0 .. allergens.len()
+    let mut solved = Vec::with_capacity(possible.len());
+    for _ in 0 .. possible.len()
     {
-        let (a, i) = allergens.iter()
-                              .find_map(|(&a, is)| if is.len() == 1 { is.iter().next().map(|&i| (a, i)) } else { None })
-                              .unwrap();
+        let (a, i) = possible.iter()
+                             .find_map(|(&a, is)| if is.len() == 1 { is.iter().next().map(|&i| (a, i)) } else { None })
+                             .unwrap();
 
-        for (_, is) in allergens.iter_mut() { is.remove(i); }
+        possible.remove(a);
+        for (_, is) in possible.iter_mut() { is.remove(i); }
         solved.push((a, i));
     }
 
+    let allergenic = solved.iter().map(|(_, i)| i).collect::<HashSet<_>>();
     println!("{}", input.iter()
-                        .flat_map(|m| m.values().next().into_iter())
-                        .flat_map(|s| s.iter())
-                        .filter(|&i| !solved.iter().any(|(_, j)| i == j))
+                        .flat_map(|(is, _)| is.iter())
+                        .filter(|i| !allergenic.contains(i))
                         .count());
 
     solved.sort_unstable_by(|x, y| x.0.cmp(y.0));
@@ -38,10 +43,10 @@ fn main()
                          .join(","));
 }
 
-fn parse_allergens(s : &str) -> HashMap<&str, HashSet<&str>>
+fn parse_allergens(s : &str) -> (Vec<&str>, Vec<&str>)
 {
     let mut it = s[.. s.len()-1].split(" (contains ");
 
-    let ingredients = it.next().unwrap().split_whitespace().collect::<HashSet<_>>();
-    it.next().unwrap().split(", ").map(|allergen| (allergen, ingredients.clone())).collect()
+    (it.next().unwrap().split_whitespace().collect(),
+     it.next().unwrap().split(", ").collect())
 }
