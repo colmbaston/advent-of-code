@@ -21,10 +21,7 @@ fn main()
     println!();
 
     cups_two[prev] = input.len()+1;
-    for i in input.len()+2 ..= 1_000_000
-    {
-        cups_two.push(i);
-    }
+    cups_two.extend(input.len()+2 ..= 1_000_000);
     cups_two.push(cups_two[0]);
     crab_cups(&mut cups_two, 10_000_000);
     println!("{}", { let x = cups_two[1]; x * cups_two[x] });
