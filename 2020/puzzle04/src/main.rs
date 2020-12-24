@@ -16,12 +16,13 @@ fn parse_passports(s : &str) -> Vec<Passport>
     {
         p.split_whitespace().map(|f|
         {
-            let mut x = f.split(':');
-            (x.next().unwrap(), x.next().unwrap())
+            let mut it = f.split(':');
+
+            (it.next().unwrap(), it.next().unwrap())
         })
-        .collect::<Vec<_>>()
+        .collect()
     })
-    .collect::<Vec<_>>()
+    .collect()
 }
 
 fn valid_field((k, v) : &(&str, &str)) -> bool
