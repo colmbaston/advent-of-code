@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 fn main()
 {
-    let input = include_str!("../input.txt").lines().map(Cube::parse).collect::<Vec<_>>();
+    let input = include_str!("../input.txt").lines().map(Axial::parse).collect::<Vec<_>>();
 
     let mut black = HashSet::new();
     for c in input.iter()
@@ -26,55 +26,54 @@ fn main()
 }
 
 #[derive(Clone, PartialEq, Eq, Hash)]
-struct Cube
+struct Axial
 {
     x: i32,
-    y: i32,
-    z: i32
+    y: i32
 }
 
-impl Cube
+impl Axial
 {
-    fn parse(mut s : &str) -> Cube
+    fn parse(mut s : &str) -> Axial
     {
-        let mut cube = Cube { x: 0, y: 0, z: 0 };
+        let mut axial = Axial { x: 0, y: 0 };
 
         while !s.is_empty()
         {
-            if let Some(t) = s.strip_prefix('e')  { cube.x += 1; cube.y -= 1; s = t; continue }
-            if let Some(t) = s.strip_prefix("se") { cube.z += 1; cube.y -= 1; s = t; continue }
-            if let Some(t) = s.strip_prefix("sw") { cube.z += 1; cube.x -= 1; s = t; continue }
-            if let Some(t) = s.strip_prefix('w')  { cube.y += 1; cube.x -= 1; s = t; continue }
-            if let Some(t) = s.strip_prefix("nw") { cube.y += 1; cube.z -= 1; s = t; continue }
-            if let Some(t) = s.strip_prefix("ne") { cube.x += 1; cube.z -= 1; s = t; continue }
+            if let Some(t) = s.strip_prefix('e')  { axial.x += 1; axial.y -= 1; s = t; continue }
+            if let Some(t) = s.strip_prefix("se") {               axial.y -= 1; s = t; continue }
+            if let Some(t) = s.strip_prefix("sw") { axial.x -= 1;               s = t; continue }
+            if let Some(t) = s.strip_prefix('w')  { axial.x -= 1; axial.y += 1; s = t; continue }
+            if let Some(t) = s.strip_prefix("nw") {               axial.y += 1; s = t; continue }
+            if let Some(t) = s.strip_prefix("ne") { axial.x += 1;               s = t; continue }
 
             unreachable!()
         }
 
-        cube
+        axial
     }
 
-    fn adjacents(&self) -> impl Iterator<Item = Cube>
+    fn adjacents(&self) -> impl Iterator<Item = Axial>
     {
-        vec![Cube { x: self.x+1, y: self.y-1, z: self.z   },
-             Cube { x: self.x,   y: self.y-1, z: self.z+1 },
-             Cube { x: self.x-1, y: self.y,   z: self.z+1 },
-             Cube { x: self.x-1, y: self.y+1, z: self.z   },
-             Cube { x: self.x,   y: self.y+1, z: self.z-1 },
-             Cube { x: self.x+1, y: self.y,   z: self.z-1 }].into_iter()
+        vec![Axial { x: self.x+1, y: self.y-1 },
+             Axial { x: self.x,   y: self.y-1 },
+             Axial { x: self.x-1, y: self.y   },
+             Axial { x: self.x-1, y: self.y+1 },
+             Axial { x: self.x,   y: self.y+1 },
+             Axial { x: self.x+1, y: self.y   }].into_iter()
     }
 }
 
-fn step(black : &HashSet<Cube>) -> HashSet<Cube>
+fn step(black : &HashSet<Axial>) -> HashSet<Axial>
 {
     let mut new = black.iter()
                        .flat_map(|c| std::iter::once(c.clone()).chain(c.adjacents()))
-                       .collect::<HashSet<Cube>>();
+                       .collect::<HashSet<Axial>>();
 
     new.retain(|c|
     {
         let count = c.adjacents().filter(|d| black.contains(d)).count();
-        if black.contains(c) { count == 1 || count == 2 } else { count == 2 }
+        count == 2 || count == 1 && black.contains(c)
     });
 
     new
