@@ -6,7 +6,7 @@ fn main()
     println!("{}", transform(door).nth(card_loop).unwrap());
 }
 
-fn parse_keys(s : &str) -> (usize, usize)
+fn parse_keys(s : &str) -> (u64, u64)
 {
     let mut it = s.lines();
 
@@ -14,7 +14,7 @@ fn parse_keys(s : &str) -> (usize, usize)
      it.next().unwrap().parse().unwrap())
 }
 
-fn transform(subject : usize) -> impl Iterator<Item = usize>
+fn transform(subject : u64) -> impl Iterator<Item = u64>
 {
     let mut value = 1;
     std::iter::from_fn(move ||
