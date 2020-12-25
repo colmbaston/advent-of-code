@@ -1,5 +1,5 @@
 use std::iter::{ empty, Empty };
-use std::io::{ stdin, stdout, Read, Write };
+use std::io::{ stdin, stdout, Write };
 use std::thread::{ spawn, JoinHandle };
 use std::sync::mpsc::{ channel, Sender, Receiver };
 
@@ -18,7 +18,13 @@ where I : Iterator<Item = i64>
 #[macro_export]
 macro_rules! parse_file
 {
-    ($file:expr) => { include_str!($file).trim_end().split(',').map(|x| x.parse().unwrap()).collect::<Vec<i64>>() }
+    ($file:expr) =>
+    {
+        include_str!($file).trim_end()
+                           .split(',')
+                           .map(|x| x.parse().unwrap())
+                           .collect::<Vec<i64>>()
+    }
 }
 
 impl<I : Iterator<Item = i64>> Iterator for &mut Interpreter<I>
@@ -185,7 +191,7 @@ impl Interpreter<Empty<i64>>
 
     pub fn with_fn(memory : Vec<i64>, input : impl Fn() -> i64, output : impl Fn(i64)) -> Interpreter<Empty<i64>>
     {
-        let (send_in,  recv_in ) = channel();
+        let (send_in,  recv_in)  = channel();
         let (send_out, recv_out) = channel();
         let (send_req, recv_req) = channel();
 
@@ -214,20 +220,13 @@ impl Interpreter<Empty<i64>>
                 stdin().read_line(&mut input).unwrap();
                 match input.trim_end().parse()
                 {
-                    Ok(x)  => return x,
+                    Ok(k)  => break k,
                     Err(e) => println!("parse error: {}", e)
                 }
             }
 
         };
-        let o_fn =  |x| println!("{}", x);
-        Interpreter::with_fn(memory, i_fn, o_fn)
-    }
 
-    pub fn ascii(memory : Vec<i64>) -> Interpreter<Empty<i64>>
-    {
-        let i_fn = || stdin().bytes().next().unwrap().unwrap() as i64;
-        let o_fn = |x| if x <= 128 { print!("{}", x as u8 as char) } else { println!("{}", x) };
-        Interpreter::with_fn(memory, i_fn, o_fn)
+        Interpreter::with_fn(memory, i_fn, |k| println!("{}", k))
     }
 }
