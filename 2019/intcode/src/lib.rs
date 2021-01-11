@@ -64,8 +64,8 @@ fn decode(i : i64) -> (i64, Vec<u8>)
     let opcode = i % 100;
     let mut k  = i / 100;
 
-    let args = match opcode { 1 => 3, 2 => 3, 3 => 1, 4 => 1, 5 => 2, 6 => 2, 7 => 3, 8 => 3, 9 => 1, _ => 0 };
-    let modes  = (0 .. args).map(|_| if k == 0 { 0 } else { let m = k % 10 ; k /= 10; m as u8 }).collect();
+    let args  = match opcode { 1 => 3, 2 => 3, 3 => 1, 4 => 1, 5 => 2, 6 => 2, 7 => 3, 8 => 3, 9 => 1, _ => 0 };
+    let modes = (0 .. args).map(|_| if k == 0 { 0 } else { let m = k % 10 ; k /= 10; m as u8 }).collect();
 
     (opcode, modes)
 }
@@ -137,7 +137,7 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
 
     fn adjust_bp(&mut self, modes : &[u8])
     {
-        self.bp = (self.bp as i64 + *self.index_modal(modes[0], self.ip + 1)) as usize;
+        self.bp  = (self.bp as i64 + *self.index_modal(modes[0], self.ip + 1)) as usize;
         self.ip += 2;
     }
 
@@ -145,10 +145,10 @@ impl<I : Iterator<Item = i64>> Interpreter<I>
     {
         let ix = match mode
         {
-            0 => *self.memory.get(v).unwrap_or(&0) as usize,
-            1 => v,
-            2 => (*self.memory.get(v).unwrap_or(&0) + self.bp as i64) as usize,
-            _ => panic!("invalid addressing mode: {}", mode)
+            0 =>  self.memory.get(v).cloned().unwrap_or(0) as usize,
+            1 =>  v,
+            2 => (self.memory.get(v).cloned().unwrap_or(0) + self.bp as i64) as usize,
+            _ =>  panic!("invalid addressing mode: {}", mode)
         };
 
         if ix >= self.memory.len()

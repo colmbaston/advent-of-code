@@ -7,4 +7,4 @@ Each puzzle's binary:
 * Parses the puzzle input from a file called `input.txt` placed in the crate's root directory;
 * With [some](2018/puzzle19/src/main.rs) [notable](2018/puzzle21/src/main.rs) [exceptions](2019/puzzle25/src/main.rs), aims to solve the puzzle for any valid input.
 
-![](https://colmbaston.uk/animation.gif)
+![](animation.gif)
