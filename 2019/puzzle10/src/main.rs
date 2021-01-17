@@ -3,7 +3,7 @@ use std::collections::{ HashMap, HashSet };
 
 fn main()
 {
-    let asteroids = coords(include_str!("../input.txt").bytes(), |x| x == b'#');
+    let asteroids = coords(include_str!("../input.txt"));
 
     if let Some(visible) = asteroids.iter().map(|a| detect(a, &asteroids)).max_by(|x, y| x.len().cmp(&y.len()))
     {
@@ -15,18 +15,16 @@ fn main()
     }
 }
 
-fn coords(iter : impl Iterator<Item = u8>, f : impl Fn(u8) -> bool) -> HashSet<(i64, i64)>
+fn coords(s : &str) -> HashSet<(i64, i64)>
 {
-    let step = |((x, y), mut s) : (_, HashSet<_>), b|
+    s.lines().zip(0..).flat_map(|(l, y)|
     {
-        match b
+        l.chars().zip(0..).filter_map(move |(c, x)|
         {
-            b'\n' => ((0, y+1), s),
-            _     => ((x+1, y), if f(b) { s.insert((x, y)) ; s } else { s })
-        }
-    };
-
-    iter.fold(((0, 0), HashSet::new()), step).1
+            if c == '#' { Some((x, y)) } else { None }
+        })
+    })
+    .collect()
 }
 
 fn detect((x, y) : &(i64, i64), s : &HashSet<(i64, i64)>) -> HashMap<(i64, i64), (i64, i64)>
