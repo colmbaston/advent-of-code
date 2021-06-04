@@ -5,7 +5,7 @@ fn main()
 {
     let input  = include_str!("../input.txt");
     let mut ls = input.lines();
-    let mut parse_next = || ls.next().unwrap().split(',').scan(((0,0), 0), parse_segment).collect::<Vec<Segment>>();
+    let mut parse_next = || ls.next().unwrap().split(',').scan(((0,0), 0), |a, b| Some(parse_segment(a, b))).collect::<Vec<Segment>>();
     let wire_one = parse_next();
     let wire_two = parse_next();
 
@@ -42,7 +42,7 @@ struct Segment
     end      : i64
 }
 
-fn parse_segment(((sx, sy), a) : &mut ((i64, i64), u64), s : &str) -> Option<Segment>
+fn parse_segment(((sx, sy), a) : &mut ((i64, i64), u64), s : &str) -> Segment
 {
     let (t, l)  = s.split_at(1);
     let l : i64 = l.parse().unwrap();
@@ -61,7 +61,7 @@ fn parse_segment(((sx, sy), a) : &mut ((i64, i64), u64), s : &str) -> Option<Seg
     *a  += l as u64;
     if v { *sy = e } else { *sx = e };
 
-    Some(result)
+    result
 }
 
 fn intersection(p : &Segment, q : &Segment) -> Coords
