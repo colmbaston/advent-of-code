@@ -62,35 +62,21 @@ enum Mode
 
 fn parse_inst(s : &str) -> Inst
 {
-    let (mode, s) = if let Some(s) = s.strip_prefix("turn on ")
-    {
-        (Mode::On, s)
-    }
-    else if let Some(s) = s.strip_prefix("turn off ")
-    {
-        (Mode::Off, s)
-    }
-    else
-    {
-        (Mode::Toggle, &s[7..])
-    };
+    let mut i = s.split(|c| c == ' ' || c == ',');
 
-    let (lx, s) = span_digits(s);
-    let (ly, s) = span_digits(&s[1..]);
-    let (ux, s) = span_digits(&s[9..]);
-    let (uy, _) = span_digits(&s[1..]);
+    let mode = match i.next()
+    {
+        Some("turn")   => if let Some("on") = i.next() { Mode::On } else { Mode::Off },
+        Some("toggle") => Mode::Toggle,
+        _              => unreachable!()
+    };
 
     Inst
     {
         mode,
-        lx: lx.parse().unwrap(),
-        ly: ly.parse().unwrap(),
-        ux: ux.parse().unwrap(),
-        uy: uy.parse().unwrap()
+        lx:             i.next().unwrap().parse().unwrap(),
+        ly:             i.next().unwrap().parse().unwrap(),
+        ux: { i.next(); i.next().unwrap().parse().unwrap() },
+        uy:             i.next().unwrap().parse().unwrap()
     }
-}
-
-fn span_digits(s : &str) -> (&str, &str)
-{
-    s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()))
 }
