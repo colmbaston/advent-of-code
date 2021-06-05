@@ -29,18 +29,15 @@ fn nice_two(s : &str) -> bool
     {
         if w[0] == w[2] { found = true; break }
     }
-
     if !found { return false }
-    found = false;
 
-    'outer: for i in 0 ..= s.len() - 4
+    for i in 0 ..= s.len() - 4
     {
         let (a, b) = s.as_bytes()[i..].split_at(2);
         for j in 0 ..= b.len() - 2
         {
-            if a == &b[j .. j+2] { found = true; break 'outer }
+            if a == &b[j .. j+2] { return true }
         }
     }
-
-    found
+    false
 }
