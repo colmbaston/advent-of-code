@@ -25,6 +25,14 @@ fn nice_one(s : &str) -> bool
 fn nice_two(s : &str) -> bool
 {
     let mut found = false;
+    for w in s.as_bytes().windows(3)
+    {
+        if w[0] == w[2] { found = true; break }
+    }
+
+    if !found { return false }
+    found = false;
+
     'outer: for i in 0 ..= s.len() - 4
     {
         let (a, b) = s.as_bytes()[i..].split_at(2);
@@ -32,14 +40,6 @@ fn nice_two(s : &str) -> bool
         {
             if a == &b[j .. j+2] { found = true; break 'outer }
         }
-    }
-
-    if !found { return false }
-    found = false;
-
-    for w in s.as_bytes().windows(3)
-    {
-        if w[0] == w[2] { found = true; break }
     }
 
     found
