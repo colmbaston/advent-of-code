@@ -1,30 +1,24 @@
 fn main()
 {
-    let mut input = String::from(include_str!("../input.txt").trim_end());
-    let mut next  = String::new();
+    let mut input = include_str!("../input.txt").trim_end().bytes().collect::<Vec<u8>>();
+    let mut next  = Vec::new();
 
     for i in 1 ..= 50
     {
         next.clear();
-        let mut cs = input.chars();
-        let mut c  = cs.next().unwrap();
-        let mut n  = 1;
+        let mut bs = input.iter().peekable();
 
-        for d in cs
+        while let Some(c) = bs.next()
         {
-            if c == d
+            let mut n = 1;
+            while bs.peek() == Some(&c)
             {
-                n += 1
+                bs.next();
+                n += 1;
             }
-            else
-            {
-                next.extend(format!("{}{}", n, c).chars());
-                c = d;
-                n = 1;
-            }
+            next.extend(format!("{}{}", n, c - b'0').bytes());
         }
 
-        next.extend(format!("{}{}", n, c).chars());
         std::mem::swap(&mut input, &mut next);
 
         if let 40 | 50 = i
