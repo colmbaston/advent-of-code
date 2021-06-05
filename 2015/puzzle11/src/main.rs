@@ -29,28 +29,26 @@ fn valid(s : &[u8]) -> bool
     }
 
     let mut found = false;
-
     for w in s.windows(3)
     {
         if w[0]+1 == w[1] && w[1]+1 == w[2]
         {
-            found = true; break;
+            found = true;
+            break
         }
     }
-
     if !found { return false }
-    found = false;
 
-    'outer: for (i, w) in s.windows(2).enumerate()
+    for (i, w) in s.windows(2).enumerate()
     {
         if w[0] == w[1]
         {
             for v in s[i+2 ..].windows(2)
             {
-                if v[0] == v[1] { found = true; break 'outer }
+                if v[0] == v[1] { return true }
             }
+            return false
         }
     }
-
-    found
+    false
 }
