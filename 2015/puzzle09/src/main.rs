@@ -1,5 +1,4 @@
 use std::collections::{ HashMap, BTreeSet };
-
 use aoc::permutations::Permutations;
 
 fn main()
