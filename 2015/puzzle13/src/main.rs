@@ -5,8 +5,8 @@ const ME : &str = "Colm";
 
 fn main()
 {
-    let mut table = include_str!("../input.txt").lines().map(parse_row).collect::<HashMap<(&str, &str), i32>>();
-    let mut people    = table.keys().map(|&(a, _)| a).collect::<BTreeSet<&str>>();
+    let mut table  = include_str!("../input.txt").lines().map(parse_row).collect::<HashMap<(&str, &str), i32>>();
+    let mut people = table.keys().map(|&(a, _)| a).collect::<BTreeSet<&str>>();
 
     println!("{}", Permutations::new(people.iter().cloned()).map(|p| happiness(p, &table)).max().unwrap());
 
