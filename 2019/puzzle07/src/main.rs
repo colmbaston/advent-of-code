@@ -1,8 +1,6 @@
 use intcode::Interpreter;
 use std::sync::mpsc::channel;
-
-mod permutations;
-use permutations::Permutations;
+use aoc::permutations::Permutations;
 
 fn main()
 {

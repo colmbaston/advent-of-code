@@ -1,7 +1,6 @@
 use std::collections::{ HashMap, BTreeSet };
 
-mod permutations;
-use permutations::Permutations;
+use aoc::permutations::Permutations;
 
 fn main()
 {
