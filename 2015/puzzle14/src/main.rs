@@ -8,8 +8,9 @@ fn main()
         input.iter_mut().filter(|r| r.position == max_position).for_each(|r| r.points += 1)
     }
 
-    println!("{}", input.iter().map(|r| r.position).max().unwrap());
-    println!("{}", input.iter().map(|r| r.points).max().unwrap());
+    let (position, points) = input.iter().fold((u32::MIN, u32::MIN), |(a, b), r| (a.max(r.position), b.max(r.points)));
+    println!("{}", position);
+    println!("{}", points);
 }
 
 struct Reindeer
@@ -33,11 +34,7 @@ impl Reindeer
             self.countdown = if self.flying { self.flying_time } else { self.resting_time };
         }
 
-        if self.flying
-        {
-            self.position += self.speed;
-        }
-
+        if self.flying { self.position += self.speed }
         self.countdown -= 1;
     }
 }
