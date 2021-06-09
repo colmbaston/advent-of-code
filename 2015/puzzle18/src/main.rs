@@ -31,7 +31,7 @@ fn main()
     }
 }
 
-fn parse_grid(s : &str) -> impl '_ + Iterator<Item = (i32, i32)>
+fn parse_grid(s : &str) -> impl '_ + Iterator<Item = (i8, i8)>
 {
     s.lines()
      .zip(0 ..)
@@ -40,7 +40,7 @@ fn parse_grid(s : &str) -> impl '_ + Iterator<Item = (i32, i32)>
                          .filter_map(move |(b, x)| (b == b'#').then(|| (x, y))))
 }
 
-fn neighbours(x : i32, y : i32) -> impl Iterator<Item = (i32, i32)>
+fn neighbours(x : i8, y : i8) -> impl Iterator<Item = (i8, i8)>
 {
     vec![(x-1, y-1), (x, y-1), (x+1, y-1),
          (x-1, y  ),           (x+1, y  ),
