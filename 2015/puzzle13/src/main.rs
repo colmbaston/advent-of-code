@@ -8,7 +8,7 @@ fn main()
     let mut table  = include_str!("../input.txt").lines().map(parse_row).collect::<HashMap<(&str, &str), i32>>();
     let mut people = table.keys().map(|&(a, _)| a).collect::<BTreeSet<&str>>();
 
-    println!("{}", Permutations::new(people.iter().cloned()).map(|p| happiness(p, &table)).max().unwrap());
+    println!("{}", Permutations::new(people.iter().cloned()).filter_map(|p| le_reverse(&p).then(|| happiness(p, &table))).max().unwrap());
 
     for p in people.iter()
     {
@@ -17,7 +17,7 @@ fn main()
     }
     people.insert(ME);
 
-    println!("{}", Permutations::new(people.into_iter()).map(|p| happiness(p, &table)).max().unwrap());
+    println!("{}", Permutations::new(people.into_iter()).filter_map(|p| le_reverse(&p).then(|| happiness(p, &table))).max().unwrap());
 }
 
 fn parse_row(s : &str) -> ((&str, &str), i32)
@@ -28,6 +28,11 @@ fn parse_row(s : &str) -> ((&str, &str), i32)
             ((a, &d[.. d.len()-1]), { let x = c.parse().unwrap(); if b == "gain" { x } else { -x }}),
         _ => unreachable!()
     }
+}
+
+fn le_reverse<T : Ord>(v : &[T]) -> bool
+{
+    v.iter().le(v.iter().rev())
 }
 
 fn happiness(mut p : Vec<&str>, table : &HashMap<(&str, &str), i32>) -> i32

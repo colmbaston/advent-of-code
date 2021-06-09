@@ -6,7 +6,7 @@ pub mod permutations
         output: Option<Vec<T>>
     }
 
-    impl<T> Permutations<T>
+    impl<T : Ord> Permutations<T>
     {
         pub fn new(values : impl Iterator<Item = T>) -> Permutations<T>
         {
