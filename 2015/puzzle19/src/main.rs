@@ -1,35 +1,45 @@
-use std::collections::HashSet;
+use std::collections::{ HashMap, HashSet };
 
 fn main()
 {
-    let (rs, molecule) = parse(include_str!("../input.txt"));
+    let (grammar, molecule) = parse_grammar(include_str!("../input.txt"));
 
-    println!("{}", replacements(&rs, &molecule).len());
+    println!("{}", replacements(&grammar, &molecule).len());
 }
 
-fn parse(s : &str) -> (Vec<(&str, &str)>, &str)
+fn parse_grammar(s : &str) -> (HashMap<&str, Vec<&str>>, &str)
 {
-    let mut i = s.split("\n\n");
+    let mut i       = s.split("\n\n");
+    let mut grammar = HashMap::new();
 
-    (i.next().unwrap().lines().map(|s| { let mut j = s.split(" => "); (j.next().unwrap(), j.next().unwrap()) }).collect(),
-     i.next().unwrap().trim_end())
-}
-
-fn replacements(rs : &[(&str, &str)], molecule : &str) -> HashSet<String>
-{
-    let mut s = HashSet::new();
-    for (a, b) in rs.iter()
+    for l in i.next().unwrap().lines()
     {
-        for k in 0 .. molecule.len()
+        let mut j = l.split(" => ");
+        grammar.entry(j.next().unwrap()).or_insert_with(Vec::new).push(j.next().unwrap())
+    }
+
+    (grammar, i.next().unwrap().trim_end())
+}
+
+fn replacements(grammar : &HashMap<&str, Vec<&str>>, molecule : &str) -> HashSet<String>
+{
+    let mut res = HashSet::new();
+    for (a, bs) in grammar.iter()
+    {
+        for b in bs.iter()
         {
-            if molecule[k ..].starts_with(a)
+            for k in 0 .. molecule.len()
             {
-                let mut v = molecule[.. k].to_string();
-                v.push_str(b);
-                v.push_str(&molecule[k + a.len() ..]);
-                s.insert(v);
+                if let Some(c) = molecule[k ..].strip_prefix(a)
+                {
+                    let mut s = String::with_capacity(k + b.len() + c.len());
+                    s.push_str(&molecule[.. k]);
+                    s.push_str(b);
+                    s.push_str(c);
+                    res.insert(s);
+                }
             }
         }
     }
-    s
+    res
 }
