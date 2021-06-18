@@ -9,36 +9,36 @@ fn main()
     println!("{}", a);
 
     cache.clear();
-    input.insert("b", Op::ATOM(Atom::CONST(a)));
+    input.insert("b", Op::Atom(Atom::Const(a)));
     println!("{}", eval("a", &input, &mut cache));
 }
 
 enum Op<'a>
 {
-    ATOM(Atom<'a>),
-    AND(Atom<'a>, Atom<'a>),
-    OR(Atom<'a>, Atom<'a>),
-    NOT(Atom<'a>),
-    LSHIFT(Atom<'a>, Atom<'a>),
-    RSHIFT(Atom<'a>, Atom<'a>)
+    Atom(Atom<'a>),
+    And(Atom<'a>, Atom<'a>),
+    Or(Atom<'a>, Atom<'a>),
+    Not(Atom<'a>),
+    LShift(Atom<'a>, Atom<'a>),
+    RShift(Atom<'a>, Atom<'a>)
 }
 
 enum Atom<'a>
 {
-    CONST(u16),
-    VAR(&'a str)
+    Const(u16),
+    Var(&'a str)
 }
 
 fn parse_op(s : &str) -> (&str, Op)
 {
     match s.split(' ').collect::<Vec<&str>>()[..]
     {
-        [a,              "->", c] => (c, Op::ATOM(parse_atom(a))),
-        [a, "AND",    b, "->", c] => (c, Op::AND(parse_atom(a), parse_atom(b))),
-        [a, "OR",     b, "->", c] => (c, Op::OR(parse_atom(a), parse_atom(b))),
-        [   "NOT",    b, "->", c] => (c, Op::NOT(parse_atom(b))),
-        [a, "LSHIFT", b, "->", c] => (c, Op::LSHIFT(parse_atom(a), parse_atom(b))),
-        [a, "RSHIFT", b, "->", c] => (c, Op::RSHIFT(parse_atom(a), parse_atom(b))),
+        [a,              "->", c] => (c, Op::Atom(parse_atom(a))),
+        [a, "AND",    b, "->", c] => (c, Op::And(parse_atom(a), parse_atom(b))),
+        [a, "OR",     b, "->", c] => (c, Op::Or(parse_atom(a), parse_atom(b))),
+        [   "NOT",    b, "->", c] => (c, Op::Not(parse_atom(b))),
+        [a, "LSHIFT", b, "->", c] => (c, Op::LShift(parse_atom(a), parse_atom(b))),
+        [a, "RSHIFT", b, "->", c] => (c, Op::RShift(parse_atom(a), parse_atom(b))),
         _                         => unreachable!()
     }
 }
@@ -47,8 +47,8 @@ fn parse_atom(s : &str) -> Atom
 {
     match s.parse()
     {
-        Ok(k)  => Atom::CONST(k),
-        Err(_) => Atom::VAR(s)
+        Ok(k)  => Atom::Const(k),
+        Err(_) => Atom::Var(s)
     }
 }
 
@@ -58,12 +58,12 @@ fn eval<'a>(s : &'a str, m : &HashMap<&'a str, Op<'a>>, cache : &mut HashMap<&'a
 
     let k = match m.get(s).unwrap()
     {
-        Op::ATOM(a)      =>  eval_atom(a, m, cache),
-        Op::AND(a, b)    =>  eval_atom(a, m, cache) &  eval_atom(b, m, cache),
-        Op::OR(a, b)     =>  eval_atom(a, m, cache) |  eval_atom(b, m, cache),
-        Op::NOT(a)       => !eval_atom(a, m, cache),
-        Op::LSHIFT(a, b) =>  eval_atom(a, m, cache) << eval_atom(b, m, cache),
-        Op::RSHIFT(a, b) =>  eval_atom(a, m, cache) >> eval_atom(b, m, cache)
+        Op::Atom(a)      =>  eval_atom(a, m, cache),
+        Op::And(a, b)    =>  eval_atom(a, m, cache) &  eval_atom(b, m, cache),
+        Op::Or(a, b)     =>  eval_atom(a, m, cache) |  eval_atom(b, m, cache),
+        Op::Not(a)       => !eval_atom(a, m, cache),
+        Op::LShift(a, b) =>  eval_atom(a, m, cache) << eval_atom(b, m, cache),
+        Op::RShift(a, b) =>  eval_atom(a, m, cache) >> eval_atom(b, m, cache)
     };
     cache.insert(s, k);
 
@@ -74,7 +74,7 @@ fn eval_atom<'a>(a : &Atom<'a>, m : &HashMap<&'a str, Op<'a>>, cache : &mut Hash
 {
     match *a
     {
-        Atom::CONST(k) => k,
-        Atom::VAR(v)   => eval(v, m, cache)
+        Atom::Const(k) => k,
+        Atom::Var(v)   => eval(v, m, cache)
     }
 }
