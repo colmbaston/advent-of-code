@@ -7,11 +7,10 @@ fn main()
     let mut sx     = 0;
     let mut sy     = 0;
     let mut houses = HashSet::new();
+    houses.insert((0, 0));
 
     for b in input.bytes()
     {
-        houses.insert((sx, sy));
-
         match b
         {
             b'^' => sy += 1,
@@ -20,6 +19,8 @@ fn main()
             b'<' => sx -= 1,
             _    => break
         }
+
+        houses.insert((sx, sy));
     }
     println!("{}", houses.len());
 
@@ -28,11 +29,11 @@ fn main()
     let mut rx = 0;
     let mut ry = 0;
     houses.clear();
+    houses.insert((0, 0));
 
     for (i, b) in input.bytes().enumerate()
     {
-        let (x, y) = if i % 2 != 0 { (&mut rx, &mut ry) } else { (&mut sx, &mut sy) };
-        houses.insert((*x, *y));
+        let (x, y) = if i % 2 == 0 { (&mut sx, &mut sy) } else { (&mut rx, &mut ry) };
 
         match b
         {
@@ -42,6 +43,8 @@ fn main()
             b'<' => *x -= 1,
             _    => break
         }
+
+        houses.insert((*x, *y));
     }
     println!("{}", houses.len());
 }
