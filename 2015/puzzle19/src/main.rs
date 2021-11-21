@@ -4,10 +4,13 @@ fn main()
 {
     let (grammar, molecule) = parse_grammar(include_str!("../input.txt"));
 
-    println!("{}", replacements(&grammar, &molecule).len());
+    println!("{}", replacements(&grammar, molecule).len());
+    println!("{}", greedy(&transpose(&grammar), molecule));
 }
 
-fn parse_grammar(s : &str) -> (HashMap<&str, Vec<&str>>, &str)
+type Grammar<'a> = HashMap<&'a str, Vec<&'a str>>;
+
+fn parse_grammar(s : &str) -> (Grammar, &str)
 {
     let mut i       = s.split("\n\n");
     let mut grammar = HashMap::new();
@@ -21,7 +24,7 @@ fn parse_grammar(s : &str) -> (HashMap<&str, Vec<&str>>, &str)
     (grammar, i.next().unwrap().trim_end())
 }
 
-fn replacements(grammar : &HashMap<&str, Vec<&str>>, molecule : &str) -> HashSet<String>
+fn replacements(grammar : &Grammar, molecule : &str) -> HashSet<String>
 {
     let mut res = HashSet::new();
     for (a, bs) in grammar.iter()
@@ -42,4 +45,39 @@ fn replacements(grammar : &HashMap<&str, Vec<&str>>, molecule : &str) -> HashSet
         }
     }
     res
+}
+
+fn transpose<'a>(grammar : &Grammar<'a>) -> Grammar<'a>
+{
+    let mut res = HashMap::new();
+
+    for (&s, v) in grammar.iter()
+    {
+        for &t in v.iter()
+        {
+            res.entry(t).or_insert_with(Vec::new).push(s)
+        }
+    }
+
+    res
+}
+
+fn greedy(grammar : &Grammar, molecule : &str) -> u32
+{
+    'reset: loop
+    {
+        let mut current = molecule.to_string();
+        let mut steps   = 0;
+
+        while current != "e"
+        {
+            match replacements(grammar, &current).into_iter().next()
+            {
+                Some(next) => { current = next; steps += 1 }
+                None       => continue 'reset
+            }
+        }
+
+        return steps
+    }
 }
