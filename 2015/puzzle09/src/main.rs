@@ -6,7 +6,7 @@ fn main()
     let graph  = include_str!("../input.txt").lines().map(parse).collect::<HashMap<(&str, &str), u32>>();
     let cities = graph.keys().flat_map(|&(a, b)| vec![a, b].into_iter()).collect::<BTreeSet<&str>>();
 
-    let (min, max) = Permutations::new(cities.into_iter()).filter(|v| le_reverse(&v)).fold((u32::MAX, u32::MIN), |(a, b), p|
+    let (min, max) = Permutations::new(cities.into_iter()).filter(|v| le_reverse(v)).fold((u32::MAX, u32::MIN), |(a, b), p|
     {
         let d = distance(&p, &graph);
         (a.min(d), b.max(d))

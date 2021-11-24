@@ -1,6 +1,6 @@
 fn main()
 {
-    let mut input = include_str!("../input.txt").lines().map(|s| s.split(": ").skip(1).next().unwrap().parse::<i32>().unwrap());
+    let mut input = include_str!("../input.txt").lines().map(|s| s.split(": ").nth(1).unwrap().parse::<i32>().unwrap());
     let boss_hp   = input.next().unwrap();
     let boss_d    = input.next().unwrap();
     let boss_a    = input.next().unwrap();
