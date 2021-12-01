@@ -2,28 +2,22 @@ fn main()
 {
     let input = include_str!("../input.txt").lines().map(|x| x.parse::<u32>().unwrap()).collect::<Vec<u32>>();
 
-    let mut prev  = None;
     let mut count = 0;
-    for &d in input.iter()
+    let mut prev  = input[0];
+    for &a in input.iter().skip(1)
     {
-        if let Some(e) = prev
-        {
-            if d > e { count += 1 }
-        }
-        prev = Some(d);
+        if a > prev { count += 1 }
+        prev = a;
     }
     println!("{}", count);
 
-    prev  = None;
     count = 0;
-    for ds in input.windows(3)
+    prev  = input.iter().take(3).sum();
+    for (a, b) in input.iter().zip(input.iter().skip(3))
     {
-        let d = ds.iter().sum();
-        if let Some(e) = prev
-        {
-            if d > e { count += 1 }
-        }
-        prev = Some(d);
+        let c = prev - a + b;
+        if c > prev { count += 1 }
+        prev = c;
     }
     println!("{}", count);
 }
