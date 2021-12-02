@@ -1,2 +1,3 @@
 [workspace]
-members = [ "puzzle01" ]
+members = [ "puzzle01",
+            "puzzle02" ]
