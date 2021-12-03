@@ -8,18 +8,18 @@ fn main()
     println!("{}", to_decimal(&gamma) * to_decimal(&gamma.iter().map(|b| !b).collect::<Vec<bool>>()));
 
     let mut oxygen = input.clone();
-    let mut carbon = input.clone();
+    let mut carbon = input;
     for i in 0 .. oxygen[0].len()
     {
-        gamma = gamma_rate(&oxygen);
         if oxygen.len() > 1
         {
+            gamma  = gamma_rate(&oxygen);
             oxygen = oxygen.into_iter().filter(|bs| bs[i] == gamma[i]).collect();
         }
 
-        gamma = gamma_rate(&carbon);
         if carbon.len() > 1
         {
+            gamma  = gamma_rate(&carbon);
             carbon = carbon.into_iter().filter(|bs| bs[i] != gamma[i]).collect();
         }
     }
