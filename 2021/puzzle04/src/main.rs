@@ -8,14 +8,14 @@ fn main()
     {
         for mut b in boards.drain(..)
         {
-            if let Some(score) = mark(n, &mut b)
+            match mark(n, &mut b)
             {
-                if last_score.is_none() { println!("{}", score) }
-                last_score  = Some(score);
-            }
-            else
-            {
-                incomplete.push(b);
+                None        => incomplete.push(b),
+                Some(score) =>
+                {
+                    if last_score.is_none() { println!("{}", score) }
+                    last_score = Some(score);
+                }
             }
         }
         std::mem::swap(&mut boards, &mut incomplete);
@@ -36,24 +36,21 @@ fn parse_input(s : &str) -> (Vec<u32>, Vec<Board>)
 
 fn mark(n : u32, board : &mut Board) -> Option<u32>
 {
-    let mut index = None;
     for (i, (k, m)) in board.iter_mut().enumerate()
     {
-        if !*m && n == *k
+        if n == *k
         {
-            *m    = true;
-            index = Some(i);
-            break
+            if *m { break }
+            *m = true;
+
+            let row     = i / 5;
+            let col     = i % 5;
+            let row_won = (0 .. 5).map(|o| 5*row + o).all(|j| board[j].1);
+            let col_won = (0 .. 5).map(|o| 5*o + col).all(|j| board[j].1);
+
+            return (row_won || col_won).then(|| n * board.iter().filter_map(|(k, m)| (!m).then(|| k)).sum::<u32>())
         }
     }
 
-    index.and_then(|i|
-    {
-        let row     = i / 5;
-        let col     = i % 5;
-        let row_won = (0 .. 5).map(|o| 5*row + o).all(|j| board[j].1);
-        let col_won = (0 .. 5).map(|o| 5*o + col).all(|j| board[j].1);
-
-        (row_won || col_won).then(|| n * board.iter().filter_map(|(k, b)| (!b).then(|| k)).sum::<u32>())
-    })
+    None
 }
