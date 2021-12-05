@@ -4,56 +4,10 @@ fn main()
 {
     let mut hv   = HashMap::new();
     let mut diag = HashMap::new();
+
     for (x1, y1, x2, y2) in include_str!("../input.txt").lines().map(parse_line)
     {
-        if x1 == x2
-        {
-            for y in y1.min(y2) ..= y1.max(y2)
-            {
-                *hv.entry((x1, y)).or_insert(0) += 1;
-            }
-        }
-        else if y1 == y2
-        {
-            for x in x1.min(x2) ..= x1.max(x2)
-            {
-                *hv.entry((x, y1)).or_insert(0) += 1;
-            }
-        }
-        else if x1 < x2
-        {
-            if y1 < y2
-            {
-                for (x, y) in (x1 ..= x2).zip(y1 ..= y2)
-                {
-                    *diag.entry((x, y)).or_insert(0) += 1;
-                }
-            }
-            else
-            {
-                for (x, y) in (x1 ..= x2).zip((y2 ..= y1).rev())
-                {
-                    *diag.entry((x, y)).or_insert(0) += 1;
-                }
-            }
-        }
-        else
-        {
-            if y1 < y2
-            {
-                for (x, y) in ((x2 ..= x1).rev()).zip(y1 ..= y2)
-                {
-                    *diag.entry((x, y)).or_insert(0) += 1;
-                }
-            }
-            else
-            {
-                for (x, y) in ((x2 ..= x1).rev()).zip((y2 ..= y1).rev())
-                {
-                    *diag.entry((x, y)).or_insert(0) += 1;
-                }
-            }
-        }
+        write_points(x1, y1, x2, y2, if x1 == x2 || y1 == y2 { &mut hv } else { &mut diag })
     }
     println!("{}", hv.values().filter(|&v| *v > 1).count());
 
@@ -64,7 +18,7 @@ fn main()
     println!("{}", diag.values().filter(|&v| *v > 1).count());
 }
 
-fn parse_line(s : &str) -> (u32, u32, u32, u32)
+fn parse_line(s : &str) -> (i32, i32, i32, i32)
 {
     let mut i  = s.split(" -> ");
 
@@ -77,4 +31,20 @@ fn parse_line(s : &str) -> (u32, u32, u32, u32)
     let y2    = j.next().unwrap().parse().unwrap();
 
     (x1, y1, x2, y2)
+}
+
+fn write_points(mut x1 : i32, mut y1 : i32, x2 : i32, y2 : i32, map : &mut HashMap<(i32, i32), u32>)
+{
+    let dx = (x2 - x1).signum();
+    let dy = (y2 - y1).signum();
+
+    loop
+    {
+        *map.entry((x1, y1)).or_insert(0) += 1;
+
+        if x1 == x2 && y1 == y2 { break }
+
+        x1 += dx;
+        y1 += dy;
+    }
 }
