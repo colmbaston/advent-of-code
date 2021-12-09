@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{ HashMap, BinaryHeap };
 
 fn main()
 {
@@ -17,14 +17,13 @@ fn main()
     }
     println!("{}", low_points.len() + low_points.into_iter().map(|k| k as usize).sum::<usize>());
 
-    let mut basins = Vec::new();
+    let mut basins = BinaryHeap::new();
     while let Some(&k) = input.keys().next()
     {
         let size = nuke_basin(k, &mut input);
         if size > 0 { basins.push(size) }
     }
-    basins.sort_unstable();
-    println!("{}", basins.into_iter().rev().take(3).product::<usize>());
+    println!("{}", basins.into_iter().take(3).product::<usize>());
 }
 
 fn adjacents((x, y) : (i32, i32)) -> impl Iterator<Item = (i32, i32)>
