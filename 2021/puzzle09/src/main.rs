@@ -7,15 +7,9 @@ fn main()
                                                 .flat_map(|(l, y)| l.bytes().zip(0 ..).map(move |(b, x)| ((x, y), b - b'0')))
                                                 .collect::<HashMap<(i32, i32), u8>>();
 
-    let mut low_points = Vec::new();
-    for (&k, &h) in input.iter()
-    {
-        if adjacents(k).filter_map(|a| input.get(&a)).all(|&g| h < g)
-        {
-            low_points.push(h);
-        }
-    }
-    println!("{}", low_points.len() + low_points.into_iter().map(|k| k as usize).sum::<usize>());
+    println!("{}", input.iter()
+                        .filter_map(|(&k, &h)| adjacents(k).filter_map(|a| input.get(&a)).all(|&g| h < g).then(|| h as usize + 1))
+                        .sum::<usize>());
 
     let mut basins = BinaryHeap::new();
     while let Some(&k) = input.keys().next()
