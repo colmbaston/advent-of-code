@@ -2,28 +2,20 @@ use std::collections::HashMap;
 
 fn main()
 {
-    let input = include_str!("../input.txt").lines()
-                                            .map(|l| l.bytes().map(|b| b - b'0').collect::<Vec<u8>>())
-                                            .collect::<Vec<Vec<u8>>>();
+    let mut input = include_str!("../input.txt").lines()
+                                                .zip(0 ..)
+                                                .flat_map(|(l, y)| l.bytes().zip(0 ..).map(move |(b, x)| ((x, y), b - b'0')))
+                                                .collect::<HashMap<(i32, i32), u8>>();
 
     let mut low_points = Vec::new();
-    for i in 0 .. input.len()
+    for (&k, &h) in input.iter()
     {
-        for j in 0 .. input[0].len()
+        if adjacents(k).filter_map(|a| input.get(&a)).all(|&g| h < g)
         {
-            let h = input[i][j];
-            if adjacents((i, j)).filter_map(|(x, y)| input.get(x).and_then(|v| v.get(y))).all(|&g| h < g)
-            {
-                low_points.push(h);
-            }
+            low_points.push(h);
         }
     }
-    println!("{}", low_points.iter().map(|&k| k as usize).sum::<usize>() + low_points.len());
-
-    let mut input = input.into_iter()
-                         .enumerate()
-                         .flat_map(|(y, v)| v.into_iter().enumerate().map(move |(x, b)| ((x, y), b)))
-                         .collect::<HashMap<(usize, usize), u8>>();
+    println!("{}", low_points.len() + low_points.into_iter().map(|k| k as usize).sum::<usize>());
 
     let mut basins = Vec::new();
     while let Some(&k) = input.keys().next()
@@ -35,12 +27,12 @@ fn main()
     println!("{}", basins.into_iter().rev().take(3).product::<usize>());
 }
 
-fn adjacents((x, y) : (usize, usize)) -> impl Iterator<Item = (usize, usize)>
+fn adjacents((x, y) : (i32, i32)) -> impl Iterator<Item = (i32, i32)>
 {
-    vec![(x.wrapping_sub(1), y), (x+1, y), (x, y.wrapping_sub(1)), (x, y+1)].into_iter()
+    vec![(x-1, y), (x+1, y), (x, y-1), (x, y+1)].into_iter()
 }
 
-fn nuke_basin(k : (usize, usize), cave : &mut HashMap<(usize, usize), u8>) -> usize
+fn nuke_basin(k : (i32, i32), cave : &mut HashMap<(i32, i32), u8>) -> usize
 {
     match cave.remove(&k)
     {
