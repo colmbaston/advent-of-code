@@ -23,7 +23,7 @@ fn main()
         let size = nuke_basin(k, &mut input);
         if size > 0 { basins.push(size) }
     }
-    println!("{}", basins.into_iter().take(3).product::<usize>());
+    println!("{}", (0 .. 3).map(|_| basins.pop().unwrap_or(1)).product::<usize>());
 }
 
 fn adjacents((x, y) : (i32, i32)) -> impl Iterator<Item = (i32, i32)>
