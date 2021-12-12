@@ -6,11 +6,13 @@ fn main()
         fish[i] += 1;
     }
 
+    let mut p = 0;
     for g in 0 .. 256
     {
         if g == 80 { println!("{}", fish.iter().sum::<u64>()) }
-        fish.rotate_left(1);
-        fish[6] += fish[8];
+
+        p = (p + 1) % 9;
+        fish[(p + 6) % 9] += fish[(p + 8) % 9];
     }
     println!("{}", fish.iter().sum::<u64>());
 }
