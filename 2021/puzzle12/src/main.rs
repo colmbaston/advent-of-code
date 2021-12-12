@@ -30,7 +30,7 @@ fn explore<'a>(pos : &'a str, graph : &HashMap<&str, Vec<&str>>, mut visited : H
 {
     if pos == "end" { return 1 }
 
-    if pos.bytes().next().unwrap().is_ascii_lowercase() && !visited.insert(pos)
+    if pos.bytes().all(|b| b.is_ascii_lowercase()) && !visited.insert(pos)
     {
         if small || pos == "start"
         {
@@ -42,7 +42,7 @@ fn explore<'a>(pos : &'a str, graph : &HashMap<&str, Vec<&str>>, mut visited : H
         }
     }
 
-    graph.get(pos).unwrap().iter()
+    graph.get(pos).iter().flat_map(|v| v.iter())
          .map(|q| explore(q, graph, visited.clone(), small))
          .sum()
 }
