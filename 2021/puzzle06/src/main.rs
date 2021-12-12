@@ -11,7 +11,7 @@ fn main()
     {
         if g == 80 { println!("{}", fish.iter().sum::<u64>()) }
 
-        p = (p + 1) % 9;
+        p += 1;
         fish[(p + 6) % 9] += fish[(p + 8) % 9];
     }
     println!("{}", fish.iter().sum::<u64>());
