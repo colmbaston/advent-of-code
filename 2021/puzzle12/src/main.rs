@@ -4,8 +4,8 @@ fn main()
 {
     let input = parse_graph(include_str!("../input.txt"));
 
-    println!("{}", explore("start", &input, HashSet::new(), true ).count());
-    println!("{}", explore("start", &input, HashSet::new(), false).count());
+    println!("{}", explore("start", &input, HashSet::new(), true));
+    println!("{}", explore("start", &input, HashSet::new(), false));
 }
 
 fn parse_graph(s : &str) -> HashMap<&str, Vec<&str>>
@@ -26,15 +26,15 @@ fn parse_graph(s : &str) -> HashMap<&str, Vec<&str>>
     graph
 }
 
-fn explore<'a>(pos : &'a str, graph : &'a HashMap<&'a str, Vec<&'a str>>, mut visited : HashSet<&'a str>, mut small : bool) -> Box<dyn Iterator<Item = Vec<&'a str>> + 'a>
+fn explore<'a>(pos : &'a str, graph : &HashMap<&str, Vec<&str>>, mut visited : HashSet<&'a str>, mut small : bool) -> u32
 {
-    if pos == "end" { return Box::new(std::iter::once(vec![pos])) }
+    if pos == "end" { return 1 }
 
     if pos.bytes().next().unwrap().is_ascii_lowercase() && !visited.insert(pos)
     {
         if small || pos == "start"
         {
-            return Box::new(std::iter::empty());
+            return 0;
         }
         else
         {
@@ -42,7 +42,7 @@ fn explore<'a>(pos : &'a str, graph : &'a HashMap<&'a str, Vec<&'a str>>, mut vi
         }
     }
 
-    Box::new(graph.get(pos).unwrap().iter()
-                  .flat_map(move |q| explore(q, graph, visited.clone(), small))
-                  .map(|mut v| { v.push(pos); v }))
+    graph.get(pos).unwrap().iter()
+         .map(|q| explore(q, graph, visited.clone(), small))
+         .sum()
 }
