@@ -2,16 +2,14 @@ pub mod permutations
 {
     pub struct Permutations<T>
     {
-        data:   Option<Vec<T>>,
-        output: Option<Vec<T>>
+        data: Option<Vec<T>>
     }
 
     impl<T : Ord> Permutations<T>
     {
         pub fn new(values : impl Iterator<Item = T>) -> Permutations<T>
         {
-            let data = Some(values.collect());
-            Permutations { data, output: None }
+            Permutations{ data: Some(values.collect()) }
         }
     }
 
@@ -21,10 +19,10 @@ pub mod permutations
 
         fn next(&mut self) -> Option<Vec<T>>
         {
+            let output = self.data.clone();
+
             if let Some(data) = &mut self.data
             {
-                self.output = Some(data.clone());
-
                 match data.windows(2).enumerate().rev().find(|(_, w)| w[0] < w[1])
                 {
                     None         => self.data = None,
@@ -38,7 +36,7 @@ pub mod permutations
                 }
             }
 
-            self.output.take()
+            output
         }
     }
 }
