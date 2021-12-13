@@ -1,8 +1,37 @@
-stages:
-  - build
+image:  rust:latest
+stages: [test]
 
-rust-latest:
-  stage: build
-  image: rust:latest
+test_2015:
+  stage: test
   script:
-  - ./check.sh all
+  - cd 2015
+  - cargo build --release --target-dir target
+  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle"); do target/release/$PUZZLE; done)
+
+test_2018:
+  stage: test
+  script:
+  - cd 2018
+  - cargo build --release --target-dir target
+  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle"); do target/release/$PUZZLE; done)
+
+test_2019:
+  stage: test
+  script:
+  - cd 2019
+  - cargo build --release --target-dir target
+  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle"); do target/release/$PUZZLE; done)
+
+test_2020:
+  stage: test
+  script:
+  - cd 2020
+  - cargo build --release --target-dir target
+  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle"); do target/release/$PUZZLE; done)
+
+test_2021:
+  stage: test
+  script:
+  - cd 2021
+  - cargo build --release --target-dir target
+  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle"); do target/release/$PUZZLE; done)
