@@ -9,6 +9,6 @@ Each puzzle's binary (with a few exceptions):
 * parses the puzzle input from a file called `input.txt` placed in the crate's root directory.
 
 A Bash script [`check.sh`](check.sh) is provided to compile and run all puzzle solutions for a given year, checking their output against that year's `answers.txt` file.
-Call the script with the desired year, for example `./check.sh 2015`, or `./check.sh clean` to call `cargo clean` in each year's directory.
+Call the script with the desired year, for example `./check.sh 2015`, `./check.sh all` for all years, or `./check.sh clean` to call `cargo clean` in each year's directory.
 
 ![2018/puzzle17](animation.gif)
