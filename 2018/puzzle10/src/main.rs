@@ -4,14 +4,14 @@ fn main()
 {
     let mut points = include_str!("../input.txt").lines().map(Point::parse).collect::<Vec<_>>();
 
-    let mut last_rect = bounding_rect(points.iter());
+    let mut last_rect = aoc::bounds::bounds_2d(points.iter().map(|p| &p.position)).unwrap();
     let mut last_area = rect_area(&last_rect);
 
     // simulate until the area of the bounding rectangle stops contracting
     for step in 0 ..
     {
         points.iter_mut().for_each(Point::step_forwards);
-        let rect = bounding_rect(points.iter());
+        let rect = aoc::bounds::bounds_2d(points.iter().map(|p| &p.position)).unwrap();
         let area = rect_area(&rect);
 
         if area > last_area
@@ -59,10 +59,10 @@ impl Point
             s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or_else(|| s.len()))
         }
 
-        let (px, s) = span_integer(&s[10..].trim_start());
-        let (py, s) = span_integer(&s[ 2..].trim_start());
-        let (vx, s) = span_integer(&s[12..].trim_start());
-        let (vy, _) = span_integer(&s[ 2..].trim_start());
+        let (px, s) = span_integer(s[10..].trim_start());
+        let (py, s) = span_integer(s[ 2..].trim_start());
+        let (vx, s) = span_integer(s[12..].trim_start());
+        let (vy, _) = span_integer(s[ 2..].trim_start());
 
         Point
         {
@@ -86,15 +86,6 @@ impl Point
         *px -= *vx;
         *py -= *vy;
     }
-}
-
-fn bounding_rect<'a>(points : impl Iterator<Item = &'a Point>) -> (i64, i64, i64, i64)
-{
-    points.fold((i64::MAX, i64::MAX, i64::MIN, i64::MIN), |(min_x, min_y, max_x, max_y), p|
-    {
-        let (px, py) = p.position;
-        (min_x.min(px), min_y.min(py), max_x.max(px), max_y.max(py))
-    })
 }
 
 fn rect_area((min_x, min_y, max_x, max_y) : &(i64, i64, i64, i64)) -> u64

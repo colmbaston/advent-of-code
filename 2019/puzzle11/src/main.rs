@@ -32,22 +32,20 @@ fn main()
         if *init
         {
             canvas.retain(|_, v| *v);
-            let (min_x, min_y, max_x, max_y) = canvas.keys().fold((i64::MAX, i64::MAX, i64::MIN, i64::MIN), |(min_x, min_y, max_x, max_y), &(x, y)|
+            if let Some((min_x, min_y, max_x, max_y)) = aoc::bounds::bounds_2d(canvas.keys())
             {
-                (min_x.min(x), min_y.min(y), max_x.max(x), max_y.max(y))
-            });
-
-            println!();
-            for y in min_y ..= max_y
-            {
-                print!(" ");
-                for x in min_x ..= max_x
+                println!();
+                for y in min_y ..= max_y
                 {
-                    print!("{}", if canvas.contains_key(&(x, y)) { '#' } else { ' ' });
+                    print!(" ");
+                    for x in min_x ..= max_x
+                    {
+                        print!("{}", if canvas.contains_key(&(x, y)) { '#' } else { ' ' });
+                    }
+                    println!();
                 }
                 println!();
             }
-            println!();
         }
         else
         {

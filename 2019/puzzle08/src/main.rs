@@ -1,7 +1,6 @@
 fn main()
 {
-    let input = include_str!("../input.txt");
-    let layers : Vec<&[u8]> = input.trim_end().as_bytes().chunks(25 * 6).collect();
+    let layers : Vec<&[u8]> = include_str!("../input.txt").trim_end().as_bytes().chunks(25 * 6).collect();
 
     let count = |b : u8, bs : &[u8]| bs.iter().fold(0, |a, &x| a + (x == b) as u32);
     let layer = layers.iter().min_by_key(|bs| count(b'0', bs)).unwrap();
@@ -24,6 +23,14 @@ fn decode_image(layers : &[&[u8]])
     }
 
     println!();
-    image.iter().for_each(|a| { print!(" "); a.iter().for_each(|b| print!("{}", if *b == b'0' { ' ' } else { '#' })); println!() });
+    for a in image.iter()
+    {
+        print!(" ");
+        for &b in a.iter()
+        {
+            print!("{}", if b == b'0' { ' ' } else { '#' });
+        }
+        println!();
+    }
     println!();
 }
