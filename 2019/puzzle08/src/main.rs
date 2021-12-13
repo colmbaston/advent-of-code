@@ -22,15 +22,12 @@ fn decode_image(layers : &[&[u8]])
         }
     }
 
-    println!();
     for a in image.iter()
     {
-        print!(" ");
         for &b in a.iter()
         {
             print!("{}", if b == b'0' { ' ' } else { '#' });
         }
         println!();
     }
-    println!();
 }

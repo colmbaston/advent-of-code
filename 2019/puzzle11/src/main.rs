@@ -34,17 +34,14 @@ fn main()
             canvas.retain(|_, v| *v);
             if let Some((min_x, min_y, max_x, max_y)) = aoc::bounds::bounds_2d(canvas.keys())
             {
-                println!();
                 for y in min_y ..= max_y
                 {
-                    print!(" ");
                     for x in min_x ..= max_x
                     {
                         print!("{}", if canvas.contains_key(&(x, y)) { '#' } else { ' ' });
                     }
                     println!();
                 }
-                println!();
             }
         }
         else

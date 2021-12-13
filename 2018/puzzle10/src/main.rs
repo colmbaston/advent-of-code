@@ -22,17 +22,15 @@ fn main()
             // part 1: display the state of area inside the bounding rectangle
             let (min_x, min_y, max_x, max_y) = last_rect;
             let canvas = points.into_iter().map(|p| p.position).collect::<HashSet<(i64, i64)>>();
-            println!();
+
             for y in min_y ..= max_y
             {
-                print!(" ");
                 for x in min_x ..= max_x
                 {
                     print!("{}", if canvas.contains(&(x, y)) { '#' } else { ' ' });
                 }
                 println!();
             }
-            println!();
 
             // part 2: print which step it was
             println!("{}", step);

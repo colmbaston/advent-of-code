@@ -19,17 +19,14 @@ fn main()
 
     if let Some((min_x, min_y, max_x, max_y)) = aoc::bounds::bounds_2d(points.iter())
     {
-        println!();
         for y in min_y ..= max_y
         {
-            print!(" ");
             for x in min_x ..= max_x
             {
                 print!("{}", if points.contains(&(x, y)) { '#' } else { ' ' });
             }
             println!();
         }
-        println!();
     }
 }
 
