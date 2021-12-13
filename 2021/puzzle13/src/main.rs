@@ -2,13 +2,11 @@ use std::collections::HashSet;
 
 fn main()
 {
-
     let (mut points, folds) = parse(include_str!("../input.txt"));
     let mut next = HashSet::new();
 
     for (i, (fx, k)) in folds.into_iter().enumerate()
     {
-        next.clear();
         for (x, y) in points.drain()
         {
             next.insert((if  fx && x > k { k+k-x } else { x },
