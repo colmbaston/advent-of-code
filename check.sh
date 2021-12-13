@@ -25,18 +25,20 @@ check()
   rm -f output.txt
   cargo build --release --target-dir target
 
-  if [ $? -eq 0 ];
+  if [ $? -ne 0 ];
   then
-    time (for PUZZLE in $(ls | grep "^puzzle")
-    do
-      printf $COLOUR1
-      target/release/$PUZZLE | tee -a output.txt
-      TEMP=$COLOUR1
-      COLOUR1=$COLOUR2
-      COLOUR2=$TEMP
-    done
-    printf "\e[0m")
+    exit 1
   fi
+
+  time (for PUZZLE in $(ls | grep "^puzzle")
+  do
+    printf $COLOUR1
+    target/release/$PUZZLE | tee -a output.txt
+    TEMP=$COLOUR1
+    COLOUR1=$COLOUR2
+    COLOUR2=$TEMP
+  done
+  printf "\e[0m")
 
   diff -w --color answers.txt output.txt
   rm -f output.txt
