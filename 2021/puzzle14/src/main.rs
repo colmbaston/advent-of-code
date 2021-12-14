@@ -4,9 +4,9 @@ fn main()
 {
     let (first, last, mut polymer, rules) = parse_polymer(include_str!("../input.txt"));
 
-    for i in [10, 30].into_iter()
+    for i in [0 .. 10, 10 .. 40].into_iter()
     {
-        for _ in 0 .. i
+        for _ in i
         {
             polymer = react(&polymer, &rules);
         }
@@ -58,13 +58,14 @@ fn react(polymer : &Polymer, rules : &Rules) -> Polymer
 
     for (&(a, b), &c) in rules.iter()
     {
-        if let Some(freq) = next.get_mut(&(a, b))
+        if let Some(k) = polymer.get(&(a, b))
         {
-            let k = *polymer.get(&(a, b)).unwrap_or(&0);
-
-            *freq                            -= k;
-            *next.entry((a, c)).or_insert(0) += k;
-            *next.entry((c, b)).or_insert(0) += k;
+            if let Some(freq) = next.get_mut(&(a, b))
+            {
+                *freq                            -= k;
+                *next.entry((a, c)).or_insert(0) += k;
+                *next.entry((c, b)).or_insert(0) += k;
+            }
         }
     }
 
