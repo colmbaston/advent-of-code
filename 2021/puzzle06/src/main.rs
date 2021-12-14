@@ -6,8 +6,9 @@ fn main()
         fish[i] += 1;
     }
 
-    for p in  0 ..  80 { fish[(p + 7) % 9] += fish[p % 9] }
-    println!("{}", fish.iter().sum::<u64>());
-    for p in 80 .. 256 { fish[(p + 7) % 9] += fish[p % 9] }
-    println!("{}", fish.iter().sum::<u64>());
+    for i in [0 .. 80, 80 .. 256].into_iter()
+    {
+        for p in i { fish[(p + 7) % 9] += fish[p % 9] }
+        println!("{}", fish.iter().sum::<u64>());
+    }
 }
