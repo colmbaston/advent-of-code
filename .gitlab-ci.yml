@@ -6,7 +6,7 @@ test_2015:
   script:
   - cd 2015
   - cargo build --release --target-dir target
-  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
+  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
     do
       echo "$PUZZLE:";
       target/release/$PUZZLE | sed 's/^/  /';
@@ -17,7 +17,7 @@ test_2018:
   script:
   - cd 2018
   - cargo build --release --target-dir target
-  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
+  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
     do
       echo "$PUZZLE:";
       target/release/$PUZZLE | sed 's/^/  /';
@@ -28,7 +28,7 @@ test_2019:
   script:
   - cd 2019
   - cargo build --release --target-dir target
-  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
+  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
     do
       echo "$PUZZLE:";
       target/release/$PUZZLE | sed 's/^/  /';
@@ -39,7 +39,7 @@ test_2020:
   script:
   - cd 2020
   - cargo build --release --target-dir target
-  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
+  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
     do
       echo "$PUZZLE:";
       target/release/$PUZZLE | sed 's/^/  /';
@@ -50,7 +50,7 @@ test_2021:
   script:
   - cd 2021
   - cargo build --release --target-dir target
-  - diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
+  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
     do
       echo "$PUZZLE:";
       target/release/$PUZZLE | sed 's/^/  /';

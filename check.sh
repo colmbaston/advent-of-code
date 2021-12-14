@@ -40,7 +40,7 @@ check()
     exit 1
   fi
 
-  diff -w --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle")
+  diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle")
   do
     (echo "$PUZZLE:"; target/release/$PUZZLE | sed 's/^/  /') | tee /dev/tty
   done)
