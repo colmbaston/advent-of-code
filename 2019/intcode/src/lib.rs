@@ -64,7 +64,7 @@ fn decode(i : i64) -> (i64, Vec<u8>)
     let opcode = i % 100;
     let mut k  = i / 100;
 
-    let args  = match opcode { 1 => 3, 2 => 3, 3 => 1, 4 => 1, 5 => 2, 6 => 2, 7 => 3, 8 => 3, 9 => 1, _ => 0 };
+    let args  = match opcode { 3 | 4 | 9 => 1, 5 | 6 => 2, 1 | 2 | 7 | 8 => 3, _ => 0 };
     let modes = (0 .. args).map(|_| if k == 0 { 0 } else { let m = k % 10 ; k /= 10; m as u8 }).collect();
 
     (opcode, modes)

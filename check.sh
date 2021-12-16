@@ -12,7 +12,7 @@ if [ $1 == "clean" ]
 then
   for YEAR in $(ls | grep "^20")
   do
-    (cd $YEAR; cargo clean)
+    (cd $YEAR; cargo clean --target-dir target)
   done
   exit
 fi
