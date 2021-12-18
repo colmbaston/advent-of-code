@@ -48,11 +48,11 @@ check()
 
 if [ $1 == "all" ]
 then
-  for YEAR in $(ls | grep "20")
+  for YEAR in $(ls | grep "^20")
   do
     (check $YEAR)
   done
   exit
 else
-  check $1
+  (check $1)
 fi
