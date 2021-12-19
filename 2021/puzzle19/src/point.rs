@@ -3,9 +3,9 @@ use std::ops::{ Add, Sub };
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Point
 {
-    pub x: i32,
-    pub y: i32,
-    pub z: i32
+    x: i32,
+    y: i32,
+    z: i32
 }
 
 #[derive(Clone, Copy)]
@@ -53,6 +53,11 @@ impl Point
             y: i.next().unwrap().parse().unwrap(),
             z: i.next().unwrap().parse().unwrap()
         }
+    }
+
+    pub fn origin() -> Point
+    {
+        Point { x: 0, y: 0, z: 0 }
     }
 
     pub fn manhattan(&self, other : &Point) -> i32

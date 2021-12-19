@@ -50,7 +50,7 @@ fn intersect(a : &[Point], b : &[Point]) -> Option<(Rotation, Point)>
 
 fn reconstruct_map(i : usize, visited : &mut HashSet<usize>, input : &[Vec<Point>]) -> (Vec<Point>, HashSet<Point>)
 {
-    let mut scanners = vec![Point { x: 0, y: 0, z: 0 }];
+    let mut scanners = vec![Point::origin()];
     let mut beacons  = input[i].iter().cloned().collect::<HashSet<Point>>();
 
     visited.insert(i);
