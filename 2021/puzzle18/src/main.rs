@@ -2,13 +2,13 @@ use std::ops::Add;
 
 fn main()
 {
-    let input = include_str!("../input.txt").lines().map(|mut s| NumberPair::parse(&mut s)).collect::<Vec<NumberPair>>();
+    let input = include_str!("../input.txt").lines().map(|mut s| Tree::parse(&mut s)).collect::<Vec<Tree>>();
 
     let mut sum;
     let mut sum_ref = &input[0];
-    for n in input.iter().skip(1)
+    for t in input.iter().skip(1)
     {
-        sum     = sum_ref + n;
+        sum     =  sum_ref + t;
         sum_ref = &sum;
     }
     println!("{}", sum_ref.magnitude());
@@ -25,50 +25,54 @@ fn main()
 }
 
 #[derive(Clone)]
-struct NumberPair
+enum Tree
 {
-    left  : NumberField,
-    right : NumberField
+    Leaf(u32),
+    Node(Box<Tree>, Box<Tree>)
 }
 
-#[derive(Clone)]
-enum NumberField
+impl Add for &Tree
 {
-    Regular(u32),
-    Nested(Box<NumberPair>)
-}
+    type Output = Tree;
 
-impl Add for &NumberPair
-{
-    type Output = NumberPair;
-
-    fn add(self, other : &NumberPair) -> NumberPair
+    fn add(self, other : &Tree) -> Tree
     {
-        let left    = NumberField::Nested(Box::new(self.clone()));
-        let right   = NumberField::Nested(Box::new(other.clone()));
-        let mut sum = NumberPair { left, right };
-
+        let mut sum = Tree::Node(Box::new(self.clone()), Box::new(other.clone()));
         sum.reduce();
         sum
     }
 }
 
-impl NumberPair
+impl Tree
 {
-    fn parse(s : &mut &str) -> NumberPair
+    fn parse(s : &mut &str) -> Tree
     {
-        *s        = s.strip_prefix('[').unwrap();
-        let left  = NumberField::parse(s);
-        *s        = s.strip_prefix(',').unwrap();
-        let right = NumberField::parse(s);
-        *s        = s.strip_prefix(']').unwrap();
+        let (a, b) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap());
+        *s         = b;
 
-        NumberPair { left, right }
+        if a.is_empty()
+        {
+            *s        = s.strip_prefix('[').unwrap();
+            let left  = Tree::parse(s);
+            *s        = s.strip_prefix(',').unwrap();
+            let right = Tree::parse(s);
+            *s        = s.strip_prefix(']').unwrap();
+
+            Tree::Node(Box::new(left), Box::new(right))
+        }
+        else
+        {
+            Tree::Leaf(a.parse().unwrap())
+        }
     }
 
     fn magnitude(&self) -> u32
     {
-        3 * self.left.magnitude() + 2 * self.right.magnitude()
+        match self
+        {
+            Tree::Leaf(k)    => *k,
+            Tree::Node(l, r) => 3 * l.magnitude() + 2 * r.magnitude()
+        }
     }
 
     fn reduce(&mut self)
@@ -81,86 +85,45 @@ impl NumberPair
 
     fn explode(&mut self, depth : u8) -> Option<(Option<u32>, Option<u32>)>
     {
-        if depth == 4
+        match self
         {
-            Some((Some(self.left.magnitude()), Some(self.right.magnitude())))
-        }
-        else
-        {
-            match self.left.explode(depth+1)
+            Tree::Leaf(_)    => None,
+            Tree::Node(l, r) =>
             {
-                Some((ml, mr)) =>
+                if depth == 4
                 {
-                    if ml.is_some() && mr.is_some() {  self.left = NumberField::Regular(0) }
-                    if let Some(r) = mr             { *self.right.leftmost() += r          }
-
-                    Some((ml, None))
+                    Some((Some(l.magnitude()), Some(r.magnitude())))
                 }
-                None => self.right.explode(depth+1).map(|(ml, mr)|
+                else
                 {
-                    if ml.is_some() && mr.is_some() {  self.right = NumberField::Regular(0) }
-                    if let Some(l) = ml             { *self.left.rightmost() += l           }
+                    match l.explode(depth+1)
+                    {
+                        Some((ml, mr)) =>
+                        {
+                            if ml.is_some() && mr.is_some() { **l = Tree::Leaf(0) }
+                            if let Some(k) = mr             { *r.leftmost() += k  }
 
-                    (None, mr)
-                })
+                            Some((ml, None))
+                        }
+                        None => r.explode(depth+1).map(|(ml, mr)|
+                        {
+                            if ml.is_some() && mr.is_some() { **r = Tree::Leaf(0) }
+                            if let Some(k) = ml             { *l.rightmost() += k }
+
+                            (None, mr)
+                        })
+                    }
+                }
             }
         }
     }
 
     fn leftmost(&mut self) -> &mut u32
     {
-        self.left.leftmost()
-    }
-
-    fn rightmost(&mut self) -> &mut u32
-    {
-        self.right.rightmost()
-    }
-
-    fn split(&mut self) -> bool
-    {
-        self.left.split() || self.right.split()
-    }
-}
-
-impl NumberField
-{
-    fn parse(s : &mut &str) -> NumberField
-    {
-        let (a, b) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap());
-        *s         = b;
-
-        match a
-        {
-            "" => NumberField::Nested(Box::new(NumberPair::parse(s))),
-            _  => NumberField::Regular(a.parse().unwrap())
-        }
-    }
-
-    fn magnitude(&self) -> u32
-    {
         match self
         {
-            NumberField::Regular(r) => *r,
-            NumberField::Nested(p)  => p.magnitude()
-        }
-    }
-
-    fn explode(&mut self, depth : u8) -> Option<(Option<u32>, Option<u32>)>
-    {
-        match self
-        {
-            NumberField::Regular(_) => None,
-            NumberField::Nested(p)  => p.explode(depth)
-        }
-    }
-
-    fn leftmost(&mut self) -> &mut u32
-    {
-        match self
-        {
-            NumberField::Regular(r) => r,
-            NumberField::Nested(p)  => p.leftmost()
+            Tree::Leaf(k)    => k,
+            Tree::Node(l, _) => l.leftmost()
         }
     }
 
@@ -168,8 +131,8 @@ impl NumberField
     {
         match self
         {
-            NumberField::Regular(r) => r,
-            NumberField::Nested(p)  => p.rightmost()
+            Tree::Leaf(k)    => k,
+            Tree::Node(_, r) => r.rightmost()
         }
     }
 
@@ -177,16 +140,13 @@ impl NumberField
     {
         match self
         {
-            NumberField::Regular(r) => *r >= 10 &&
+            Tree::Leaf(k) => *k >= 10 &&
             {
-                let q     = *r / 2;
-                let left  = NumberField::Regular(q);
-                let right = NumberField::Regular(*r - q);
-                *self     = NumberField::Nested(Box::new(NumberPair { left, right }));
-
+                let q = *k / 2;
+                *self = Tree::Node(Box::new(Tree::Leaf(q)), Box::new(Tree::Leaf(*k - q)));
                 true
             },
-            NumberField::Nested(p) => p.split()
+            Tree::Node(l, r) => l.split() || r.split()
         }
     }
 }
