@@ -1,6 +1,6 @@
 mod point;
 use point::{ Point, Rotation };
-use std::collections::HashSet;
+use std::collections::{ HashSet, HashMap };
 
 fn main()
 {
@@ -28,14 +28,16 @@ fn intersect(a : &[Point], b : &[Point]) -> Option<(Rotation, Point)>
 
     for rot in Point::rotations()
     {
-        let b = b.iter().map(|&p| p.rotate(rot)).collect::<Vec<Point>>();
-
-        for pa in a.iter()
+        let mut hist = HashMap::new();
+        for pb in b.iter().map(|p| p.rotate(rot))
         {
-            for pb in b.iter()
+            for pa in a.iter()
             {
-                let offset = pa - pb;
-                if THRESHOLD <= b.iter().filter(|&pt| a.contains(&(pt + &offset))).count()
+                let offset = pa - &pb;
+                let entry  = hist.entry(offset).or_insert(0);
+
+                *entry += 1;
+                if THRESHOLD <= *entry
                 {
                     return Some((rot, offset))
                 }
