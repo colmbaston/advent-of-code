@@ -8,8 +8,7 @@ fn main()
                                                         .map(parse_tile)
                                                         .collect::<HashMap<_, _>>());
 
-    let &(min_x, min_y) = image.keys().min().unwrap();
-    let &(max_x, max_y) = image.keys().max().unwrap();
+    let (min_x, min_y, max_x, max_y) = aoc::bounds::bounds_2d(image.keys()).unwrap();
     println!("{}", image.get(&(min_x, min_y)).unwrap().0
                  * image.get(&(min_x, max_y)).unwrap().0
                  * image.get(&(max_x, min_y)).unwrap().0
