@@ -15,27 +15,8 @@ fn main()
         }
     }
 
-    let mut one_wins  = 0;
-    let mut two_wins  = 0;
-    let mut universes = HashMap::new();
-    universes.insert(input, 1u64);
-    while let Some(state) = universes.keys().cloned().next()
-    {
-        let count = universes.remove(&state).unwrap();
-        for (roll, freq) in [(3, 1), (4, 3), (5, 6), (6, 7), (7, 6), (8, 3), (9, 1)].into_iter()
-        {
-            let mut state = state.clone();
-            let k = if state.step(roll) >= 21
-            {
-                if state.turn { &mut one_wins } else { &mut two_wins }
-            }
-            else
-            {
-                universes.entry(state).or_insert(0)
-            };
-            *k += count * freq;
-        }
-    }
+    let mut cache            = HashMap::new();
+    let (one_wins, two_wins) = quantum(input, &mut cache);
     println!("{}", one_wins.max(two_wins));
 }
 
@@ -89,5 +70,36 @@ impl IndexMut<bool> for State
     fn index_mut(&mut self, i : bool) -> &mut (u8, u32)
     {
         if i { &mut self.player_one } else { &mut self.player_two }
+    }
+}
+
+fn quantum(state : State, cache : &mut HashMap<State, (u64, u64)>) -> (u64, u64)
+{
+    match cache.get(&state)
+    {
+        Some(&scores) => scores,
+        None          =>
+        {
+            let mut one_wins = 0;
+            let mut two_wins = 0;
+            for (roll, freq) in [(3, 1), (4, 3), (5, 6), (6, 7), (7, 6), (8, 3), (9, 1)].into_iter()
+            {
+                let mut state = state.clone();
+                if state.step(roll) >= 21
+                {
+                    if state.turn { one_wins += freq } else { two_wins += freq }
+                }
+                else
+                {
+                    let (a, b) = quantum(state, cache);
+                    one_wins  += a * freq;
+                    two_wins  += b * freq;
+                }
+            }
+
+            let scores = (one_wins, two_wins);
+            cache.insert(state, scores);
+            scores
+        }
     }
 }
