@@ -4,8 +4,10 @@ fn main()
 {
     let input = include_str!("../input.txt").lines().map(Inst::parse).collect::<Vec<Inst>>();
 
-    println!("{}", reverse_digits(search(&input, 0, [0 ; 4], (1 ..= 9).rev(), &mut HashMap::new()).unwrap()));
-    println!("{}", reverse_digits(search(&input, 0, [0 ; 4],  1 ..= 9,        &mut HashMap::new()).unwrap()));
+    let mut cache = HashMap::new();
+    println!("{}", reverse_digits(search(&input, 0, [0 ; 4], (1 ..= 9).rev(), &mut cache).unwrap()));
+    cache.clear();
+    println!("{}", reverse_digits(search(&input, 0, [0 ; 4],  1 ..= 9,        &mut cache).unwrap()));
 }
 
 enum Inst
