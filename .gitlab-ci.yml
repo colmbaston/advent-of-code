@@ -12,6 +12,28 @@ test_2015:
       target/release/$PUZZLE | sed 's/^/  /';
     done)
 
+test_2016:
+  stage: test
+  script:
+  - cd 2016
+  - cargo build --release --target-dir target
+  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
+    do
+      echo "$PUZZLE:";
+      target/release/$PUZZLE | sed 's/^/  /';
+    done)
+
+test_2017:
+  stage: test
+  script:
+  - cd 2017
+  - cargo build --release --target-dir target
+  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
+    do
+      echo "$PUZZLE:";
+      target/release/$PUZZLE | sed 's/^/  /';
+    done)
+
 test_2018:
   stage: test
   script:
