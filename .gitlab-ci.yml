@@ -2,78 +2,33 @@ image:  rust:latest
 stages: [test]
 
 test_2015:
-  stage: test
-  script:
-  - cd 2015
-  - cargo build --release --target-dir target
-  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
-    do
-      echo "$PUZZLE:";
-      target/release/$PUZZLE | sed 's/^/  /';
-    done)
+  stage:  test
+  script: bash ./check.sh 2015
 
 test_2016:
-  stage: test
-  script:
-  - cd 2016
-  - cargo build --release --target-dir target
-  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
-    do
-      echo "$PUZZLE:";
-      target/release/$PUZZLE | sed 's/^/  /';
-    done)
+  stage:  test
+  script: bash ./check.sh 2016
 
 test_2017:
-  stage: test
-  script:
-  - cd 2017
-  - cargo build --release --target-dir target
-  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
-    do
-      echo "$PUZZLE:";
-      target/release/$PUZZLE | sed 's/^/  /';
-    done)
+  stage:  test
+  script: bash ./check.sh 2017
 
 test_2018:
-  stage: test
-  script:
-  - cd 2018
-  - cargo build --release --target-dir target
-  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
-    do
-      echo "$PUZZLE:";
-      target/release/$PUZZLE | sed 's/^/  /';
-    done)
+  stage:  test
+  script: bash ./check.sh 2018
 
 test_2019:
-  stage: test
-  script:
-  - cd 2019
-  - cargo build --release --target-dir target
-  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
-    do
-      echo "$PUZZLE:";
-      target/release/$PUZZLE | sed 's/^/  /';
-    done)
+  stage:  test
+  script: bash ./check.sh 2019
 
 test_2020:
-  stage: test
-  script:
-  - cd 2020
-  - cargo build --release --target-dir target
-  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
-    do
-      echo "$PUZZLE:";
-      target/release/$PUZZLE | sed 's/^/  /';
-    done)
+  stage:  test
+  script: bash ./check.sh 2020
 
 test_2021:
-  stage: test
-  script:
-  - cd 2021
-  - cargo build --release --target-dir target
-  - diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle");
-    do
-      echo "$PUZZLE:";
-      target/release/$PUZZLE | sed 's/^/  /';
-    done)
+  stage:  test
+  script: bash ./check.sh 2021
+
+test_2022:
+  stage:  test
+  script: bash ./check.sh 2022

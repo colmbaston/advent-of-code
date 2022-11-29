@@ -40,19 +40,21 @@ check()
     exit 1
   fi
 
-  diff -w -u --color answers.txt <(for PUZZLE in $(ls | grep "^puzzle")
+  (for puzzle in $(ls | grep "^puzzle")
   do
-    (echo "$PUZZLE:"; target/release/$PUZZLE | sed 's/^/  /') | tee /dev/tty
-  done)
+    echo "$puzzle:"
+    target/release/$puzzle | sed '/Hello, world!/d; s/^/  /'
+  done) | tee output.txt
+
+  diff -Z -U 999 --color answers.txt output.txt
 }
 
 if [ $1 == "all" ]
 then
-  for YEAR in $(ls | grep "^20")
+  for year in $(ls | grep "^20")
   do
-    (check $YEAR)
+    (check $year)
   done
-  exit
 else
   (check $1)
 fi
