@@ -38,17 +38,16 @@ fn mark(n : u32, board : &mut Board) -> Option<u32>
 {
     for (i, (k, m)) in board.iter_mut().enumerate()
     {
-        if n == *k
+        if !*m && n == *k
         {
-            if *m { break }
             *m = true;
 
-            let row     = i / 5;
-            let col     = i % 5;
-            let row_won = (0 .. 5).map(|o| 5*row + o).all(|j| board[j].1);
-            let col_won = (0 .. 5).map(|o| 5*o + col).all(|j| board[j].1);
+            let row = i / 5;
+            let col = i % 5;
+            let won = (0 .. 5).map(|o| 5*row + o).all(|j| board[j].1)
+                   || (0 .. 5).map(|o| 5*o + col).all(|j| board[j].1);
 
-            return (row_won || col_won).then(|| n * board.iter().filter_map(|(k, m)| (!m).then(|| k)).sum::<u32>())
+            return won.then(|| n * board.iter().filter_map(|(k, m)| (!m).then_some(k)).sum::<u32>())
         }
     }
 

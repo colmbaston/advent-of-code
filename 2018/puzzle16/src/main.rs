@@ -38,7 +38,7 @@ fn main()
 
     // if there is only one possibility left for a value, eliminate
     // it at as a possibility for the rest of the values
-    let mut opcodes : [OpCode ; 16] = unsafe { std::mem::MaybeUninit::uninit().assume_init() };
+    let mut opcodes : [OpCode ; 16] = [OpCode::ADDR ; 16];
     for _ in 0 .. 16
     {
         match possibilities.iter().enumerate().find(|(_, s)| s.len() == 1)
