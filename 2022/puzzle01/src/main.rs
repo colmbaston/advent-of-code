@@ -1,10 +1,11 @@
+use std::collections::BinaryHeap;
+
 fn main()
 {
-    let mut elves = include_str!("../input.txt").split("\n\n")
-                                                .map(|e| e.lines().map(|l| l.parse::<u32>().unwrap()).sum())
-                                                .collect::<Vec<u32>>();
+    let mut heap = include_str!("../input.txt").split("\n\n")
+                                               .map(|group| group.lines().map(|l| l.parse::<u32>().unwrap_or(0)).sum())
+                                               .collect::<BinaryHeap<u32>>();
 
-    elves.sort_unstable();
-    println!("{}", elves.last().unwrap());
-    println!("{}", elves.iter().rev().take(3).sum::<u32>());
+    println!("{}", heap.peek().unwrap());
+    println!("{}", std::iter::from_fn(|| heap.pop()).take(3).sum::<u32>());
 }
