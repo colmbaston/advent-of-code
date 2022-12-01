@@ -5,6 +5,6 @@ fn main()
                                                 .collect::<Vec<u32>>();
 
     elves.sort_unstable();
-    println!("{}", elves.iter().last().unwrap());
+    println!("{}", elves.last().unwrap());
     println!("{}", elves.iter().rev().take(3).sum::<u32>());
 }
