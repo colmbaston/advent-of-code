@@ -2,6 +2,8 @@ puzzle01:
   71780
   212489
 puzzle02:
+  11603
+  12725
 puzzle03:
 puzzle04:
 puzzle05:
