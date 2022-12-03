@@ -5,6 +5,8 @@ puzzle02:
   11603
   12725
 puzzle03:
+  7967
+  2716
 puzzle04:
 puzzle05:
 puzzle06:
