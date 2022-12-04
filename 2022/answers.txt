@@ -8,6 +8,8 @@ puzzle03:
   7967
   2716
 puzzle04:
+  464
+  770
 puzzle05:
 puzzle06:
 puzzle07:
