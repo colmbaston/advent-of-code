@@ -2,7 +2,7 @@
 
 if [ $# -ne 1 ]
 then
-  echo "expected argument \$YEAR, \"all\", or \"clean\""
+  echo "expected argument year, \"all\", or \"clean\""
   exit 1
 fi
 
@@ -10,9 +10,9 @@ cd "`dirname \"$0\"`"
 
 if [ $1 == "clean" ]
 then
-  for YEAR in $(ls | grep "^20")
+  for year in $(ls | grep "^20")
   do
-    (cd $YEAR; cargo clean --target-dir target)
+    (cd $year; cargo clean --target-dir target)
   done
   exit
 fi

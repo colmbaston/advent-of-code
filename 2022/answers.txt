@@ -11,6 +11,8 @@ puzzle04:
   464
   770
 puzzle05:
+  BSDMQFLSP
+  PGSQBFLDP
 puzzle06:
 puzzle07:
 puzzle08:
