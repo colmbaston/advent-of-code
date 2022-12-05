@@ -7,18 +7,15 @@ fn main()
     let mut buffer = Vec::new();
     for (count, from, to) in input.next().unwrap_or("").lines().map(parse_instruction)
     {
-        for _ in 0 .. count
+        for (stacks, one) in [&mut stacks_one, &mut stacks_two].iter_mut().zip([true, false])
         {
-            stacks_one.get_mut(from)
-                      .and_then(|s| s.pop())
-                      .and_then(|c| stacks_one.get_mut(to)
-                                              .map(|s| s.push(c)));
+            stacks.get_mut(from)
+                  .map(|s| { let d = s.drain(s.len() - count ..);
+                             if one { buffer.extend(d.rev()) }
+                             else   { buffer.extend(d)       }})
+                  .and_then(|_| stacks.get_mut(to)
+                                      .map(|s| s.append(&mut buffer)));
         }
-
-        stacks_two.get_mut(from)
-                  .map(|s| buffer.extend(std::iter::from_fn(|| s.pop()).take(count)))
-                  .and_then(|_| stacks_two.get_mut(to)
-                                          .map(|s| s.extend(buffer.drain(..).rev())));
     }
 
     for stacks in &[stacks_one, stacks_two]
