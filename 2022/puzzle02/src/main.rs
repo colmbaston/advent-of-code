@@ -5,6 +5,7 @@ fn main()
                                                    {
                                                        let a = (arr[0] - b'A') as i8;
                                                        let b = (arr[2] - b'X') as i8;
+
                                                        (one + score(a, b)               as u32,
                                                         two + score(a, (2 + a + b) % 3) as u32)
                                                    });
