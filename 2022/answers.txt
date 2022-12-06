@@ -14,6 +14,8 @@ puzzle05:
   BSDMQFLSP
   PGSQBFLDP
 puzzle06:
+  1566
+  2265
 puzzle07:
 puzzle08:
 puzzle09:
