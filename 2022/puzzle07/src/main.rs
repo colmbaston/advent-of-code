@@ -5,24 +5,29 @@ fn main()
 
     let mut sizes = Vec::new();
     root.sizes(&mut sizes);
+    let free_space = 70000000 - root.size;
 
-    println!("{}", sizes.iter().copied().filter(|&s| s <= 100000).sum::<u32>());
+    let (one, two) = sizes.into_iter().fold((0, u32::MAX), |(one, two), size|
+    {
+        (if size              <= 100000   { one + size    } else { one },
+         if free_space + size >= 30000000 { two.min(size) } else { two })
+    });
 
-    let unused = 70000000 - root.size;
-    println!("{}", sizes.iter().copied().filter(|&s| unused + s >= 30000000).min().unwrap_or(0));
+    println!("{one}");
+    println!("{two}");
 }
 
 struct Dir
 {
     size:    u32,
-    subtree: Vec<Dir>
+    subdirs: Vec<Dir>
 }
 
 impl Dir
 {
     fn new() -> Dir
     {
-        Dir { size: 0, subtree: Vec::new() }
+        Dir { size: 0, subdirs: Vec::new() }
     }
 
     fn parse_terminal<'a>(&mut self, lines : &mut impl Iterator<Item = &'a str>)
@@ -32,24 +37,25 @@ impl Dir
             None    => return,
             Some(l) =>
             {
-                match l.split_whitespace().collect::<Vec<&str>>()[..]
+                if let Some(comm) = l.strip_prefix("$ ")
                 {
-                    ["$", "cd", dir] => match dir
+                    match comm.strip_prefix("cd ")
                     {
-                        "/"  => (),
-                        ".." => return,
-                        _    =>
+                        None | Some("/") => (),
+                        Some("..")       => return,
+                        Some(_)          =>
                         {
                             let mut subdir = Dir::new();
                             subdir.parse_terminal(lines);
                             self.size += subdir.size;
-                            self.subtree.push(subdir);
+                            self.subdirs.push(subdir);
                         }
-                    },
-                    ["$", "ls"]   => (),
-                    ["dir", _dir] => (),
-                    [size, _file] => self.size += size.parse::<u32>().unwrap_or(0),
-                    _             => unreachable!()
+                    }
+                }
+                else
+                {
+                    let (digits, _) = l.split_at(l.find(|c : char| !c.is_ascii_digit()).unwrap_or(l.len()));
+                    if let Ok(size) = digits.parse::<u32>() { self.size += size }
                 }
             }
         }
@@ -60,6 +66,6 @@ impl Dir
     fn sizes(&self, sizes : &mut Vec<u32>)
     {
         sizes.push(self.size);
-        self.subtree.iter().for_each(|subdir| subdir.sizes(sizes))
+        self.subdirs.iter().for_each(|subdir| subdir.sizes(sizes))
     }
 }
