@@ -17,6 +17,8 @@ puzzle06:
   1566
   2265
 puzzle07:
+  1315285
+  9847279
 puzzle08:
 puzzle09:
 puzzle10:
