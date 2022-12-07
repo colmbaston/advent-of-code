@@ -1,15 +1,26 @@
-use std::collections::HashSet;
+use std::collections::{ HashMap, hash_map::Entry };
 
 fn main()
 {
-    let mut set = HashSet::new();
+    let signal   = include_str!("../input.txt").trim_end().as_bytes();
+    let mut hist = HashMap::new();
     for size in [4, 14]
     {
-        for (window, ix) in include_str!("../input.txt").trim_end().as_bytes().windows(size).zip(size ..)
+        let (init, rest) = signal.split_at(size);
+        hist.clear();
+        for &v in init { *hist.entry(v).or_insert(0) += 1 }
+
+        for ((&exiting, &entering), ix) in signal.iter().zip(rest).zip(size ..)
         {
-            set.clear();
-            set.extend(window.iter().copied());
-            if set.len() == window.len() { println!("{ix}"); break }
+            if hist.len() == size { println!("{ix}"); break }
+
+            *hist.entry(entering).or_insert(0) += 1;
+
+            if let Entry::Occupied(mut e) = hist.entry(exiting)
+            {
+                let v = e.get_mut();
+                if *v == 1 { e.remove(); } else { *v -= 1 }
+            }
         }
     }
 }
