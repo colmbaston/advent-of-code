@@ -3,10 +3,8 @@ use std::collections::HashSet;
 
 fn main()
 {
-    let trees_by_row = include_str!("../input.txt").lines()
-                                                   .map(|l| l.as_bytes())
-                                                   .collect::<Vec<&[u8]>>();
-    let trees_by_col = aoc::transpose::transpose(&trees_by_row);
+    let trees_by_row = include_str!("../input.txt").lines().map(|l| l.as_bytes()).collect::<Vec<&[u8]>>();
+    let trees_by_col = aoc::transpose::transpose(trees_by_row.iter().copied()).collect::<Vec<Vec<u8>>>();
 
     let mut visible = HashSet::new();
     for (y, row) in trees_by_row.iter().enumerate()
