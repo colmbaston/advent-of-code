@@ -39,10 +39,10 @@ fn main()
 
 fn visible_indices(iter : impl Iterator<Item = (usize, u8)>) -> impl Iterator<Item = usize>
 {
-    let mut max = 0;
+    let mut max = None;
     iter.filter_map(move |(i, b)|
     {
-        if b > max { max = b; Some(i) } else { None }
+        (max < Some(b)).then(|| { max = Some(b); i })
     })
 }
 
