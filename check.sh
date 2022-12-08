@@ -2,7 +2,7 @@
 
 if [ $# -ne 1 ]
 then
-  echo "expected argument year, \"all\", or \"clean\""
+  echo "error: expected exactly one argument: year, \"all\", or \"clean\""
   exit 1
 fi
 
@@ -12,24 +12,24 @@ if [ $1 == "clean" ]
 then
   for year in $(ls | grep "^20")
   do
-    (cd $year; cargo clean --target-dir target)
+    (cd $year && cargo clean --target-dir target)
   done
   exit
 fi
 
 check()
 {
-  if [ ! -d $1 ]
+  if [ ! -d $year ]
   then
-    echo "$1 is not a directory"
+    echo "error: $year is not a directory"
     exit 1
   fi
 
-  cd $1
+  cd $year
 
   if [ ! -f "answers.txt" ]
   then
-    echo "could not find file answers.txt in directory $1"
+    echo "error: could not find file $year/answers.txt"
     exit 1
   fi
 
@@ -46,15 +46,15 @@ check()
     target/release/$puzzle | sed '/Hello, world!/d; s/^/  /'
   done) | tee output.txt
 
-  diff -Z -U 999 --color answers.txt output.txt
+  diff -Z -u --color answers.txt output.txt || (echo "error: there were differences from $year/answers.txt" && exit 1)
 }
 
 if [ $1 == "all" ]
 then
   for year in $(ls | grep "^20")
   do
-    (check $year)
+    (check) || break
   done
 else
-  (check $1)
+  (year=$1 check)
 fi

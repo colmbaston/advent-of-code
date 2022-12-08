@@ -1,18 +1,17 @@
-use std::hash::Hash;
-use std::cmp::Reverse;
-use std::collections::{ BinaryHeap, HashSet };
+use std::{ ops::{ Add, Sub }, cmp::Reverse, hash::Hash, collections::{ BinaryHeap, HashSet }};
+use num_traits::{ Zero, One };
 
-pub fn ortho_2d<T : num::Num + Copy>(x : T, y : T) -> Vec<(T, T)>
+pub fn ortho_2d<T : One + Add<Output = T> + Sub<Output = T> + Copy>(x : T, y : T) -> Vec<(T, T)>
 {
-    let one = num::one();
+    let one = num_traits::identities::one();
 
     vec![(x - one, y), (x + one, y),
          (x, y - one), (x, y + one)]
 }
 
-pub fn ortho_3d<T : num::Num + Copy>(x : T, y : T, z : T) -> Vec<(T, T, T)>
+pub fn ortho_3d<T : One + Add<Output = T> + Sub<Output = T> + Copy>(x : T, y : T, z : T) -> Vec<(T, T, T)>
 {
-    let one = num::one();
+    let one = num_traits::identities::one();
 
     vec![(x - one, y, z), (x + one, y, z),
          (x, y - one, z), (x, y + one, z),
@@ -20,12 +19,12 @@ pub fn ortho_3d<T : num::Num + Copy>(x : T, y : T, z : T) -> Vec<(T, T, T)>
 }
 
 pub fn a_star<P, C>(init : P, target : impl Fn(&P) -> bool, adj : impl Fn(&P) -> Vec<(P, C)>, h : impl Fn(&P) -> C) -> Option<C>
-where P : Copy + Ord + Hash, C : Copy + Ord + num::Num
+where P : Copy + Ord + Hash, C : Copy + Ord + Zero + Add
 {
     let mut queue   = BinaryHeap::new();
     let mut visited = HashSet::new();
 
-    queue.push((Reverse((h(&init), num::zero())), init));
+    queue.push((Reverse((h(&init), num_traits::identities::zero())), init));
     while let Some((Reverse((_, c)), p)) = queue.pop()
     {
         if !visited.insert(p) { continue       }
@@ -37,7 +36,7 @@ where P : Copy + Ord + Hash, C : Copy + Ord + num::Num
 }
 
 pub fn dijkstra<P, C>(init : P, target : impl Fn(&P) -> bool, adjacent : impl Fn(&P) -> Vec<(P, C)>) -> Option<C>
-where P : Copy + Ord + Hash, C : Copy + Ord + num::Num
+where P : Copy + Ord + Hash, C : Copy + Ord + Zero + Add
 {
-    a_star(init, target, adjacent, |_| num::zero())
+    a_star(init, target, adjacent, |_| num_traits::identities::zero())
 }
