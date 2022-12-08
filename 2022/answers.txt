@@ -20,6 +20,8 @@ puzzle07:
   1315285
   9847279
 puzzle08:
+  1798
+  259308
 puzzle09:
 puzzle10:
 puzzle11:
