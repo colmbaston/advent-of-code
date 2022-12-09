@@ -23,6 +23,8 @@ puzzle08:
   1798
   259308
 puzzle09:
+  6181
+  2386
 puzzle10:
 puzzle11:
 puzzle12:
