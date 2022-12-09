@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use std::collections::HashSet;
 
 fn main()
@@ -46,8 +45,7 @@ fn visible_indices(iter : impl Iterator<Item = (usize, u8)>) -> impl Iterator<It
     })
 }
 
-fn viewing_distance(height : u8, iter : impl Iterator<Item = u8>) -> usize
+fn viewing_distance(height : u8, mut iter : impl Iterator<Item = u8>) -> usize
 {
-    let mut iter = iter.peekable();
-    iter.peeking_take_while(|&h| h < height).count() + iter.next().is_some() as usize
+    iter.by_ref().take_while(|&h| h < height).count() + iter.next().is_some() as usize
 }
