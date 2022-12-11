@@ -31,15 +31,13 @@ impl Monkey
     pub fn parse(s : &str) -> Option<Monkey>
     {
         let mut lines = s.lines().skip(1);
-
-        let items = lines.next()?
-                         .strip_prefix("  Starting items: ")?
-                         .split(", ")
-                         .map(|w| w.parse::<WorryLevel>().ok())
-                         .collect::<Option<VecDeque<WorryLevel>>>()?;
-
-        let op_fn = Monkey::parse_op_fn(lines.next()?)?;
-        let test  = Monkey::parse_test(lines)?;
+        let items     = lines.next()?
+                             .strip_prefix("  Starting items: ")?
+                             .split(", ")
+                             .map(|w| w.parse::<WorryLevel>().ok())
+                             .collect::<Option<VecDeque<WorryLevel>>>()?;
+        let op_fn     = Monkey::parse_op_fn(lines.next()?)?;
+        let test      = Monkey::parse_test(lines)?;
 
         Some(Monkey { items, op_fn, test })
     }
