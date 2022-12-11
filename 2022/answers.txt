@@ -34,6 +34,7 @@ puzzle10:
   #    #    #    #    #  # #    #    #  #
   #    #### #### #     ##  #### #    ###
 puzzle11:
+  90294
 puzzle12:
 puzzle13:
 puzzle14:
