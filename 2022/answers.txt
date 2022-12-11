@@ -35,6 +35,7 @@ puzzle10:
   #    #### #### #     ##  #### #    ###
 puzzle11:
   90294
+  18170818354
 puzzle12:
 puzzle13:
 puzzle14:
