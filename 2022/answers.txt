@@ -37,6 +37,8 @@ puzzle11:
   90294
   18170818354
 puzzle12:
+  534
+  525
 puzzle13:
 puzzle14:
 puzzle15:
