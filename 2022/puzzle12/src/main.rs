@@ -20,15 +20,15 @@ fn main()
     {
         type Pos = (usize, usize);
 
-        let target   = |&pos        : &Pos| pos == end;
-        let height   = |&(x, y)     : &Pos| hill.get(y).and_then(|row| row.get(x).copied());
-        let adjacent = |&pos@(x, y) : &Pos|
+        let target   = |&pos    : &Pos| pos == end;
+        let height   = |&(x, y) : &Pos| hill.get(y).and_then(|row| row.get(x).copied());
+        let adjacent = |&(x, y) : &Pos|
         {
             [(x+1, y), (x, y+1)].into_iter()
                                 .chain(x.checked_sub(1).map(|x| (x, y)).into_iter())
                                 .chain(y.checked_sub(1).map(|y| (x, y)).into_iter())
-                                .filter_map(move |next| height(&pos).and_then(|hc| height(&next).filter(|&hn| hn <= hc || hn-1 == hc)
-                                                                                                .map(|_| next)))
+                                .filter_map(move |next| height(&(x, y)).and_then(|hc| height(&next).filter(|&hn| hn as i8 - hc as i8 <= 1)
+                                                                                                   .map(|_| next)))
         };
 
         let mut result : Option<u32>;
