@@ -5,30 +5,23 @@ fn main()
     let mut lowest = Vec::new();
     let hill       = include_str!("../input.txt").lines().enumerate().map(|(y, row)|
     {
-        let row = row.as_bytes();
-        row.iter().enumerate().for_each(|(x, b)| match b
+        row.as_bytes().iter().enumerate().map(|(x, &b)| match b
         {
-            b'S' => start = Some((x, y)),
-            b'E' => end   = Some((x, y)),
-            b'a' => lowest.push((x, y)),
-            _    => ()
-        });
-        row
+            b'S' => { start = Some((x, y)); b'a' }
+            b'E' => { end   = Some((x, y)); b'z' }
+            b'a' => { lowest.push((x, y));  b'a' }
+            b    => b
+        })
+        .collect::<Vec<u8>>()
     })
-    .collect::<Vec<&[u8]>>();
+    .collect::<Vec<Vec<u8>>>();
 
     if let Some((start, end)) = start.and_then(|s| end.map(|e| (s, e)))
     {
         type Pos = (usize, usize);
 
-        let height = |&(x, y) : &Pos| hill.get(y).and_then(|row| row.get(x).map(|&b| match b
-        {
-            b'S' => b'a',
-            b'E' => b'z',
-            b    => b
-        }));
-
         let target   = |&pos        : &Pos| pos == end;
+        let height   = |&(x, y)     : &Pos| hill.get(y).and_then(|row| row.get(x).copied());
         let adjacent = |&pos@(x, y) : &Pos|
         {
             [(x+1, y), (x, y+1)].into_iter()
