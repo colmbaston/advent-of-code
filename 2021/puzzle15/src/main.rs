@@ -1,30 +1,30 @@
-use std::cmp::Reverse;
-use std::collections::{ BinaryHeap, HashSet };
-
 fn main()
 {
-    let input = include_str!("../input.txt").lines().map(|l| l.bytes().map(|b| b - b'0').collect::<Vec<_>>()).collect::<Vec<_>>();
-    let lx    = input[0].len() as i32;
-    let ly    = input.len()    as i32;
+    let cave = include_str!("../input.txt").lines().map(|l| l.bytes().map(|b| b - b'0').collect::<Vec<u8>>()).collect::<Vec<Vec<u8>>>();
+    let ly   = cave.len();
+    let lx   = cave.first().map(|row| row.len()).unwrap_or(0);
 
-    println!("{}", dijkstra(  lx - 1,   ly - 1, |x, y| input.get(y as usize).and_then(|l| l.get(x as usize).cloned())).unwrap());
-    println!("{}", dijkstra(5*lx - 1, 5*ly - 1, |x, y| (0 <= x && x < 5*lx && 0 <= y && y < 5*ly).then(||
-                                                       (input[(y % ly) as usize][(x % lx) as usize] + (x / lx + y / ly) as u8 - 1) % 9 + 1)).unwrap());
-}
+    type Pos = (usize, usize);
 
-fn dijkstra(tx : i32, ty : i32, risk : impl Fn(i32, i32) -> Option<u8>) -> Option<u32>
-{
-    let mut queue   = BinaryHeap::new();
-    let mut visited = HashSet::new();
-
-    queue.push((Reverse(0), 0, 0));
-    while let Some((Reverse(r), x, y)) = queue.pop()
+    let risk       = |&(x, y) : &Pos| cave.get(y).and_then(|row : &Vec<u8>| row.get(x));
+    let orthogonal = |&(x, y) : &Pos|
     {
-        if !visited.insert((x, y)) { continue       }
-        if x == tx && y == ty      { return Some(r) }
+        [(x+1, y), (x, y+1)].into_iter()
+                            .chain(x.checked_sub(1).map(|x| (x, y)).into_iter())
+                            .chain(y.checked_sub(1).map(|y| (x, y)).into_iter())
+    };
 
-        queue.extend(aoc::search::ortho_2d(x, y).into_iter().filter_map(|(x, y)| risk(x, y).map(|s| (Reverse(r + s as u32), x, y))));
-    }
+    let target   = |&(x, y) : &Pos| x == lx-1 && y == ly-1;
+    let adjacent = |pos     : &Pos| orthogonal(pos).filter_map(|next| risk(&next).map(|&r| (next, r as usize)));
+    if let Some(risk) = aoc::pathfinding::dijkstra(std::iter::once((0, 0)), target, adjacent) { println!("{risk}") }
 
-    None
+    let target   = |&(x, y) : &Pos| x == 5*lx-1 && y == 5*ly-1;
+    let adjacent = |pos     : &Pos|
+    {
+        orthogonal(pos).filter_map(|pos@(x, y)| if x < 5*lx && y < 5*ly
+          { risk(&(x % lx, y % ly)).map(|&r| (pos, (r as usize + (x / lx + y / ly) - 1) % 9 + 1)) }
+        else
+          { None })
+    };
+    if let Some(risk) = aoc::pathfinding::dijkstra(std::iter::once((0, 0)), target, adjacent) { println!("{risk}") }
 }

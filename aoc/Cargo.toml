@@ -11,6 +11,6 @@ num-traits = { version = "0.2.15", optional = true }
 [features]
 default      = []
 bounds       = []
-search       = ["num-traits"]
-transpose    = []
+pathfinding  = ["num-traits"]
 permutations = []
+transpose    = []
