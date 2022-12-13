@@ -1,4 +1,4 @@
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Packet(Vec<Payload>);
 
 #[derive(Clone, PartialEq, Eq)]
@@ -34,6 +34,11 @@ impl Packet
             .map(|rest| (Packet(payloads), rest))
         })
     }
+
+    fn as_slice(&self) -> &[Payload]
+    {
+        self.0.as_slice()
+    }
 }
 
 impl Payload
@@ -56,41 +61,16 @@ impl Payload
 
 use std::cmp::Ordering;
 
-impl Ord for Packet
-{
-    fn cmp(&self, other : &Packet) -> Ordering
-    {
-        for (p, q) in self.0.iter().zip(other.0.iter())
-        {
-            match p.cmp(q)
-            {
-                Ordering::Equal => continue,
-                ord             => return ord
-            }
-        }
-
-        self.0.len().cmp(&other.0.len())
-    }
-}
-
-impl PartialOrd for Packet
-{
-    fn partial_cmp(&self, other : &Packet) -> Option<Ordering>
-    {
-        Some(self.cmp(other))
-    }
-}
-
 impl Ord for Payload
 {
     fn cmp(&self, other : &Payload) -> Ordering
     {
         match (self, other)
         {
-            (Payload::Int(k),    Payload::Int(l))    => k.cmp(l),
-            (k@Payload::Int(_),  Payload::Packet(q)) => Packet(vec![k.clone()]).cmp(q),
-            (Payload::Packet(p), l@Payload::Int(_))  => p.cmp(&Packet(vec![l.clone()])),
-            (Payload::Packet(p), Payload::Packet(q)) => p.cmp(q)
+            (  Payload::Int(k),      Payload::Int(l))    => k.cmp(l),
+            (k@Payload::Int(_),      Payload::Packet(q)) => [k.clone()].as_slice().cmp(q.as_slice()),
+            (  Payload::Packet(p), l@Payload::Int(_))    => p.as_slice().cmp([l.clone()].as_slice()),
+            (  Payload::Packet(p),   Payload::Packet(q)) => p.cmp(q)
         }
     }
 }
