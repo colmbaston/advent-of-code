@@ -17,17 +17,22 @@ impl Packet
 
     fn parse(s : &str) -> Option<(Packet, &str)>
     {
-        let mut payloads = Vec::new();
-        s.strip_prefix('[').and_then(|tail| Packet::parse_payloads(tail, &mut payloads).map(|rest| (Packet(payloads), rest)))
-    }
-
-    fn parse_payloads<'a>(s : &'a str, payloads : &mut Vec<Payload>) -> Option<&'a str>
-    {
-        s.strip_prefix(']').or_else(|| Payload::parse(s).and_then(|(payload, rest)|
+        s.strip_prefix('[').and_then(|tail|
         {
-            payloads.push(payload);
-            Packet::parse_payloads(rest.strip_prefix(',').unwrap_or(rest), payloads)
-        }))
+            let mut payloads = Vec::new();
+            tail.strip_prefix(']').or_else(||
+            {
+                let mut parse = Payload::parse(tail)?;
+                payloads.push(parse.0);
+                while let Some(rest) = parse.1.strip_prefix(',')
+                {
+                    parse = Payload::parse(rest)?;
+                    payloads.push(parse.0);
+                }
+                parse.1.strip_prefix(']')
+            })
+            .map(|rest| (Packet(payloads), rest))
+        })
     }
 }
 
@@ -35,7 +40,7 @@ impl Payload
 {
     fn parse(s : &str) -> Option<(Payload, &str)>
     {
-        s.as_bytes().get(0).and_then(|b| match b
+        s.as_bytes().first().and_then(|b| match b
         {
             b'0' ..= b'9' =>
             {
