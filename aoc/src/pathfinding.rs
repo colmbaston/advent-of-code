@@ -12,7 +12,7 @@ pub fn a_star<P, C, A>(inits     : impl Iterator<Item = P>,
 {
     let mut queue   = BinaryHeap::new();
     let mut visited = HashSet::new();
-    queue.extend(inits.map(|init| (Reverse((heuristic(&init), num_traits::identities::zero())), init)));
+    queue.extend(inits.map(|init| (Reverse((heuristic(&init), C::zero())), init)));
 
     while let Some((Reverse((_, c)), p)) = queue.pop()
     {
@@ -31,7 +31,7 @@ pub fn dijkstra<P, C, A>(inits    : impl Iterator<Item = P>,
                              C : Copy + Ord + Zero + Add,
                              A : Iterator<Item = (P, C)>
 {
-    a_star(inits, target, adjacent, |_| num_traits::identities::zero())
+    a_star(inits, target, adjacent, |_| C::zero())
 }
 
 pub fn bfs<P, C, A>(inits    : impl Iterator<Item = P>,
@@ -44,13 +44,13 @@ pub fn bfs<P, C, A>(inits    : impl Iterator<Item = P>,
 {
     let mut queue   = VecDeque::new();
     let mut visited = HashSet::new();
-    queue.extend(inits.map(|init| (num_traits::identities::zero(), init)));
+    queue.extend(inits.map(|init| (C::zero(), init)));
 
     while let Some((c, p)) = queue.pop_front()
     {
         if !visited.insert(p) { continue       }
         if target(&p)         { return Some(c) }
-        queue.extend(adjacent(&p).map(|p| (c + num_traits::identities::one(), p)));
+        queue.extend(adjacent(&p).map(|p| (c + C::one(), p)));
     }
     None
 }
