@@ -18,8 +18,6 @@ fn main()
     packets.extend(dividers.iter().cloned());
     packets.sort_unstable();
     println!("{}", dividers.into_iter()
-                           .filter_map(|d| packets.iter().zip(1 ..)
-                                                  .find(|&(p, _)| &d == p)
-                                                  .map(|(_, ix)| ix))
+                           .filter_map(|d| packets.binary_search(&d).ok().map(|ix| ix as u32 + 1))
                            .product::<u32>());
 }
