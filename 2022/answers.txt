@@ -40,6 +40,8 @@ puzzle12:
   534
   525
 puzzle13:
+  6428
+  22464
 puzzle14:
 puzzle15:
 puzzle16:

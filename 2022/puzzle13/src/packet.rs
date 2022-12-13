@@ -1,7 +1,7 @@
-#[derive(Debug)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Packet(Vec<Payload>);
 
-#[derive(Debug)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum Payload
 {
     Int(u8),
@@ -46,5 +46,54 @@ impl Payload
             b'[' => Packet::parse(s).map(|(p, rest)| (Payload::Packet(p), rest)),
             _    => None
         })
+    }
+}
+
+use std::cmp::Ordering;
+
+impl Ord for Packet
+{
+    fn cmp(&self, other : &Packet) -> Ordering
+    {
+        for (p, q) in self.0.iter().zip(other.0.iter())
+        {
+            match p.cmp(q)
+            {
+                Ordering::Equal => continue,
+                ord             => return ord
+            }
+        }
+
+        self.0.len().cmp(&other.0.len())
+    }
+}
+
+impl PartialOrd for Packet
+{
+    fn partial_cmp(&self, other : &Packet) -> Option<Ordering>
+    {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Payload
+{
+    fn cmp(&self, other : &Payload) -> Ordering
+    {
+        match (self, other)
+        {
+            (Payload::Int(k),    Payload::Int(l))    => k.cmp(l),
+            (k@Payload::Int(_),  Payload::Packet(q)) => Packet(vec![k.clone()]).cmp(q),
+            (Payload::Packet(p), l@Payload::Int(_))  => p.cmp(&Packet(vec![l.clone()])),
+            (Payload::Packet(p), Payload::Packet(q)) => p.cmp(q)
+        }
+    }
+}
+
+impl PartialOrd for Payload
+{
+    fn partial_cmp(&self, other : &Payload) -> Option<Ordering>
+    {
+        Some(self.cmp(other))
     }
 }
