@@ -43,6 +43,8 @@ puzzle13:
   6428
   22464
 puzzle14:
+  719
+  23390
 puzzle15:
 puzzle16:
 puzzle17:
