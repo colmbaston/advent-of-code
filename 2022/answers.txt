@@ -46,6 +46,8 @@ puzzle14:
   719
   23390
 puzzle15:
+  5256611
+  13337919186981
 puzzle16:
 puzzle17:
 puzzle18:
