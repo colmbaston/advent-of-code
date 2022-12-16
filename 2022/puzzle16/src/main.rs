@@ -12,12 +12,12 @@ fn main()
 
     let mut visited = HashSet::new();
     let mut queue   = VecDeque::new();
-    queue.push_back(State { valve: "AA", minute: 1, pressure: 0, rates });
+    queue.push_back(State { valve: "AA", minutes: 30, pressure: 0, rates });
 
     let mut max = 0;
     while let Some(state) = queue.pop_front()
     {
-        if state.minute == 30
+        if state.minutes <= 1
         || !visited.insert((state.valve, state.pressure)) { continue }
 
         max = max.max(state.pressure);
@@ -41,7 +41,7 @@ fn parse_valve(s : &str) -> Option<(&str, u32, Vec<&str>)>
 struct State<'a>
 {
     valve:    &'a str,
-    minute:   u32,
+    minutes:  u32,
     pressure: u32,
     rates:    HashMap<&'a str, u32>
 }
@@ -50,7 +50,8 @@ impl<'a> State<'a>
 {
     fn step<'b>(&'b self, tunnels : &'a HashMap<&str, Vec<&str>>) -> impl Iterator<Item = State<'a>> + 'b
     {
-        let open_valve = self.rates.get(self.valve).into_iter().map(|&rate|
+        let minutes    = self.minutes - 1;
+        let open_valve = self.rates.get(self.valve).into_iter().map(move |&rate|
         {
             let mut rates = self.rates.clone();
             rates.remove(self.valve);
@@ -58,16 +59,16 @@ impl<'a> State<'a>
             State
             {
                 valve:    self.valve,
-                minute:   self.minute+1,
-                pressure: self.pressure + rate * (30 - self.minute),
+                minutes,
+                pressure: self.pressure + rate * minutes,
                 rates
             }
         });
 
-        let tunnel = tunnels.get(self.valve).into_iter().flat_map(|ts| ts.iter().map(|valve| State
+        let tunnel = tunnels.get(self.valve).into_iter().flat_map(move |ts| ts.iter().map(move |valve| State
         {
             valve,
-            minute:    self.minute+1,
+            minutes,
             pressure:  self.pressure,
             rates:     self.rates.clone()
         }));
