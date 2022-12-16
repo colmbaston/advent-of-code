@@ -49,6 +49,8 @@ puzzle15:
   5256611
   13337919186981
 puzzle16:
+  1659
+  2382
 puzzle17:
 puzzle18:
 puzzle19:

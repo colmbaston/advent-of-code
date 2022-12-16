@@ -10,20 +10,30 @@ fn main()
         tunnels.insert(valve, ts);
     }
 
-    let mut visited = HashSet::new();
-    let mut queue   = VecDeque::new();
-    queue.push_back(State { valve: "AA", minutes: 30, pressure: 0, rates });
+    let mut queue     = VecDeque::new();
+    let mut visited   = HashSet::new();
+    let mut adjacents = Vec::new();
+    let mut buffer    = Vec::new();
 
-    let mut max = 0;
-    while let Some(state) = queue.pop_front()
+    let start_one = State { valves: vec!["AA"],       minutes: 30, pressure: 0, rates: rates.clone() };
+    let start_two = State { valves: vec!["AA", "AA"], minutes: 26, pressure: 0, rates                };
+    for start in [start_one, start_two]
     {
-        if state.minutes <= 1
-        || !visited.insert((state.valve, state.pressure)) { continue }
+        queue.clear();
+        queue.push_back(start);
+        visited.clear();
 
-        max = max.max(state.pressure);
-        queue.extend(state.step(&tunnels));
+        let mut max = 0;
+        while let Some(state) = queue.pop_front()
+        {
+            if !visited.insert((state.valves.clone(), state.pressure)) { continue }
+
+            max = max.max(state.pressure);
+            state.adjacents(&tunnels, &mut adjacents, &mut buffer);
+            queue.extend(adjacents.drain(..));
+        }
+        println!("{max}");
     }
-    println!("{max}");
 }
 
 fn parse_valve(s : &str) -> Option<(&str, u32, Vec<&str>)>
@@ -38,9 +48,10 @@ fn parse_valve(s : &str) -> Option<(&str, u32, Vec<&str>)>
     Some((valve, rate.parse().ok()?, s.split(", ").collect()))
 }
 
+#[derive(Clone)]
 struct State<'a>
 {
-    valve:    &'a str,
+    valves:   Vec<&'a str>,
     minutes:  u32,
     pressure: u32,
     rates:    HashMap<&'a str, u32>
@@ -48,31 +59,37 @@ struct State<'a>
 
 impl<'a> State<'a>
 {
-    fn step<'b>(&'b self, tunnels : &'a HashMap<&str, Vec<&str>>) -> impl Iterator<Item = State<'a>> + 'b
+    fn adjacents<'b>(&'b self, tunnels : &'a HashMap<&str, Vec<&str>>, result : &'b mut Vec<State<'a>>, buffer : &'b mut Vec<State<'a>>)
     {
-        let minutes    = self.minutes - 1;
-        let open_valve = self.rates.get(self.valve).into_iter().map(move |&rate|
-        {
-            let mut rates = self.rates.clone();
-            rates.remove(self.valve);
+        let mut state = self.clone();
+        state.minutes -= 1;
+        if state.minutes <= 1 { return }
 
-            State
+        result.clear();
+        result.push(state);
+        for (ix, valve) in self.valves.iter().enumerate()
+        {
+            buffer.clear();
+            buffer.extend(result.iter().flat_map(|state|
             {
-                valve:    self.valve,
-                minutes,
-                pressure: self.pressure + rate * minutes,
-                rates
-            }
-        });
+                let open_valve = state.rates.get(valve).into_iter().map(|&rate|
+                {
+                    let mut state = state.clone();
+                    state.pressure += rate * state.minutes;
+                    state.rates.remove(valve);
+                    state
+                });
 
-        let tunnel = tunnels.get(self.valve).into_iter().flat_map(move |ts| ts.iter().map(move |valve| State
-        {
-            valve,
-            minutes,
-            pressure:  self.pressure,
-            rates:     self.rates.clone()
-        }));
+                let move_valve = tunnels.get(valve).into_iter().flat_map(|ts| ts.iter().map(|valve|
+                {
+                    let mut state = state.clone();
+                    state.valves[ix] = valve;
+                    state
+                }));
 
-        open_valve.chain(tunnel)
+                open_valve.chain(move_valve)
+            }));
+            std::mem::swap(result, buffer)
+        }
     }
 }
