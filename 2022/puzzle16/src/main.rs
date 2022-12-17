@@ -10,30 +10,28 @@ fn main()
         tunnels.insert(valve, ts);
     }
 
-    let mut queue     = VecDeque::new();
-    let mut visited   = HashSet::new();
-    let mut adjacents = Vec::new();
-    let mut buffer    = Vec::new();
+    let vertices      = tunnels.keys().copied();
+    let edges         = tunnels.iter().flat_map(|(&v, ts)| ts.iter().map(move |&t| ((v, t), 1)));
+    let mut distances = aoc::pathfinding::floyd_warshall(vertices, edges);
+    drop(tunnels);
 
-    let start_one = State { valves: vec!["AA"],       minutes: 30, pressure: 0, rates: rates.clone() };
-    let start_two = State { valves: vec!["AA", "AA"], minutes: 26, pressure: 0, rates                };
-    for start in [start_one, start_two]
+    for dist in distances.values_mut() { *dist += 1 }
+    distances.retain(|(source, dest), _| (rates.contains_key(source) || source == &"AA")
+                                      &&  rates.contains_key(dest));
+
+    let mut visited = HashSet::new();
+    let mut queue   = VecDeque::new();
+    queue.push_back(State { valve: "AA", minutes: 30, pressure: 0, rates });
+
+    let mut max = 0;
+    while let Some(state) = queue.pop_front()
     {
-        queue.clear();
-        queue.push_back(start);
-        visited.clear();
+        if !visited.insert((state.valve, state.pressure)) { continue }
 
-        let mut max = 0;
-        while let Some(state) = queue.pop_front()
-        {
-            if !visited.insert((state.valves.clone(), state.pressure)) { continue }
-
-            max = max.max(state.pressure);
-            state.adjacents(&tunnels, &mut adjacents, &mut buffer);
-            queue.extend(adjacents.drain(..));
-        }
-        println!("{max}");
+        max = max.max(state.pressure);
+        queue.extend(state.adjacents(&distances));
     }
+    println!("{max}");
 }
 
 fn parse_valve(s : &str) -> Option<(&str, u32, Vec<&str>)>
@@ -51,7 +49,7 @@ fn parse_valve(s : &str) -> Option<(&str, u32, Vec<&str>)>
 #[derive(Clone)]
 struct State<'a>
 {
-    valves:   Vec<&'a str>,
+    valve:    &'a str,
     minutes:  u32,
     pressure: u32,
     rates:    HashMap<&'a str, u32>
@@ -59,37 +57,18 @@ struct State<'a>
 
 impl<'a> State<'a>
 {
-    fn adjacents<'b>(&'b self, tunnels : &'a HashMap<&str, Vec<&str>>, result : &'b mut Vec<State<'a>>, buffer : &'b mut Vec<State<'a>>)
+    fn adjacents<'b>(&'b self, distances : &'b HashMap<(&str, &str), u32>) -> impl Iterator<Item = State<'a>> + 'b
     {
-        let mut state = self.clone();
-        state.minutes -= 1;
-        if state.minutes <= 1 { return }
-
-        result.clear();
-        result.push(state);
-        for (ix, valve) in self.valves.iter().enumerate()
+        self.rates.keys().filter_map(|&dest|
         {
-            buffer.clear();
-            buffer.extend(result.iter().flat_map(|state|
-            {
-                let open_valve = state.rates.get(valve).into_iter().map(|&rate|
-                {
-                    let mut state = state.clone();
-                    state.pressure += rate * state.minutes;
-                    state.rates.remove(valve);
-                    state
-                });
+            let &distance   = distances.get(&(self.valve, dest))?;
+            let minutes     = self.minutes.checked_sub(distance)?;
 
-                let move_valve = tunnels.get(valve).into_iter().flat_map(|ts| ts.iter().map(|valve|
-                {
-                    let mut state = state.clone();
-                    state.valves[ix] = valve;
-                    state
-                }));
-
-                open_valve.chain(move_valve)
-            }));
-            std::mem::swap(result, buffer)
-        }
+            let mut state   = self.clone();
+            state.valve     = dest;
+            state.minutes   = minutes;
+            state.pressure += minutes * state.rates.remove(dest)?;
+            Some(state)
+        })
     }
 }
