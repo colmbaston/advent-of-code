@@ -1,18 +1,17 @@
 use std::{ ops::{ Add, AddAssign }, collections::{ HashSet, HashMap }};
 
-const CYCLE_KEY_WORDS : usize = 4;
-type CycleKeyWordType         = u64;
-type CycleKey                 = [CycleKeyWordType ; CYCLE_KEY_WORDS];
-
 fn main()
 {
-    let mut rocks = rockfall();
-    println!("{}", rocks.by_ref().take(2022)
-                        .last().map(|(h, _)| h)
-                        .unwrap_or(0));
-
     let mut cycle_map = HashMap::new();
-    for (curr_ix, (curr_height, key)) in (2023 ..).zip(rocks.by_ref())
+    let mut rocks = (1 ..).zip(rockfall());
+    println!("{}", rocks.by_ref().take(2022)
+                        .fold(0, |_, (ix, (height, key))|
+                        {
+                            cycle_map.insert(key, (ix, height));
+                            height
+                        }));
+
+    for (curr_ix, (curr_height, key)) in rocks.by_ref()
     {
         if let Some((prev_ix, prev_height)) = cycle_map.insert(key, (curr_ix, curr_height))
         {
@@ -20,7 +19,7 @@ fn main()
             let rocks_left = 1_000_000_000_000 - curr_ix;
             println!("{}", curr_height + (curr_height - prev_height) * (rocks_left / cycle_len)
                          + rocks.take((rocks_left % cycle_len) as usize)
-                                .last().map(|(h, _)| h - curr_height)
+                                .last().map(|(_, (h, _))| h - curr_height)
                                 .unwrap_or(0));
 
             break
@@ -28,17 +27,16 @@ fn main()
     }
 }
 
+type CycleKey = (Shape, [i64 ; 7]);
+
 fn rockfall() -> impl Iterator<Item = (i64, CycleKey)>
 {
-    let mut jet_cycle = include_str!("../input.txt").bytes().filter_map(|b| match b
+    let mut jet_cycle = include_str!("../input.txt").trim_end().bytes().cycle().filter_map(|b| match b
     {
         b'<' => Some(Direction::Left),
         b'>' => Some(Direction::Right),
         _    => None
-    })
-    .collect::<Vec<Direction>>()
-    .into_iter()
-    .cycle();
+    });
 
     let mut height  = 0;
     let mut settled = HashSet::new();
@@ -74,17 +72,16 @@ fn rockfall() -> impl Iterator<Item = (i64, CycleKey)>
             height.max(pos.y)
         });
 
-        let mut key     = [0 ; CYCLE_KEY_WORDS];
-        let mut history = (0 ..= height).rev().flat_map(|y| (0 .. 7).map(move |x| Pos { x, y }));
-        for word in key.iter_mut()
+        let mut depths = [0 ; 7];
+        for(d, x) in depths.iter_mut().zip(0 ..)
         {
-            for pos in history.by_ref().take(8 * std::mem::size_of::<CycleKeyWordType>())
+            for pos in (0 ..= height).rev().map(move |y| Pos { x, y })
             {
-                *word = (*word << 1) + settled.contains(&pos) as CycleKeyWordType;
+                if settled.contains(&pos) { *d = height - pos.y; break }
             }
         }
 
-        (height, key)
+        (height, (shape, depths))
     })
 }
 
@@ -145,7 +142,7 @@ impl Direction
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 enum Shape { Flat, Cross, Corner, Tall, Square }
 
 impl Shape
