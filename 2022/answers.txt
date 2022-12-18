@@ -55,6 +55,8 @@ puzzle17:
   3127
   1542941176480
 puzzle18:
+  4444
+  2530
 puzzle19:
 puzzle20:
 puzzle21:
