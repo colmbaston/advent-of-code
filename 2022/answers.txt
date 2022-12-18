@@ -53,6 +53,7 @@ puzzle16:
   2382
 puzzle17:
   3127
+  1542941176480
 puzzle18:
 puzzle19:
 puzzle20:
