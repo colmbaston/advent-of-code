@@ -1,38 +1,101 @@
-use std::collections::{ HashMap, HashSet, VecDeque };
+use std::{ cmp::Ordering, collections::{ HashMap, hash_map::Entry }};
 
 fn main()
 {
-    let mut rates   = HashMap::new();
+    let mut valves  = HashMap::new();
     let mut tunnels = HashMap::new();
     for (valve, rate, ts) in include_str!("../input.txt").lines().filter_map(parse_valve)
     {
-        if rate > 0 { rates.insert(valve, rate); }
+        if rate > 0 { valves.insert(valve, rate); }
         tunnels.insert(valve, ts);
     }
 
-    let mut queue     = VecDeque::new();
-    let mut visited   = HashSet::new();
-    let mut adjacents = Vec::new();
-    let mut buffer    = Vec::new();
+    let vertices      = tunnels.keys().copied();
+    let edges         = tunnels.iter().flat_map(|(&v, ts)| ts.iter().map(move |&t| ((v, t), 1)));
+    let mut distances = aoc::pathfinding::floyd_warshall(vertices, edges);
+    drop(tunnels);
 
-    let start_one = State { valves: vec!["AA"],       minutes: 30, pressure: 0, rates: rates.clone() };
-    let start_two = State { valves: vec!["AA", "AA"], minutes: 26, pressure: 0, rates                };
-    for start in [start_one, start_two]
+    for dist in distances.values_mut() { *dist += 1 }
+    distances.retain(|(source, dest), _| (valves.contains_key(source) || source == &"AA")
+                                      &&  valves.contains_key(dest));
+
+    let mut queue         = Vec::new();
+    let mut cache         = HashMap::new();
+    let mut valves_sorted = valves.keys().copied().collect::<Vec<&str>>();
+    valves_sorted.sort_unstable();
+
     {
-        queue.clear();
-        queue.push_back(start);
-        visited.clear();
+        let state = State { valve: "AA", minutes: 30, pressure: 0, closed: valves.clone() };
+        dfs(state, &valves_sorted, &distances, &mut queue, &mut cache);
 
         let mut max = 0;
-        while let Some(state) = queue.pop_front()
+        for (_, pressure) in cache.drain()
         {
-            if !visited.insert((state.valves.clone(), state.pressure)) { continue }
-
-            max = max.max(state.pressure);
-            state.adjacents(&tunnels, &mut adjacents, &mut buffer);
-            queue.extend(adjacents.drain(..));
+            max = max.max(pressure);
         }
         println!("{max}");
+    }
+
+    {
+        let state = State { valve: "AA", minutes: 26, pressure: 0, closed: valves };
+        dfs(state, &valves_sorted, &distances, &mut queue, &mut cache);
+
+        let mut max = 0;
+        for (i, (open_a, pressure_a)) in cache.iter().enumerate()
+        {
+            'middle: for (open_b, pressure_b) in cache.iter().skip(i+1)
+            {
+                let mut open_a = open_a.iter();
+                let mut peek_a = open_a.next();
+
+                let mut open_b = open_b.iter();
+                let mut peek_b = open_b.next();
+
+                while let Some((a, b)) = peek_a.and_then(|a| peek_b.map(|b| (a, b)))
+                {
+                    match a.cmp(b)
+                    {
+                        Ordering::Less    => peek_a = open_a.next(),
+                        Ordering::Equal   => continue 'middle,
+                        Ordering::Greater => peek_b = open_b.next()
+                    };
+                }
+
+                max = max.max(pressure_a + pressure_b)
+            }
+        }
+        println!("{max}");
+    }
+}
+
+fn dfs<'a>(init      : State<'a>,
+           valves    : &[&'a str],
+           distances : &HashMap<(&'a str, &'a str), u32>,
+           queue     : &mut Vec<State<'a>>,
+           cache     : &mut HashMap<Vec<&'a str>, u32>)
+{
+    queue.push(init);
+    while let Some(state) = queue.pop()
+    {
+        match cache.entry(valves.iter().copied()
+                                .filter(|v| !state.closed.contains_key(v))
+                                .collect::<Vec<&str>>())
+        {
+            Entry::Vacant(entry) =>
+            {
+                entry.insert(state.pressure);
+                queue.extend(state.adjacents(distances))
+            }
+            Entry::Occupied(mut entry) =>
+            {
+                let prev = entry.get_mut();
+                if *prev < state.pressure
+                {
+                    *prev = state.pressure;
+                    queue.extend(state.adjacents(distances))
+                }
+            }
+        }
     }
 }
 
@@ -51,45 +114,26 @@ fn parse_valve(s : &str) -> Option<(&str, u32, Vec<&str>)>
 #[derive(Clone)]
 struct State<'a>
 {
-    valves:   Vec<&'a str>,
+    valve:    &'a str,
     minutes:  u32,
     pressure: u32,
-    rates:    HashMap<&'a str, u32>
+    closed:   HashMap<&'a str, u32>
 }
 
 impl<'a> State<'a>
 {
-    fn adjacents<'b>(&'b self, tunnels : &'a HashMap<&str, Vec<&str>>, result : &'b mut Vec<State<'a>>, buffer : &'b mut Vec<State<'a>>)
+    fn adjacents<'b>(&'b self, distances : &'b HashMap<(&str, &str), u32>) -> impl Iterator<Item = State<'a>> + 'b
     {
-        let mut state = self.clone();
-        state.minutes -= 1;
-        if state.minutes <= 1 { return }
-
-        result.clear();
-        result.push(state);
-        for (ix, valve) in self.valves.iter().enumerate()
+        self.closed.keys().filter_map(|&dest|
         {
-            buffer.clear();
-            buffer.extend(result.iter().flat_map(|state|
-            {
-                let open_valve = state.rates.get(valve).into_iter().map(|&rate|
-                {
-                    let mut state = state.clone();
-                    state.pressure += rate * state.minutes;
-                    state.rates.remove(valve);
-                    state
-                });
+            let &distance   = distances.get(&(self.valve, dest))?;
+            let minutes     = self.minutes.checked_sub(distance)?;
 
-                let move_valve = tunnels.get(valve).into_iter().flat_map(|ts| ts.iter().map(|valve|
-                {
-                    let mut state = state.clone();
-                    state.valves[ix] = valve;
-                    state
-                }));
-
-                open_valve.chain(move_valve)
-            }));
-            std::mem::swap(result, buffer)
-        }
+            let mut state   = self.clone();
+            state.valve     = dest;
+            state.minutes   = minutes;
+            state.pressure += minutes * state.closed.remove(dest)?;
+            Some(state)
+        })
     }
 }
