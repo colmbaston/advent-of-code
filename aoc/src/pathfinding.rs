@@ -1,38 +1,5 @@
-use std::{ ops::Add, cmp::Reverse, hash::Hash, collections::{ BinaryHeap, HashSet, HashMap, VecDeque }};
+use std::{ ops::Add, cmp::Ordering, hash::Hash, collections::{ BinaryHeap, HashSet, HashMap, VecDeque }};
 use num_traits::{ Zero, One };
-
-pub fn a_star<P, C, A>(inits     : impl Iterator<Item = P>,
-                       target    : impl Fn(&P) -> bool,
-                       adjacent  : impl Fn(&P) -> A,
-                       heuristic : impl Fn(&P) -> C) -> Option<C>
-                         where
-                           P : Copy + Ord + Hash,
-                           C : Copy + Ord + Zero + Add,
-                           A : Iterator<Item = (P, C)>
-{
-    let mut queue   = BinaryHeap::new();
-    let mut visited = HashSet::new();
-    queue.extend(inits.map(|init| (Reverse((heuristic(&init), C::zero())), init)));
-
-    while let Some((Reverse((_, c)), p)) = queue.pop()
-    {
-        if !visited.insert(p) { continue       }
-        if target(&p)         { return Some(c) }
-        queue.extend(adjacent(&p).map(|(p, d)| (Reverse((c+d+heuristic(&p), c+d)), p)));
-    }
-    None
-}
-
-pub fn dijkstra<P, C, A>(inits    : impl Iterator<Item = P>,
-                         target   : impl Fn(&P) -> bool,
-                         adjacent : impl Fn(&P) -> A) -> Option<C>
-                           where
-                             P : Copy + Ord + Hash,
-                             C : Copy + Ord + Zero + Add,
-                             A : Iterator<Item = (P, C)>
-{
-    a_star(inits, target, adjacent, |_| C::zero())
-}
 
 pub fn bfs<P, C, A>(inits    : impl Iterator<Item = P>,
                     target   : impl Fn(&P) -> bool,
@@ -83,4 +50,79 @@ pub fn floyd_warshall<V, C>(vertices : impl Iterator<Item = V> + Clone, edges : 
     }
 
     dists
+}
+
+struct AStarNode<P, C>
+{
+    payload:  P,
+    steps:    C,
+    estimate: C
+}
+
+impl<P, C : Copy + Add<Output = C>> AStarNode<P, C>
+{
+    fn new(payload : P, steps : C, heuristic : impl Fn(&P) -> C) -> AStarNode<P, C>
+    {
+        let estimate = steps + heuristic(&payload);
+        AStarNode { payload, steps, estimate }
+    }
+}
+
+impl<P, C : Eq> Eq for AStarNode<P, C> {}
+
+impl<P, C : Eq> PartialEq for AStarNode<P, C>
+{
+    fn eq(&self, other : &AStarNode<P, C>) -> bool
+    {
+        self.steps == other.steps && self.estimate == other.estimate
+    }
+}
+
+impl<P, C : Ord> Ord for AStarNode<P, C>
+{
+    fn cmp(&self, other : &AStarNode<P, C>) -> Ordering
+    {
+        other.estimate.cmp(&self.estimate).then(other.steps.cmp(&self.steps))
+    }
+}
+
+impl<P, C : Ord> PartialOrd for AStarNode<P, C>
+{
+    fn partial_cmp(&self, other : &AStarNode<P, C>) -> Option<Ordering>
+    {
+        Some(self.cmp(other))
+    }
+}
+
+pub fn a_star<P, C, A>(inits     : impl Iterator<Item = P>,
+                       target    : impl Fn(&P) -> bool,
+                       adjacent  : impl Fn(&P) -> A,
+                       heuristic : impl Fn(&P) -> C + Copy) -> Option<C>
+                         where
+                           P : Copy + Eq  + Hash,
+                           C : Copy + Ord + Zero + Add,
+                           A : Iterator<Item = (P, C)>
+{
+    let mut queue   = BinaryHeap::new();
+    let mut visited = HashSet::new();
+    queue.extend(inits.map(|init| AStarNode::new(init, C::zero(), heuristic)));
+
+    while let Some(AStarNode { steps, payload, .. }) = queue.pop()
+    {
+        if !visited.insert(payload) { continue           }
+        if target(&payload)         { return Some(steps) }
+        queue.extend(adjacent(&payload).map(|(p, dist)| AStarNode::new(p, steps+dist, heuristic)))
+    }
+    None
+}
+
+pub fn dijkstra<P, C, A>(inits    : impl Iterator<Item = P>,
+                         target   : impl Fn(&P) -> bool,
+                         adjacent : impl Fn(&P) -> A) -> Option<C>
+                           where
+                             P : Copy + Eq  + Hash,
+                             C : Copy + Ord + Zero + Add,
+                             A : Iterator<Item = (P, C)>
+{
+    a_star(inits, target, adjacent, |_| C::zero())
 }
