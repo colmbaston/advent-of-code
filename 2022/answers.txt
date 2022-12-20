@@ -59,6 +59,8 @@ puzzle18:
   2530
 puzzle19:
 puzzle20:
+  15297
+  2897373276210
 puzzle21:
 puzzle22:
 puzzle23:
