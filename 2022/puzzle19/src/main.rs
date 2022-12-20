@@ -36,7 +36,9 @@ fn explore(blueprint : &Blueprint, minutes : u16, queue : &mut Vec<State>, buffe
         if !visited.insert(state.clone()) { continue }
 
         state.step(blueprint, buffer);
-        queue.extend(buffer.drain(..).filter(|next| !next.prune(geode_max, &cost_max)));
+        queue.extend(buffer.drain(..)
+                           .map(|mut next| { next.dump_excess(&cost_max); next })
+                           .filter(|next| !next.prune(geode_max, &cost_max)));
     }
     geode_max
 }
@@ -82,6 +84,14 @@ impl State
             {
                 state.resources[resource] += self.robots[resource];
             }
+        }
+    }
+
+    fn dump_excess(&mut self, cost_max : &Inventory)
+    {
+        for resource in Resource::enumerate().take(3)
+        {
+            self.resources[resource] = self.resources[resource].min(self.minutes * cost_max[resource]);
         }
     }
 
