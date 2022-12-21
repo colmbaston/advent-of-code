@@ -2,19 +2,17 @@ use std::collections::HashMap;
 
 fn main()
 {
-    let monkeys = include_str!("../input.txt").lines().filter_map(|l|
+    let mut monkeys = include_str!("../input.txt").lines().filter_map(|l|
     {
-        let mut split = l.split(": ");
-        Some((split.next()?, Expr::parse(split.next()?)?))
+        let mut parts = l.split(": ");
+        Some((parts.next()?, Expr::parse(parts.next()?)?))
     })
     .collect::<HashMap<&str, Expr>>();
 
-    if let Some(root) = Expr::Var("root").eval(&monkeys, &mut HashMap::new())
-    {
-        println!("{root}")
-    }
+    if let Some(root) = Expr::Var("root").eval(&mut monkeys) { println!("{root}") }
 }
 
+#[derive(Debug, Clone)]
 enum Expr<'a>
 {
     Int(i64),
@@ -22,7 +20,7 @@ enum Expr<'a>
     Op(Op, Box<Expr<'a>>, Box<Expr<'a>>)
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 enum Op { Add, Sub, Mul, Div }
 
 impl<'a> Expr<'a>
@@ -46,19 +44,23 @@ impl<'a> Expr<'a>
         Some(Expr::Op(op, Box::new(lhs), Box::new(rhs)))
     }
 
-    fn eval(&self, context : &HashMap<&'a str, Expr<'a>>, cache : &mut HashMap<&'a str, i64>) -> Option<i64>
+    fn eval(&self, context : &mut HashMap<&'a str, Expr<'a>>) -> Option<i64>
     {
         match self
         {
-            &Expr::Int(k) => Some(k),
-            &Expr::Var(v)  => cache.get(v).copied().or_else(||
+            Expr::Int(k) => Some(*k),
+            Expr::Var(v) => match context.get(v)?.clone()
             {
-                let k = context.get(v)?.eval(context, cache)?;
-                cache.insert(v, k);
-                Some(k)
-            }),
-            Expr::Op(op, lhs, rhs) => Some(op.eval(lhs.eval(context, cache)?,
-                                                   rhs.eval(context, cache)?))
+                Expr::Int(k) => Some(k),
+                expr         =>
+                {
+                    let k = expr.eval(context)?;
+                    context.insert(v, Expr::Int(k));
+                    Some(k)
+                }
+            },
+            Expr::Op(op, lhs, rhs) => Some(op.eval(lhs.eval(context)?,
+                                                   rhs.eval(context)?))
         }
     }
 }
