@@ -45,23 +45,20 @@ fn rockfall() -> impl Iterator<Item = (i64, CycleKey)>
     {
         let mut rock_pos = Pos { x: 2, y: height+4 };
 
-        'fall: loop
+        for dir in jet_cycle.by_ref().flat_map(|dir| [dir, Direction::Down])
         {
-            for dir in jet_cycle.by_ref().take(1).chain(std::iter::once(Direction::Down))
+            rock_pos += dir.offset();
+
+            let collision = shape.points().any(|mut pos|
             {
-                rock_pos += dir.offset();
+                pos += rock_pos;
+                !(0 .. 7).contains(&pos.x) || pos.y < 1 || settled.contains(&pos)
+            });
 
-                let collision = shape.points().any(|mut pos|
-                {
-                    pos += rock_pos;
-                    !(0 .. 7).contains(&pos.x) || pos.y < 1 || settled.contains(&pos)
-                });
-
-                if collision
-                {
-                    rock_pos += dir.opposite().offset();
-                    if let Direction::Down = dir { break 'fall }
-                }
+            if collision
+            {
+                rock_pos += dir.opposite().offset();
+                if let Direction::Down = dir { break }
             }
         }
 
