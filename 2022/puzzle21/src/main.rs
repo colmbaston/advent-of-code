@@ -1,3 +1,5 @@
+#![feature(box_patterns)]
+
 use std::collections::HashMap;
 
 fn main()
@@ -9,10 +11,45 @@ fn main()
     })
     .collect::<HashMap<&str, Expr>>();
 
-    if let Some(root) = Expr::Var("root").eval(&mut monkeys) { println!("{root}") }
+    if let Some(root) = Expr::Var("root").eval(&mut monkeys.clone()) { println!("{root}") }
+
+    monkeys.remove("humn");
+    Expr::Var("root").eval(&mut monkeys);
+    if let Expr::Op(_, box lhs, box rhs) = Expr::Var("root").build_tree(&monkeys)
+    {
+        let humn = match (lhs, rhs)
+        {
+            (Expr::Int(k), rhs) => solve(k, rhs),
+            (lhs, Expr::Int(k)) => solve(k, lhs),
+            _                   => None
+        };
+
+        if let Some(humn) = humn { println!("{humn}") }
+    }
 }
 
-#[derive(Debug, Clone)]
+fn solve(acc : i64, expr : Expr) -> Option<i64>
+{
+    match expr
+    {
+        Expr::Op(Op::Add, lhs, box Expr::Int(l)) => solve(acc - l, *lhs),
+        Expr::Op(Op::Add, box Expr::Int(k), rhs) => solve(acc - k, *rhs),
+
+        Expr::Op(Op::Sub, lhs, box Expr::Int(l)) => solve(acc + l, *lhs),
+        Expr::Op(Op::Sub, box Expr::Int(k), rhs) => solve(k - acc, *rhs),
+
+        Expr::Op(Op::Mul, lhs, box Expr::Int(l)) => solve(acc / l, *lhs),
+        Expr::Op(Op::Mul, box Expr::Int(k), rhs) => solve(acc / k, *rhs),
+
+        Expr::Op(Op::Div, lhs, box Expr::Int(l)) => solve(acc * l, *lhs),
+        Expr::Op(Op::Div, box Expr::Int(k), rhs) => solve(k / acc, *rhs),
+
+        Expr::Var(_) => Some(acc),
+        _            => None
+    }
+}
+
+#[derive(Clone)]
 enum Expr<'a>
 {
     Int(i64),
@@ -20,7 +57,7 @@ enum Expr<'a>
     Op(Op, Box<Expr<'a>>, Box<Expr<'a>>)
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 enum Op { Add, Sub, Mul, Div }
 
 impl<'a> Expr<'a>
@@ -49,7 +86,7 @@ impl<'a> Expr<'a>
         match self
         {
             Expr::Int(k) => Some(*k),
-            Expr::Var(v) => match context.get(v)?.clone()
+            Expr::Var(v) => match context.get(v).cloned()?
             {
                 Expr::Int(k) => Some(k),
                 expr         =>
@@ -59,8 +96,25 @@ impl<'a> Expr<'a>
                     Some(k)
                 }
             },
-            Expr::Op(op, lhs, rhs) => Some(op.eval(lhs.eval(context)?,
-                                                   rhs.eval(context)?))
+            Expr::Op(op, lhs, rhs) =>
+            {
+                let lhs = lhs.eval(context);
+                let rhs = rhs.eval(context);
+                Some(op.eval(lhs?, rhs?))
+            }
+        }
+    }
+
+    fn build_tree(&self, context : &HashMap<&'a str, Expr<'a>>) -> Expr<'a>
+    {
+        match self
+        {
+            Expr::Int(k)           => Expr::Int(*k),
+            Expr::Var(v)           => context.get(v).cloned()
+                                             .map(|expr| expr.build_tree(context))
+                                             .unwrap_or(Expr::Var(v)),
+            Expr::Op(op, lhs, rhs) => Expr::Op(*op, Box::new(lhs.build_tree(context)),
+                                                    Box::new(rhs.build_tree(context)))
         }
     }
 }
