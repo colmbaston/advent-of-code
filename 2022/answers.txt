@@ -68,6 +68,7 @@ puzzle21:
   3876027196185
 puzzle22:
   88226
+  57305
 puzzle23:
 puzzle24:
 puzzle25:
