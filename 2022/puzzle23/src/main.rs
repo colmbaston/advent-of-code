@@ -1,4 +1,4 @@
-use std::{ ops::RangeInclusive, collections::{ HashSet, HashMap }};
+use std::{ ops::Range, collections::{ HashSet, HashMap }};
 
 fn main()
 {
@@ -8,19 +8,19 @@ fn main()
                                                                         .filter_map(move |(b, x)| (b == b'#').then_some(Pos { x, y })))
                                                     .collect::<HashSet<Pos>>();
 
-    for round in 0 ..
+    for round in 1 ..
     {
         for &elf in elves.iter()
         {
             let adjacent = elf.adjacent();
-            if adjacent.iter().any(|pos| elves.contains(pos))
+            if adjacent[.. 8].iter().any(|pos| elves.contains(pos))
             {
-                for dir in Direction::cycle().skip(round).take(4)
+                for dir in Direction::enumerate().cycle().skip((round - 1) % 4).take(4)
                 {
                     let scan = &adjacent[dir.adjacent_range()];
                     if !scan.iter().any(|pos| elves.contains(pos))
                     {
-                        proposals.entry(scan[1]).or_insert_with(Vec::new).push(elf);
+                        proposals.entry(scan[1]).or_insert((elf, 0)).1 += 1;
                         break
                     }
                 }
@@ -29,22 +29,22 @@ fn main()
 
         if proposals.is_empty()
         {
-            println!("{}", round+1);
+            println!("{round}");
             break
         }
 
-        for (dest, proposers) in proposals.drain()
+        for (dest, (elf, count)) in proposals.drain()
         {
-            if let [elf] = proposers[..]
+            if count == 1
             {
                 elves.remove(&elf);
                 elves.insert(dest);
             }
         }
 
-        if round == 9
+        if round == 10
         {
-            let mut min_corner = Pos { x: 0, y: 0 };
+            let mut min_corner = elves.iter().next().cloned().unwrap_or(Pos { x: 0, y: 0 });
             let mut max_corner = min_corner;
 
             for &elf in elves.iter()
@@ -56,7 +56,7 @@ fn main()
             }
 
             println!("{}", (1 + max_corner.x - min_corner.x) *
-                           (1 + max_corner.y - min_corner.y) - elves.len() as i32);
+                           (1 + max_corner.y - min_corner.y) - elves.len() as i16);
         }
     }
 }
@@ -64,8 +64,8 @@ fn main()
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 struct Pos
 {
-    x: i32,
-    y: i32
+    x: i16,
+    y: i16
 }
 
 #[derive(Clone, Copy)]
@@ -91,23 +91,22 @@ impl Pos
 
 impl Direction
 {
-    fn cycle() -> impl Iterator<Item = Direction>
+    fn enumerate() -> impl Iterator<Item = Direction> + Clone
     {
         [Direction::North,
          Direction::South,
          Direction::West,
          Direction::East].into_iter()
-                         .cycle()
     }
 
-    fn adjacent_range(self) -> RangeInclusive<usize>
+    fn adjacent_range(self) -> Range<usize>
     {
         match self
         {
-            Direction::North => 0 ..= 2,
-            Direction::East  => 2 ..= 4,
-            Direction::South => 4 ..= 6,
-            Direction::West  => 6 ..= 8
+            Direction::North => 0 .. 3,
+            Direction::East  => 2 .. 5,
+            Direction::South => 4 .. 7,
+            Direction::West  => 6 .. 9
         }
     }
 }
