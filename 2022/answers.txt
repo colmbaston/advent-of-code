@@ -70,5 +70,7 @@ puzzle22:
   88226
   57305
 puzzle23:
+  4236
+  1023
 puzzle24:
 puzzle25:
