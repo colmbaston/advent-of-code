@@ -73,4 +73,6 @@ puzzle23:
   4236
   1023
 puzzle24:
+  334
+  934
 puzzle25:
