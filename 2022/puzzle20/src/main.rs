@@ -24,7 +24,7 @@ fn mix(file : &[i64], key : i64, buffer : &mut VecDeque<usize>)
         buffer.rotate_left(buffer.iter().position(|&j| j == i).unwrap_or(0));
         buffer.pop_front();
 
-        let rot = val.unsigned_abs() as usize % buffer.len();
+        let rot = (val.unsigned_abs() % buffer.len() as u64) as usize;
         if val.is_positive() { buffer.rotate_left(rot) } else { buffer.rotate_right(rot) }
         buffer.push_front(i);
     }
