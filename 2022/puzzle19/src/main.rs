@@ -37,8 +37,8 @@ fn explore(blueprint : &Blueprint, minutes : u16, queue : &mut Vec<State>, buffe
 
         state.step(blueprint, buffer);
         queue.extend(buffer.drain(..)
-                           .map(|mut next| { next.dump_excess(&cost_max); next })
-                           .filter(|next| !next.prune(geode_max, &cost_max)));
+                           .filter(|next| !next.prune(geode_max, &cost_max))
+                           .map(|mut next| { next.dump_excess(&cost_max); next }))
     }
     geode_max
 }
