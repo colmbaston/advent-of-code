@@ -35,7 +35,7 @@ fn parse_canvas(s : &str) -> (Vec<bool>, HashSet<(i32, i32)>)
 fn enhance(rules : &[bool], canvas : &HashSet<(i32, i32)>, parity : bool) -> HashSet<(i32, i32)>
 {
     let mut next = HashSet::new();
-    if let Some((min_x, min_y, max_x, max_y)) = aoc::bounds::bounds_2d(canvas.iter())
+    if let Some((min_x, min_y, max_x, max_y)) = aoc::linear::bounds_2d(canvas.iter())
     {
         for y in min_y-1 ..= max_y+1
         {

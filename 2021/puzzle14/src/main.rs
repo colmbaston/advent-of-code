@@ -18,7 +18,7 @@ fn main()
             *hist.entry(b).or_insert(0) += freq;
         }
 
-        if let Some((min, max)) = aoc::bounds::bounds_1d(hist.values())
+        if let Some((min, max)) = aoc::linear::bounds_1d(hist.values())
         {
             println!("{}", (max - min) / 2);
         }

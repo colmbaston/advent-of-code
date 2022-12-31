@@ -10,7 +10,7 @@ num-traits = { version = "0.2.15", optional = true }
 
 [features]
 default      = []
-bounds       = []
+linear       = []
 pathfinding  = ["num-traits"]
 permutations = []
 transpose    = []

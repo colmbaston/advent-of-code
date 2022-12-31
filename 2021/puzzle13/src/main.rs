@@ -17,7 +17,7 @@ fn main()
         if i == 0 { println!("{}", points.len()) }
     }
 
-    if let Some((min_x, min_y, max_x, max_y)) = aoc::bounds::bounds_2d(points.iter())
+    if let Some((min_x, min_y, max_x, max_y)) = aoc::linear::bounds_2d(points.iter())
     {
         for y in min_y ..= max_y
         {

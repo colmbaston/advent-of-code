@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 intcode = { path = "../intcode" }
-aoc     = { path = "../../aoc", features = ["bounds"] }
+aoc     = { path = "../../aoc", features = ["linear"] }

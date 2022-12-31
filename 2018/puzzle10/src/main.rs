@@ -4,14 +4,14 @@ fn main()
 {
     let mut points = include_str!("../input.txt").lines().map(Point::parse).collect::<Vec<_>>();
 
-    let mut last_rect = aoc::bounds::bounds_2d(points.iter().map(|p| &p.position)).unwrap();
+    let mut last_rect = aoc::linear::bounds_2d(points.iter().map(|p| &p.position)).unwrap();
     let mut last_area = rect_area(&last_rect);
 
     // simulate until the area of the bounding rectangle stops contracting
     for step in 0 ..
     {
         points.iter_mut().for_each(Point::step_forwards);
-        let rect = aoc::bounds::bounds_2d(points.iter().map(|p| &p.position)).unwrap();
+        let rect = aoc::linear::bounds_2d(points.iter().map(|p| &p.position)).unwrap();
         let area = rect_area(&rect);
 
         if area > last_area

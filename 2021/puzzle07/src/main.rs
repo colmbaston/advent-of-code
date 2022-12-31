@@ -5,7 +5,7 @@ fn main()
     let fuel_one   = |a : i32, b : i32| {         (a - b).abs()                  };
     let fuel_two   = |a : i32, b : i32| { let c = (a - b).abs(); (c * (c+1)) / 2 };
 
-    if let Some((min, max)) = aoc::bounds::bounds_1d(input.iter())
+    if let Some((min, max)) = aoc::linear::bounds_1d(input.iter())
     {
         for fuel in [fuel_one, fuel_two]
         {

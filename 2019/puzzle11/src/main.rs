@@ -32,7 +32,7 @@ fn main()
         if *init
         {
             canvas.retain(|_, v| *v);
-            if let Some((min_x, min_y, max_x, max_y)) = aoc::bounds::bounds_2d(canvas.keys())
+            if let Some((min_x, min_y, max_x, max_y)) = aoc::linear::bounds_2d(canvas.keys())
             {
                 for y in min_y ..= max_y
                 {

@@ -1,5 +1,5 @@
-#[cfg(feature = "bounds")]
-pub mod bounds;
+#[cfg(feature = "linear")]
+pub mod linear;
 
 #[cfg(feature = "pathfinding")]
 pub mod pathfinding;
