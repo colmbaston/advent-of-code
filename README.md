@@ -1,6 +1,8 @@
 # Advent of Code
 
 My solutions to [Advent of Code](https://adventofcode.com/about) puzzles, written in Rust.
+I tend to optimise for code quality rather than fast puzzle completion time.
+
 Each year's puzzles are organised into a Cargo workspace consisting of one binary crate per puzzle.
 Each puzzle's binary (with a few exceptions):
 

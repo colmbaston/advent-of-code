@@ -4,31 +4,53 @@ stages: [test]
 test_2015:
   stage:  test
   script: bash ./check.sh 2015
+  rules:
+  - changes: [2015/**/*, aoc/**/*]
 
 test_2016:
   stage:  test
   script: bash ./check.sh 2016
+  rules:
+  - changes: [2016/**/*, aoc/**/*]
 
 test_2017:
   stage:  test
   script: bash ./check.sh 2017
+  rules:
+  - changes: [2017/**/*, aoc/**/*]
 
 test_2018:
   stage:  test
   script: bash ./check.sh 2018
+  rules:
+  - changes: [2018/**/*, aoc/**/*]
 
 test_2019:
   stage:  test
   script: bash ./check.sh 2019
+  rules:
+  - changes: [2019/**/*, aoc/**/*]
 
 test_2020:
   stage:  test
   script: bash ./check.sh 2020
+  rules:
+  - changes: [2020/**/*, aoc/**/*]
 
 test_2021:
   stage:  test
   script: bash ./check.sh 2021
+  rules:
+  - changes: [2021/**/*, aoc/**/*]
 
 test_2022:
   stage:  test
   script: bash ./check.sh 2022
+  rules:
+  - changes: [2022/**/*, aoc/**/*]
+
+test_2023:
+  stage:  test
+  script: bash ./check.sh 2023
+  rules:
+  - changes: [2023/**/*, aoc/**/*]

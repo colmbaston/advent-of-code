@@ -12,7 +12,9 @@ if [ $1 == "clean" ]
 then
   for year in $(ls | grep "^20")
   do
-    (cd $year && cargo clean --target-dir target)
+    (cd $year;
+     rm -f output.txt;
+     cargo clean --target-dir target)
   done
   exit
 fi
