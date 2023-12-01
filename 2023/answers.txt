@@ -1,4 +1,6 @@
 puzzle01:
+  56397
+  55701
 puzzle02:
 puzzle03:
 puzzle04:
