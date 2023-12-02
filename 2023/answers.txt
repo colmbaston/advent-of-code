@@ -2,6 +2,8 @@ puzzle01:
   56397
   55701
 puzzle02:
+  2105
+  72422
 puzzle03:
 puzzle04:
 puzzle05:
