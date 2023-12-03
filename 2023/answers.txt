@@ -5,6 +5,8 @@ puzzle02:
   2105
   72422
 puzzle03:
+  550934
+  81997870
 puzzle04:
 puzzle05:
 puzzle06:
