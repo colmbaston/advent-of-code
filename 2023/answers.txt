@@ -11,6 +11,8 @@ puzzle04:
   27845
   9496801
 puzzle05:
+  825516882
+  136096660
 puzzle06:
 puzzle07:
 puzzle08:
