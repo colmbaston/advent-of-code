@@ -17,6 +17,8 @@ puzzle06:
   505494
   23632299
 puzzle07:
+  246912307
+  246894760
 puzzle08:
 puzzle09:
 puzzle10:
