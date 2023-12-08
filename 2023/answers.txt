@@ -20,6 +20,8 @@ puzzle07:
   246912307
   246894760
 puzzle08:
+  15871
+  11283670395017
 puzzle09:
 puzzle10:
 puzzle11:
