@@ -23,6 +23,8 @@ puzzle08:
   15871
   11283670395017
 puzzle09:
+  1743490457
+  1053
 puzzle10:
 puzzle11:
 puzzle12:
