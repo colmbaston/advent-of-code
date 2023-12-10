@@ -26,6 +26,8 @@ puzzle09:
   1743490457
   1053
 puzzle10:
+  6599
+  477
 puzzle11:
 puzzle12:
 puzzle13:
