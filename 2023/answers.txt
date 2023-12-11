@@ -29,6 +29,8 @@ puzzle10:
   6599
   477
 puzzle11:
+  9370588
+  746207878188
 puzzle12:
 puzzle13:
 puzzle14:
