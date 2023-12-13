@@ -32,6 +32,8 @@ puzzle11:
   9370588
   746207878188
 puzzle12:
+  7017
+  527570479489
 puzzle13:
 puzzle14:
 puzzle15:
