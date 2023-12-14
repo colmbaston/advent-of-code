@@ -38,6 +38,8 @@ puzzle13:
   33520
   34824
 puzzle14:
+  107053
+  88371
 puzzle15:
 puzzle16:
 puzzle17:
