@@ -41,6 +41,8 @@ puzzle14:
   107053
   88371
 puzzle15:
+  514394
+  236358
 puzzle16:
 puzzle17:
 puzzle18:
