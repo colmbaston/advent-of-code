@@ -1,4 +1,5 @@
-use std::{ ops::Range, collections::{ HashSet, HashMap }};
+#![feature(hash_extract_if)]
+use std::collections::HashMap;
 
 fn main()
 {
@@ -13,7 +14,10 @@ fn main()
 
     for n in 0 .. CYCLES
     {
-        let mut rocks = platform.rocks.iter().copied().collect::<Vec<Pos>>();
+        let mut rocks = platform.rocks.iter()
+                                      .filter(|(_, &v)| v)
+                                      .map(|(&p, _)| p)
+                                      .collect::<Vec<Pos>>();
         rocks.sort_unstable();
 
         if let Some(m) = visited.insert(rocks, n)
@@ -31,22 +35,24 @@ type Pos = (i32, i32);
 
 struct Platform
 {
-    rows:  Range<i32>,
-    cols:  Range<i32>,
-    walls: HashSet<Pos>,
-    rocks: HashSet<Pos>
+    rocks:  HashMap<Pos, bool>,
+    width:  i32,
+    height: i32
 }
 
 impl Platform
 {
     fn tilt(&mut self, dir : Direction)
     {
-        for mut rock in self.rocks.drain().collect::<Vec<Pos>>().into_iter()
+
+        for mut rock in self.rocks.extract_if(|_, &mut v| v)
+                                  .map(|(p, _)| p)
+                                  .collect::<Vec<Pos>>()
+                                  .into_iter()
         {
-            let obstructed = |p : Pos| !self.rows.contains(&p.1) ||
-                                       !self.cols.contains(&p.0) ||
-                                        self.walls.contains(&p)  ||
-                                        self.rocks.contains(&p);
+            let obstructed = |(x, y) : Pos| !(0 .. self.width).contains(&x)  ||
+                                            !(0 .. self.height).contains(&y) ||
+                                             self.rocks.contains_key(&(x, y));
 
             while !obstructed(rock)
             {
@@ -58,7 +64,7 @@ impl Platform
                 rock = dir.opposite().offset(rock)
             }
 
-            self.rocks.insert(rock);
+            self.rocks.insert(rock, true);
         }
     }
 
@@ -72,13 +78,15 @@ impl Platform
 
     fn load(&self) -> i32
     {
-        self.rocks.iter().map(|(_, y)| self.cols.end - y).sum()
+        self.rocks.iter()
+                  .filter(|(_, &v)| v)
+                  .map(|((_, y), _)| self.height - y)
+                  .sum()
     }
 
     fn parse(s : &str) -> Platform
     {
-        let mut walls  = HashSet::new();
-        let mut rocks  = HashSet::new();
+        let mut rocks  = HashMap::new();
         let mut width  = 0;
         let mut height = 0;
 
@@ -88,8 +96,8 @@ impl Platform
             {
                 match b
                 {
-                    b'#' => { walls.insert((x, y)); },
-                    b'O' => { rocks.insert((x, y)); },
+                    b'#' => { rocks.insert((x, y), false); },
+                    b'O' => { rocks.insert((x, y), true);  },
                     _    => ()
                 }
 
@@ -98,7 +106,7 @@ impl Platform
             }
         }
 
-        Platform { rows: 0 .. width, cols: 0 .. height, walls, rocks }
+        Platform { rocks, width, height }
     }
 }
 
