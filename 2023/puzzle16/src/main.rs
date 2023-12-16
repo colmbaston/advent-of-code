@@ -1,4 +1,4 @@
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashMap;
 
 fn main()
 {
@@ -63,12 +63,14 @@ impl Contraption
         Contraption { grid, width, height }
     }
 
-    fn energise(&self, mut pos : Pos, mut dir : Dir, visited : &mut HashMap<Pos, HashSet<Dir>>)
+    fn energise(&self, mut pos : Pos, mut dir : Dir, visited : &mut HashMap<Pos, u8>)
     {
-        while (0 .. self.width).contains(&pos.0)  &&
-              (0 .. self.height).contains(&pos.1) &&
-              visited.entry(pos).or_default().insert(dir)
+        while (0 .. self.width).contains(&pos.0) && (0 .. self.height).contains(&pos.1)
         {
+            let set = visited.entry(pos).or_insert(0);
+            if *set & dir.bit() != 0 { break }
+            *set |= dir.bit();
+
             match (self.grid.get(&pos), dir)
             {
                 (Some(Tile::MirrorF), _) => { dir = dir.reflect()            },
@@ -82,7 +84,7 @@ impl Contraption
                     dir = dir.opposite();
                 },
 
-                _ => ()
+                _ => *set |= dir.opposite().bit()
             }
 
             pos = dir.offset(pos);
@@ -90,7 +92,7 @@ impl Contraption
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy)]
 enum Dir { N, S, E, W }
 
 impl Dir
@@ -126,5 +128,10 @@ impl Dir
             Dir::E => Dir::W,
             Dir::W => Dir::E
         }
+    }
+
+    fn bit(self) -> u8
+    {
+        1 << self as u8
     }
 }
