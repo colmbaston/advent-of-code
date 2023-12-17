@@ -1,6 +1,9 @@
 #[cfg(feature = "bounds")]
 pub mod bounds;
 
+#[cfg(feature = "direction")]
+pub mod direction;
+
 #[cfg(feature = "pathfinding")]
 pub mod pathfinding;
 

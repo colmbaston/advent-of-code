@@ -1,5 +1,6 @@
 #![feature(hash_extract_if)]
 use std::collections::HashMap;
+use aoc::direction::Direction;
 
 fn main()
 {
@@ -56,12 +57,12 @@ impl Platform
 
             while !obstructed(rock)
             {
-                rock = dir.offset(rock)
+                rock = dir.step(rock)
             }
 
             while obstructed(rock)
             {
-                rock = dir.opposite().offset(rock)
+                rock = dir.opposite().step(rock)
             }
 
             self.rocks.insert(rock, true);
@@ -107,33 +108,5 @@ impl Platform
         }
 
         Platform { rocks, width, height }
-    }
-}
-
-#[derive(Copy, Clone)]
-enum Direction { North, West, South, East }
-
-impl Direction
-{
-    fn offset(self, (x, y) : Pos) -> Pos
-    {
-        match self
-        {
-            Direction::North => (x, y-1),
-            Direction::West  => (x-1, y),
-            Direction::South => (x, y+1),
-            Direction::East  => (x+1, y)
-        }
-    }
-
-    fn opposite(self) -> Direction
-    {
-        match self
-        {
-            Direction::North => Direction::South,
-            Direction::West  => Direction::East,
-            Direction::South => Direction::North,
-            Direction::East  => Direction::West
-        }
     }
 }

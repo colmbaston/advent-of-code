@@ -1,3 +1,5 @@
+use aoc::direction::Direction;
+
 fn main()
 {
     let grid   = parse_grid(include_str!("../input.txt"));
@@ -5,17 +7,10 @@ fn main()
 
     println!("{}", aoc::pathfinding::dijkstra(State::inits(),
                                               |s| s.pos == target,
-                                              |s| s.adjacent(0, 3)
-                                                   .filter_map(|s| grid.get(s.pos.1)
-                                                                       .and_then(|row| row.get(s.pos.0))
-                                                                       .map(|&loss| (s, loss as u32)))).unwrap());
-
+                                              |s| s.adjacent(0, 3, &grid)).unwrap());
     println!("{}", aoc::pathfinding::dijkstra(State::inits(),
                                               |s| s.pos == target && 4 <= s.straight,
-                                              |s| s.adjacent(4, 10)
-                                                   .filter_map(|s| grid.get(s.pos.1)
-                                                                       .and_then(|row| row.get(s.pos.0))
-                                                                       .map(|&loss| (s, loss as u32)))).unwrap());
+                                              |s| s.adjacent(4, 10, &grid)).unwrap());
 }
 
 type Pos = (usize, usize);
@@ -31,7 +26,7 @@ fn parse_grid(s : &str) -> Vec<Vec<u8>>
 struct State
 {
     pos:      Pos,
-    dir:      Dir,
+    dir:      Direction,
     straight: u32
 }
 
@@ -39,11 +34,12 @@ impl State
 {
     fn inits() -> impl Iterator<Item = State>
     {
-        [Dir::E, Dir::S].into_iter()
-                        .map(|dir| State { pos: (0, 0), dir, straight: 0 })
+        [Direction::East,
+         Direction::South].into_iter()
+                          .map(|dir| State { pos: (0, 0), dir, straight: 0 })
     }
 
-    fn adjacent(self, min : u32, max : u32) -> impl Iterator<Item = State>
+    fn adjacent(self, min : u32, max : u32, grid : &[Vec<u8>]) -> impl Iterator<Item = (State, u32)> + '_
     {
         let mut next = Vec::new();
         if self.straight < max  { next.push((self.dir,   self.straight+1)) }
@@ -51,51 +47,10 @@ impl State
                                   next.push((self.dir.anticlockwise(), 1)) }
 
         next.into_iter()
-            .filter_map(move |(dir, straight)| dir.offset(self.pos)
-                                                  .map(|pos| State { pos, dir, straight }))
-    }
-}
-
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
-enum Dir { N, E, S, W }
-
-impl Dir
-{
-    fn from_u8(b : u8) -> Dir
-    {
-        match b % 4
-        {
-            0 => Dir::N,
-            1 => Dir::E,
-            2 => Dir::S,
-            3 => Dir::W,
-            _ => unreachable!()
-        }
-    }
-
-    fn clockwise(self) -> Dir
-    {
-        Dir::from_u8((self as u8).wrapping_add(1))
-    }
-
-    fn anticlockwise(self) -> Dir
-    {
-        self.clockwise().opposite()
-    }
-
-    fn opposite(self) -> Dir
-    {
-        Dir::from_u8((self as u8).wrapping_add(2))
-    }
-
-    fn offset(self, (x, y) : Pos) -> Option<Pos>
-    {
-        match self
-        {
-            Dir::N => y.checked_sub(1).map(|y| (x, y)),
-            Dir::E => x.checked_add(1).map(|x| (x, y)),
-            Dir::S => y.checked_add(1).map(|y| (x, y)),
-            Dir::W => x.checked_sub(1).map(|x| (x, y))
-        }
+            .filter_map(move |(dir, straight)| dir.checked_step(self.pos)
+                                                  .and_then(|pos| grid.get(pos.1)
+                                                                      .and_then(|row| row.get(pos.0))
+                                                                      .map(|&loss| (pos, loss as u32)))
+                                                  .map(|(pos, loss)| (State { pos, dir, straight }, loss)))
     }
 }
