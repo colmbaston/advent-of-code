@@ -15,9 +15,10 @@ pub fn bfs<P, C, A>(inits    : impl Iterator<Item = P>,
 
     while let Some((c, p)) = queue.pop_front()
     {
-        if !visited.insert(p) { continue       }
         if target(&p)         { return Some(c) }
-        queue.extend(adjacent(&p).map(|p| (c + C::one(), p)));
+        if !visited.insert(p) { continue       }
+        queue.extend(adjacent(&p).filter(|p| !visited.contains(p))
+                                 .map(|p| (c + C::one(), p)));
     }
     None
 }
@@ -109,9 +110,10 @@ pub fn a_star<P, C, A>(inits     : impl Iterator<Item = P>,
 
     while let Some(AStarNode { steps, payload, .. }) = queue.pop()
     {
-        if !visited.insert(payload) { continue           }
         if target(&payload)         { return Some(steps) }
-        queue.extend(adjacent(&payload).map(|(p, dist)| AStarNode::new(p, steps+dist, heuristic)))
+        if !visited.insert(payload) { continue           }
+        queue.extend(adjacent(&payload).filter(|(p, _)| !visited.contains(p))
+                                       .map(|(p, d)| AStarNode::new(p, steps+d, heuristic)))
     }
     None
 }
