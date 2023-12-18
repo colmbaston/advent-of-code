@@ -10,6 +10,7 @@ cd "`dirname \"$0\"`"
 
 if [ $1 == "clean" ]
 then
+  (cd aoc; cargo clean)
   for year in $(ls | grep "^20")
   do
     (cd $year;
