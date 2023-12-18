@@ -50,6 +50,8 @@ puzzle17:
   694
   829
 puzzle18:
+  70026
+  68548301037382
 puzzle19:
 puzzle20:
 puzzle21:
