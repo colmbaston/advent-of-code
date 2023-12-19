@@ -53,6 +53,7 @@ puzzle18:
   70026
   68548301037382
 puzzle19:
+  495298
 puzzle20:
 puzzle21:
 puzzle22:
