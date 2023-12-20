@@ -56,6 +56,7 @@ puzzle19:
   495298
   132186256794011
 puzzle20:
+  856482136
 puzzle21:
 puzzle22:
 puzzle23:
