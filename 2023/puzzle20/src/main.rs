@@ -3,7 +3,8 @@ use std::collections::{ HashMap, VecDeque };
 fn main()
 {
     let mut graph = include_str!("../input.txt").lines().map(Module::parse).collect::<HashMap<&str, Module<&str>>>();
-    Module::reset(&mut graph);
+    let inputs    = Module::inputs(&graph);
+    Module::reset(&mut graph, &inputs);
 
     let mut highs = 0;
     let mut lows  = 0;
@@ -22,6 +23,43 @@ fn main()
         }
     }
     println!("{}", highs * lows);
+
+    // make copious assumptions about the structure of the input for part two
+    let to_rx  = &inputs["rx"];
+    assert!(to_rx.len() == 1);
+    let to_rx  = to_rx.iter().next().copied().unwrap();
+    let module = &graph[to_rx];
+    assert!(matches!(module.state, State::Conjunction(_)));
+
+    let mut lcm = 1;
+    'outer: for &input in inputs[to_rx].iter()
+    {
+        queue.clear();
+        Module::reset(&mut graph, &inputs);
+        for press in 1 ..
+        {
+            queue.push_back(("button", "broadcaster", false));
+            while let Some((source, dest, in_pulse)) = queue.pop_front()
+            {
+                if in_pulse && source == input && dest == to_rx
+                {
+                    lcm = (lcm * press) / gcd(lcm, press);
+                    continue 'outer
+                }
+
+                if let Some(module) = graph.get_mut(dest)
+                {
+                    queue.extend(module.update(source, in_pulse).map(|(out, out_pulse)| (dest, out, out_pulse)));
+                }
+            }
+        }
+    }
+    println!("{lcm}");
+}
+
+fn gcd(a : u64, b : u64) -> u64
+{
+    if let 0 = a { b } else { gcd(b % a, a) }
 }
 
 struct Module<Id>
@@ -58,27 +96,34 @@ impl Module<&str>
     }
 }
 
-impl<Id : Copy + Eq + std::hash::Hash> Module<Id>
+impl<Id : Copy + Eq + std::hash::Hash + std::fmt::Debug> Module<Id>
 {
-    fn reset(modules : &mut HashMap<Id, Module<Id>>)
+    fn inputs(modules : &HashMap<Id, Module<Id>>) -> HashMap<Id, Vec<Id>>
     {
-        let mut buffer = HashMap::new();
+        let mut inputs = HashMap::new();
 
         for (&id, module) in modules.iter()
         {
             for &output in module.outputs.iter()
             {
-                buffer.entry(output).or_insert_with(Vec::new).push(id);
+                inputs.entry(output).or_insert_with(Vec::new).push(id);
             }
         }
 
-        for (id, inputs) in buffer.into_iter()
+        inputs
+    }
+
+    fn reset(modules : &mut HashMap<Id, Module<Id>>, inputs : &HashMap<Id, Vec<Id>>)
+    {
+        for (id, inputs) in inputs.iter()
         {
-            if let Some(module) = modules.get_mut(&id)
+            if let Some(module) = modules.get_mut(id)
             {
-                if let State::Conjunction(mem) = &mut module.state
+                match &mut module.state
                 {
-                    inputs.into_iter().for_each(|input| { mem.insert(input, false); })
+                    State::Broadcaster => (),
+                    State::FlipFlop(s) => *s = false,
+                    State::Conjunction(mem) => inputs.iter().for_each(|&input| { mem.insert(input, false); })
                 }
             }
         }
