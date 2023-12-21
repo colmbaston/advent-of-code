@@ -6,6 +6,11 @@ pub enum Direction { North, East, South, West }
 
 impl Direction
 {
+    pub const ELEMS : [Direction ; 4] = [Direction::North,
+                                         Direction::East,
+                                         Direction::South,
+                                         Direction::West];
+
     pub fn offset<T : Add<Output = T> + Sub<Output = T> + One>(self, (x, y) : (T, T), d : T) -> (T, T)
     {
         match self
