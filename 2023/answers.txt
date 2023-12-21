@@ -60,6 +60,7 @@ puzzle20:
   224046542165867
 puzzle21:
   3770
+  628206330073385
 puzzle22:
 puzzle23:
 puzzle24:
