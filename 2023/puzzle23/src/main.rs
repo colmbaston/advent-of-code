@@ -1,10 +1,12 @@
 #![feature(iter_next_chunk)]
-use std::collections::{ HashMap, HashSet };
+use std::collections::HashMap;
 use aoc::direction::Direction;
 
 fn main()
 {
-    let grid = Tile::parse_grid(include_str!("../input.txt"));
+    let mut grid = Tile::parse_grid(include_str!("../input.txt"));
+    let width    = grid[0].len();
+    let height   = grid.len();
 
     let mut graph_one = HashMap::new();
     let mut graph_two = HashMap::new();
@@ -34,11 +36,10 @@ fn main()
     contract(&mut graph_one);
     contract(&mut graph_two);
 
-    let start       = (1, 0);
-    let target      = (grid[0].len() as u8 - 2, grid.len() as u8 - 1);
-    let mut visited = HashSet::new();
-    println!("{}", dfs(start, target, 0, &graph_one, &mut visited));
-    println!("{}", dfs(start, target, 0, &graph_two, &mut visited));
+    let start  = (1, 0);
+    let target = (width as u8 - 2, height as u8 - 1);
+    println!("{}", dfs(start, target, 0, &graph_one, &mut grid));
+    println!("{}", dfs(start, target, 0, &graph_two, &mut grid));
 }
 
 type Grid = Vec<Vec<Tile>>;
@@ -84,24 +85,32 @@ fn adjacents(pos : Pos, grid : &Grid) -> impl Iterator<Item = Pos> + '_
 
 fn contract(graph : &mut Graph)
 {
-    while let Some((&pos, edges)) = graph.iter().find(|(_, es)| es.len() == 2)
+    let buffer = graph.iter()
+                      .filter_map(|(&pos, edges)| (edges.len() == 2).then_some(pos))
+                      .collect::<Vec<Pos>>();
+
+    for pos in buffer.into_iter()
     {
-        let [(&p1, &c1), (&p2, &c2)] = edges.iter().next_chunk().unwrap();
+        let [(&p1, &c1), (&p2, &c2)] = graph[&pos].iter().next_chunk().unwrap();
         graph.remove(&pos);
         graph.entry(p1).and_modify(|edges| { edges.remove(&pos); edges.insert(p2, c1+c2); });
         graph.entry(p2).and_modify(|edges| { edges.remove(&pos); edges.insert(p1, c1+c2); });
     }
 }
 
-fn dfs(pos : Pos, target : Pos, steps : u32, graph : &Graph, visited : &mut HashSet<Pos>) -> u32
+fn dfs(pos@(x, y) : Pos, target : Pos, steps : u32, graph : &Graph, grid : &mut Grid) -> u32
 {
-    if pos == target        { return steps }
-    if !visited.insert(pos) { return 0     }
+    if pos == target { return steps }
 
-    let max = graph.get(&pos).unwrap()
-                   .iter().map(|(&next, &cost)| dfs(next, target, steps+cost, graph, visited))
+    let tile = std::mem::replace(&mut grid[y as usize][x as usize], Tile::Forest);
+
+    #[allow(clippy::filter_map_bool_then)]
+    let max = graph.get(&pos).unwrap().iter()
+                   .filter_map(|(&next@(x, y), cost)| grid[y as usize]
+                                                          [x as usize].passable()
+                                                                      .then(|| dfs(next, target, steps+cost, graph, grid)))
                    .max().unwrap_or(0);
 
-    visited.remove(&pos);
+    grid[y as usize][x as usize] = tile;
     max
 }
