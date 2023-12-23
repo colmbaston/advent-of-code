@@ -65,5 +65,7 @@ puzzle22:
   407
   59266
 puzzle23:
+  2282
+  6646
 puzzle24:
 puzzle25:
