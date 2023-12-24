@@ -68,4 +68,5 @@ puzzle23:
   2282
   6646
 puzzle24:
+  16779
 puzzle25:
