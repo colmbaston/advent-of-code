@@ -27,6 +27,44 @@ fn main()
         }
     }
     println!("{count}");
+
+    println!("{}", solve(&hailstones).unwrap());
+}
+
+fn solve(hailstones : &[Hailstone]) -> Option<i64>
+{
+    use z3::{ Context, Config, Solver, ast::{ Ast, Int }, SatResult };
+
+    let context = Context::new(&Config::new());
+    let solver  = Solver::new(&context);
+
+    let rpx = Int::new_const(&context, "rpx");
+    let rpy = Int::new_const(&context, "rpy");
+    let rpz = Int::new_const(&context, "rpz");
+    let rvx = Int::new_const(&context, "rvx");
+    let rvy = Int::new_const(&context, "rvy");
+    let rvz = Int::new_const(&context, "rvz");
+
+    for (i, hailstone) in hailstones.iter().enumerate()
+    {
+        let t = Int::new_const(&context, format!("t{i}"));
+        solver.assert(&t.ge(&Int::from_i64(&context, 0)));
+
+        let hpx = Int::from_i64(&context, hailstone.pos.x);
+        let hpy = Int::from_i64(&context, hailstone.pos.y);
+        let hpz = Int::from_i64(&context, hailstone.pos.z);
+        let hvx = Int::from_i64(&context, hailstone.vel.x);
+        let hvy = Int::from_i64(&context, hailstone.vel.y);
+        let hvz = Int::from_i64(&context, hailstone.vel.z);
+        solver.assert(&(&hpx + &hvx * &t)._eq(&(&rpx + &rvx * &t)));
+        solver.assert(&(&hpy + &hvy * &t)._eq(&(&rpy + &rvy * &t)));
+        solver.assert(&(&hpz + &hvz * &t)._eq(&(&rpz + &rvz * &t)));
+    }
+
+    (solver.check() == SatResult::Sat).then(|| solver.get_model()?
+                                                     .eval(&(&rpx + &rpy + &rpz), true)?
+                                                     .as_i64())
+                                      .flatten()
 }
 
 struct Hailstone
