@@ -2,13 +2,14 @@ use std::{ hash::Hash, collections::{ HashMap, HashSet, VecDeque }};
 
 fn main()
 {
-    let mut graph = parse_graph(include_str!("../input.txt"));
-    let mut hist  = HashMap::new();
+    let mut graph   = parse_graph(include_str!("../input.txt"));
+    let mut hist    = HashMap::new();
+    let mut visited = HashSet::new();
+    let mut queue   = VecDeque::new();
 
     for &u in graph.keys()
     {
-        let mut visited = HashSet::new();
-        let mut queue   = VecDeque::new();
+        visited.clear();
         queue.push_back(u);
 
         while let Some(v) = queue.pop_front()
