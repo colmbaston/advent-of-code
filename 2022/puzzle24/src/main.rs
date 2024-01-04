@@ -40,10 +40,10 @@ fn main()
             if pos == finish { start_time = minute; break }
 
             minute += 1;
-            queue.extend(pos.moves().filter_map(|pos| valid(pos, minute).then(||
+            queue.extend(pos.moves().filter(|&pos| valid(pos, minute)).map(|pos|
             {
                 (Reverse((minute + pos.manhattan(finish) as usize, minute)), pos)
-            })))
+            }))
         }
 
         if trip == 0

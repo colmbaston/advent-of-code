@@ -67,7 +67,7 @@ impl Bot
     {
         fn parse_integer(s : &str) -> (i32, &str)
         {
-            let (integer, rest) = s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or_else(|| s.len()));
+            let (integer, rest) = s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or(s.len()));
             (integer.parse().unwrap(), rest)
         }
 

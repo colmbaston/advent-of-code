@@ -13,14 +13,14 @@ fn main()
     {
         if oxygen.len() > 1
         {
-            gamma  = gamma_rate(&oxygen);
-            oxygen = oxygen.into_iter().filter(|bs| bs[i] == gamma[i]).collect();
+            gamma = gamma_rate(&oxygen);
+            oxygen.retain(|bs| bs[i] == gamma[i]);
         }
 
         if carbon.len() > 1
         {
-            gamma  = gamma_rate(&carbon);
-            carbon = carbon.into_iter().filter(|bs| bs[i] != gamma[i]).collect();
+            gamma = gamma_rate(&carbon);
+            carbon.retain(|bs| bs[i] != gamma[i]);
         }
     }
     println!("{}", to_decimal(&oxygen[0]) * to_decimal(&carbon[0]));

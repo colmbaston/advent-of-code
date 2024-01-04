@@ -33,7 +33,9 @@ enum Team
     Elf
 }
 
-fn parse(s : &str) -> (HashMap<(u32, u32), Unit>, HashSet<(u32, u32)>)
+type Pos = (u32, u32);
+
+fn parse(s : &str) -> (HashMap<Pos, Unit>, HashSet<Pos>)
 {
     let mut units = HashMap::new();
     let mut walls = HashSet::new();
@@ -61,7 +63,7 @@ fn parse(s : &str) -> (HashMap<(u32, u32), Unit>, HashSet<(u32, u32)>)
     (units, walls)
 }
 
-fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, elf_attack : Option<u32>) -> Option<u32>
+fn combat(mut units : HashMap<Pos, Unit>, walls : &HashSet<Pos>, elf_attack : Option<u32>) -> Option<u32>
 {
     let mut round          = 0;
     let mut unit_positions = Vec::new();
@@ -85,17 +87,17 @@ fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, e
                 }
 
                 // identify all unique open squares that are adjacent to targets
-                let open_squares = targets.iter().flat_map(|(p, _)| moves(p, &walls, &units)).collect::<HashSet<_>>();
+                let open_squares = targets.iter().flat_map(|(p, _)| moves(p, walls, &units)).collect::<HashSet<_>>();
 
                 // only move if not already on one of the open squares
                 if !open_squares.contains(&current_p)
                 {
                     // use bfs to compute the unit's move
-                    let sources   = moves(&current_p, &walls, &units);
+                    let sources   = moves(&current_p, walls, &units);
                     let mut sinks = open_squares.into_iter().collect::<Vec<_>>();
                     sinks.sort_by_key(|&(x, y)| (y, x));
 
-                    current_p = bfs(&sources, &sinks, |p| moves(p, &walls, &units)).unwrap_or(current_p);
+                    current_p = bfs(&sources, &sinks, |p| moves(p, walls, &units)).unwrap_or(current_p);
                 }
 
                 // find the adjacent target (if any) with the lowest hit points
@@ -139,12 +141,12 @@ fn combat(mut units : HashMap<(u32, u32), Unit>, walls : &HashSet<(u32, u32)>, e
     }
 }
 
-fn ortho((x, y) : (u32, u32)) -> impl Iterator<Item = (u32, u32)>
+fn ortho((x, y) : Pos) -> impl Iterator<Item = Pos>
 {
     vec![(x, y-1), (x-1, y), (x+1, y), (x, y+1)].into_iter()
 }
 
-fn moves(&p : &(u32, u32), walls : &HashSet<(u32, u32)>, units : &HashMap<(u32, u32), Unit>) -> Vec<(u32, u32)>
+fn moves(&p : &Pos, walls : &HashSet<Pos>, units : &HashMap<Pos, Unit>) -> Vec<Pos>
 {
     ortho(p).filter(|p| !(walls.contains(p) || units.contains_key(p))).collect()
 }

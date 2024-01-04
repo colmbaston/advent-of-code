@@ -19,7 +19,7 @@ fn main()
             {
                 for y in 0 ..  100
                 {
-                    let k = neighbours(x, y).filter(|n| grid.contains(&n)).count();
+                    let k = neighbours(x, y).filter(|n| grid.contains(n)).count();
                     if grid.contains(&(x, y)) && k == 2 || k == 3 { next.insert((x, y)); }
                 }
             }
@@ -37,7 +37,8 @@ fn parse_grid(s : &str) -> impl '_ + Iterator<Item = (i8, i8)>
      .zip(0 ..)
      .flat_map(|(l, y)| l.bytes()
                          .zip(0 ..)
-                         .filter_map(move |(b, x)| (b == b'#').then(|| (x, y))))
+                         .filter(|(b, _)| (*b == b'#'))
+                         .map(move |(_, x)| (x, y)))
 }
 
 fn neighbours(x : i8, y : i8) -> impl Iterator<Item = (i8, i8)>

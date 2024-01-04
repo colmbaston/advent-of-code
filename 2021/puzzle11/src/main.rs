@@ -52,7 +52,7 @@ fn increment(x : i8, y : i8, grid : &mut Vec<Vec<Option<u8>>>)
     }
 }
 
-fn reset(grid : &mut Vec<Vec<Option<u8>>>) -> usize
+fn reset(grid : &mut [Vec<Option<u8>>]) -> usize
 {
     let mut count = 0;
     for v in grid.iter_mut()

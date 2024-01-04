@@ -75,7 +75,7 @@ impl Expr
                 }
                 else
                 {
-                    let (y, t) = Expr::parse_ops(&s[1..].trim_start(), ops, *p + *l as u8)?;
+                    let (y, t) = Expr::parse_ops(s[1..].trim_start(), ops, *p + *l as u8)?;
                     x = Expr::Op(op.clone(), Box::new(x), Box::new(y));
                     s = t;
                 }
@@ -91,7 +91,7 @@ impl Expr
         {
             None =>
             {
-                let (ds, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()));
+                let (ds, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()));
                 ds.parse().ok().map(|k| (Expr::Lit(k), s))
             }
             Some(s) =>

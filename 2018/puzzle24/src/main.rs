@@ -159,7 +159,7 @@ impl<'a> Group<'a>
     {
         fn span(s : &str, pred : impl Fn(char) -> bool) -> (&str, &str)
         {
-            s.split_at(s.find(|c| !pred(c)).unwrap_or_else(|| s.len()))
+            s.split_at(s.find(|c| !pred(c)).unwrap_or(s.len()))
         }
 
         fn parse_digits(s : &str) -> (u32, &str)

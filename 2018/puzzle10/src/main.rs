@@ -54,7 +54,7 @@ impl Point
     {
         fn span_integer(s : &str) -> (&str, &str)
         {
-            s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or_else(|| s.len()))
+            s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or(s.len()))
         }
 
         let (px, s) = span_integer(s[10..].trim_start());

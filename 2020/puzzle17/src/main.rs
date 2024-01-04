@@ -23,7 +23,7 @@ fn neighbours(p : &[i32]) -> Vec<Point>
         None             => vec![p.to_vec()],
         Some((&k, rest)) =>
         {
-            let     prev = neighbours(&rest);
+            let     prev = neighbours(rest);
             let mut next = Vec::with_capacity(3 * prev.len());
             for mut q in prev.into_iter()
             {
@@ -47,7 +47,7 @@ fn cycle(dim : &Dimension) -> Dimension
 
     new.retain(|p|
     {
-        let count = neighbours(&p).into_iter().filter(|q| p != q && dim.contains(q)).count();
+        let count = neighbours(p).into_iter().filter(|q| p != q && dim.contains(q)).count();
         count == 3 || count == 2 && dim.contains(p)
     });
 

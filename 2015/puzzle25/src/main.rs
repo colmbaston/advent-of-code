@@ -4,7 +4,7 @@ fn main()
     {
         fn span(s : &str, p : impl Fn(char) -> bool) -> (&str, &str)
         {
-            s.split_at(s.find(|c| !p(c)).unwrap_or_else(|| s.len()))
+            s.split_at(s.find(|c| !p(c)).unwrap_or(s.len()))
         }
 
         let          input  = include_str!("../input.txt");

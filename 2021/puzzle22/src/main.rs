@@ -52,7 +52,7 @@ impl Region for RangeInclusive<i64>
         let max_start = *self.start().max(other.start());
         let min_end   = *self.end().min(other.end());
 
-        (max_start <= min_end).then(|| max_start ..= min_end)
+        (max_start <= min_end).then_some(max_start ..= min_end)
     }
 
     fn subregion(&self, other : &RangeInclusive<i64>) -> bool

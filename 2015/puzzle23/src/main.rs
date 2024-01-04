@@ -2,12 +2,12 @@ fn main()
 {
     let input = include_str!("../input.txt").lines().map(parse_inst).collect::<Vec<Inst>>();
 
-    for mut regs in [[0, 0], [1, 0]].iter_mut()
+    for regs in [[0, 0], [1, 0]].iter_mut()
     {
         let mut pc = 0;
         while let Some(i) = input.get(pc as usize)
         {
-            run_inst(i, &mut regs, &mut pc);
+            run_inst(i, regs, &mut pc);
         }
         println!("{}", regs[1]);
     }

@@ -33,23 +33,24 @@ fn main()
     println!("{}", lower);
 }
 
-fn parse_reaction(s : &str) -> (&str, (u64, Vec<(u64, &str)>))
+fn parse_reaction(s : &str) -> (&str, (u64, Inputs))
 {
     fn parse_chem(s : &str) -> (u64, &str)
     {
-        let (q, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()));
+        let (q, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()));
 
         (q.parse().unwrap(), &s[1..])
     }
 
-    let mut reaction     = s.split(" => ");
-    let inputs           = reaction.next().unwrap().split(", ").map(parse_chem).collect();
-    let (quantity, chem) = parse_chem(reaction.next().unwrap());
+    let (inputs, chem)   = s.split_once(" => ").unwrap();
+    let inputs           = inputs.split(", ").map(parse_chem).collect();
+    let (quantity, chem) = parse_chem(chem);
 
     (chem, (quantity, inputs))
 }
 
-type Reactions<'a> = HashMap<&'a str, (u64, Vec<(u64, &'a str)>)>;
+type Reactions<'a> = HashMap<&'a str, (u64, Inputs<'a>)>;
+type Inputs<'a>    = Vec<(u64, &'a str)>;
 
 fn ore_required<'a>(mut q_required : u64, chem : &'a str, reactions : &Reactions<'a>, leftover : &mut HashMap<&'a str, u64>) -> u64
 {

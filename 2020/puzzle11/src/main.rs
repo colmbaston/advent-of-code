@@ -8,14 +8,14 @@ fn main()
         let next = step_one(&current);
         if current == next { break } else { current = next }
     }
-    println!("{}", current.iter().map(|r| r.iter()).flatten().filter(|c| **c == Cell::Occupied).count());
+    println!("{}", current.iter().flat_map(|r| r.iter()).filter(|c| **c == Cell::Occupied).count());
 
     loop
     {
         let next = step_two(&input);
         if input == next { break } else { input = next }
     }
-    println!("{}", input.iter().map(|r| r.iter()).flatten().filter(|c| **c == Cell::Occupied).count());
+    println!("{}", input.iter().flat_map(|r| r.iter()).filter(|c| **c == Cell::Occupied).count());
 }
 
 #[derive(Clone, PartialEq, Eq)]

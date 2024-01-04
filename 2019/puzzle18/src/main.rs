@@ -113,7 +113,7 @@ fn collect_keys(current : Vec<u8>, keys : BTreeSet<u8>, matrix : &HashMap<(u8, u
         else
         {
             let mut keys = keys.clone(); keys.remove(&k);
-            Some(d + collect_keys(current, keys, &matrix, cache))
+            Some(d + collect_keys(current, keys, matrix, cache))
         }
     })
     .fold(std::u64::MAX, std::cmp::min);

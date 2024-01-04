@@ -25,8 +25,8 @@ fn main()
         let adjacent = |&(x, y) : &Pos|
         {
             [(x+1, y), (x, y+1)].into_iter()
-                                .chain(x.checked_sub(1).map(|x| (x, y)).into_iter())
-                                .chain(y.checked_sub(1).map(|y| (x, y)).into_iter())
+                                .chain(x.checked_sub(1).map(|x| (x, y)))
+                                .chain(y.checked_sub(1).map(|y| (x, y)))
                                 .filter_map(move |next| height(&(x, y)).and_then(|hc| height(&next).filter(|&hn| hn as i8 - hc as i8 <= 1)
                                                                                                    .map(|_| next)))
         };

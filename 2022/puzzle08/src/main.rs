@@ -39,6 +39,8 @@ fn main()
 fn visible_indices(iter : impl Iterator<Item = (usize, u8)>) -> impl Iterator<Item = usize>
 {
     let mut max = None;
+
+    #[allow(clippy::filter_map_bool_then)]
     iter.filter_map(move |(i, b)|
     {
         (max < Some(b)).then(|| { max = Some(b); i })

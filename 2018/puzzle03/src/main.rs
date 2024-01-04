@@ -2,7 +2,7 @@ use std::collections::{ HashSet, HashMap, hash_map::Entry };
 
 fn main()
 {
-    let input = include_str!("../input.txt").lines().map(|s| parse_claim(s)).collect::<Vec<_>>();
+    let input = include_str!("../input.txt").lines().map(parse_claim).collect::<Vec<_>>();
 
     let mut areas       = HashMap::new();
     let mut uncontested = input.iter().map(|c| c.id).collect::<HashSet<_>>();
@@ -46,7 +46,7 @@ fn parse_claim(s : &str) -> Claim
 {
     fn span_digits(s : &str) -> (&str, &str)
     {
-        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()))
+        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()))
     }
 
     let (id, s) = span_digits(&s[1..]);

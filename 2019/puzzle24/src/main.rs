@@ -59,7 +59,7 @@ fn adjacent((x, y, z) : Bug) -> impl Iterator<Item = Bug>
 {
     vec![(x+1, y, z), (x-1, y, z), (x, y+1, z), (x, y-1, z)].into_iter().filter(|&(x, y, _)|
     {
-        1 <= x && x <= 5 && 1 <= y && y <= 5
+        (1 ..= 5).contains(&x) && (1 ..= 5).contains(&y)
     })
 }
 

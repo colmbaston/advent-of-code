@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 fn main()
 {
-    let input : Vec<_> = include_str!("../input.txt").lines().map(|s| parse_moon(s)).collect();
+    let input : Vec<_> = include_str!("../input.txt").lines().map(parse_moon).collect();
 
     let mut moons  = input.clone();
     let mut cycles = [None, None, None];
@@ -32,7 +32,7 @@ fn parse_moon(s : &str) -> ([i64 ; 3], [i64 ; 3])
 {
     fn span_integer(s : &str) -> (&str, &str)
     {
-        s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or_else(|| s.len()))
+        s.split_at(s.find(|c : char| !(c.is_ascii_digit() || c == '-')).unwrap_or(s.len()))
     }
 
     let (x, s) = span_integer(&s[3..]);

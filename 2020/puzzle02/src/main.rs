@@ -10,7 +10,7 @@ fn parse_policy(s : &str) -> Option<((u8, u8, char), &str)>
 {
     fn natural(s : &str) -> Option<(u8, &str)>
     {
-        let (n, t) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()));
+        let (n, t) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()));
         n.parse().ok().map(|k| (k, t))
     }
 

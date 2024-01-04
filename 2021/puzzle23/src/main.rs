@@ -135,7 +135,7 @@ impl Burrow
 
     fn ascending_moves(&self) -> impl Iterator<Item = (Burrow, usize)> + '_
     {
-        self.rooms.iter().enumerate().filter_map(|(ri, room)| (!room.is_empty()).then(|| ri)).flat_map(move |ri|
+        self.rooms.iter().enumerate().filter(|(_, room)| !room.is_empty()).flat_map(move |(ri, _)|
         {
             let hi = 2 * (ri + 1);
             [0, 1, 3, 5, 7, 9, 10].into_iter().filter_map(move |dest|

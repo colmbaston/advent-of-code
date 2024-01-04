@@ -6,8 +6,8 @@ fn main()
     let poms  = compound_index("pomeranians:");
     let golds = compound_index("goldfish:");
 
-    println!("{}", input.iter().zip(1..).find(|(cs, _)| matches(&cs, |_, a, b| a == b)).unwrap().1);
-    println!("{}", input.iter().zip(1..).find(|(cs, _)| matches(&cs, |i, a, b|
+    println!("{}", input.iter().zip(1..).find(|(cs, _)| matches(cs, |_, a, b| a == b)).unwrap().1);
+    println!("{}", input.iter().zip(1..).find(|(cs, _)| matches(cs, |i, a, b|
            if i == cats || i == trees { a >  b }
       else if i == poms || i == golds { a <  b }
       else                            { a == b })).unwrap().1);

@@ -58,7 +58,7 @@ impl Linear
         {
             if exponent % 2 == 1
             {
-                x.compose(&self);
+                x.compose(self);
                 x %= n;
             }
             self.compose(&self.clone());

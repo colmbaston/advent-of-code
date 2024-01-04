@@ -30,7 +30,7 @@ fn parse_graph(s : &str) -> Graph<&str>
     let mut graph = HashMap::new();
     for l in s.lines()
     {
-        let (u, vs) = l.split_once(": ").unwrap();
+        let (u, vs) = l.split_once(':').unwrap();
         for v in vs.split_whitespace()
         {
             *graph.entry(u).or_insert_with(HashMap::new).entry(v).or_insert(0) += 1;

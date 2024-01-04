@@ -55,7 +55,7 @@ impl Instruction
             None =>
             {
                 let s = &s[4..];
-                let (a, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()));
+                let (a, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()));
 
                 Instruction::SetMem(a.parse().unwrap(), s[4..].parse().unwrap())
             },

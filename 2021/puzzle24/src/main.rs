@@ -123,7 +123,7 @@ fn search(prog : &[Inst], mut pc : usize, mut vars : [i64 ; 4], it : impl Iterat
         pc += 1;
     }
 
-    (vars[Var::Z.index()] == 0).then(|| 0)
+    (vars[Var::Z.index()] == 0).then_some(0)
 }
 
 fn reverse_digits(mut k : i64) -> i64

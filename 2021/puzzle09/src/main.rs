@@ -8,7 +8,8 @@ fn main()
                                                 .collect::<HashMap<(i32, i32), u8>>();
 
     println!("{}", input.iter()
-                        .filter_map(|(&k, &h)| adjacents(k).filter_map(|a| input.get(&a)).all(|&g| h < g).then(|| h as usize + 1))
+                        .filter(|&(&k, &h)| adjacents(k).filter_map(|a| input.get(&a)).all(|&g| h < g))
+                        .map(|(_, &h)| h as usize + 1)
                         .sum::<usize>());
 
     let mut basins = BinaryHeap::new();

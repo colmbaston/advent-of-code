@@ -31,16 +31,16 @@ fn valid_field((k, v) : &(&str, &str)) -> bool
 
     match *k
     {
-        "byr" => n_digits(4).map(|n| 1920 <= n && n <= 2002),
-        "iyr" => n_digits(4).map(|n| 2010 <= n && n <= 2020),
-        "eyr" => n_digits(4).map(|n| 2020 <= n && n <= 2030),
+        "byr" => n_digits(4).map(|n| (1920 ..= 2002).contains(&n)),
+        "iyr" => n_digits(4).map(|n| (2010 ..= 2020).contains(&n)),
+        "eyr" => n_digits(4).map(|n| (2020 ..= 2030).contains(&n)),
         "hgt" => match v.strip_suffix("cm")
         {
-            Some(cm) =>                                  cm.parse::<u8>().ok().map(|n| 150 <= n && n <= 193),
-            None     => v.strip_suffix("in").and_then(|i| i.parse::<u8>().ok().map(|n|  59 <= n && n <=  76))
+            Some(cm) =>                                  cm.parse::<u8>().ok().map(|n| (150 ..= 193).contains(&n)),
+            None     => v.strip_suffix("in").and_then(|i| i.parse::<u8>().ok().map(|n| (59  ..=  76).contains(&n)))
         },
         "hcl" => v.strip_prefix('#').map(|hcl| hcl.bytes().all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase())),
-        "ecl" => Some(["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].contains(&v)),
+        "ecl" => Some(["amb", "blu", "brn", "gry", "grn", "hzl", "oth"].contains(v)),
         "pid" => n_digits(9).map(|_| true),
         _     => Some(true),
     }

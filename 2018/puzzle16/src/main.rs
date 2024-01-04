@@ -38,7 +38,7 @@ fn main()
 
     // if there is only one possibility left for a value, eliminate
     // it at as a possibility for the rest of the values
-    let mut opcodes : [OpCode ; 16] = [OpCode::ADDR ; 16];
+    let mut opcodes : [OpCode ; 16] = [OpCode::Addr ; 16];
     for _ in 0 .. 16
     {
         match possibilities.iter().enumerate().find(|(_, s)| s.len() == 1)
@@ -76,7 +76,7 @@ fn parse(s : &str) -> (Vec<Sample>, Vec<Instruction>)
 {
     fn parse_digits(s : &str) -> (usize, &str)
     {
-        let (digits, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()));
+        let (digits, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()));
         (digits.parse().unwrap(), s)
     }
 
@@ -123,26 +123,26 @@ fn parse(s : &str) -> (Vec<Sample>, Vec<Instruction>)
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 enum OpCode
 {
-    ADDR, ADDI,
-    MULR, MULI,
-    BANR, BANI,
-    BORR, BORI,
-    SETR, SETI,
-    GTIR, GTRI, GTRR,
-    EQIR, EQRI, EQRR
+    Addr, Addi,
+    Mulr, Muli,
+    Banr, Bani,
+    Borr, Bori,
+    Setr, Seti,
+    Gtir, Gtri, Gtrr,
+    Eqir, Eqri, Eqrr
 }
 
 impl OpCode
 {
     fn iter_all() -> impl Iterator<Item = OpCode>
     {
-        vec![OpCode::ADDR, OpCode::ADDI,
-             OpCode::MULR, OpCode::MULI,
-             OpCode::BANR, OpCode::BANI,
-             OpCode::BORR, OpCode::BORI,
-             OpCode::SETR, OpCode::SETI,
-             OpCode::GTIR, OpCode::GTRI, OpCode::GTRR,
-             OpCode::EQIR, OpCode::EQRI, OpCode::EQRR].into_iter()
+        [OpCode::Addr, OpCode::Addi,
+         OpCode::Mulr, OpCode::Muli,
+         OpCode::Banr, OpCode::Bani,
+         OpCode::Borr, OpCode::Bori,
+         OpCode::Setr, OpCode::Seti,
+         OpCode::Gtir, OpCode::Gtri, OpCode::Gtrr,
+         OpCode::Eqir, OpCode::Eqri, OpCode::Eqrr].into_iter()
     }
 }
 
@@ -150,21 +150,21 @@ fn run_instruction(op : OpCode, &[_, a, b, c] : &Instruction, regs : &mut Regist
 {
     match op
     {
-        OpCode::ADDR => regs[c] = regs[a] + regs[b],
-        OpCode::ADDI => regs[c] = regs[a] + b,
-        OpCode::MULR => regs[c] = regs[a] * regs[b],
-        OpCode::MULI => regs[c] = regs[a] * b,
-        OpCode::BANR => regs[c] = regs[a] & regs[b],
-        OpCode::BANI => regs[c] = regs[a] & b,
-        OpCode::BORR => regs[c] = regs[a] | regs[b],
-        OpCode::BORI => regs[c] = regs[a] | b,
-        OpCode::SETR => regs[c] = regs[a],
-        OpCode::SETI => regs[c] = a,
-        OpCode::GTIR => regs[c] = (a       >  regs[b]) as usize,
-        OpCode::GTRI => regs[c] = (regs[a] >  b)       as usize,
-        OpCode::GTRR => regs[c] = (regs[a] >  regs[b]) as usize,
-        OpCode::EQIR => regs[c] = (a       == regs[b]) as usize,
-        OpCode::EQRI => regs[c] = (regs[a] == b)       as usize,
-        OpCode::EQRR => regs[c] = (regs[a] == regs[b]) as usize
+        OpCode::Addr => regs[c] = regs[a] + regs[b],
+        OpCode::Addi => regs[c] = regs[a] + b,
+        OpCode::Mulr => regs[c] = regs[a] * regs[b],
+        OpCode::Muli => regs[c] = regs[a] * b,
+        OpCode::Banr => regs[c] = regs[a] & regs[b],
+        OpCode::Bani => regs[c] = regs[a] & b,
+        OpCode::Borr => regs[c] = regs[a] | regs[b],
+        OpCode::Bori => regs[c] = regs[a] | b,
+        OpCode::Setr => regs[c] = regs[a],
+        OpCode::Seti => regs[c] = a,
+        OpCode::Gtir => regs[c] = (a       >  regs[b]) as usize,
+        OpCode::Gtri => regs[c] = (regs[a] >  b)       as usize,
+        OpCode::Gtrr => regs[c] = (regs[a] >  regs[b]) as usize,
+        OpCode::Eqir => regs[c] = (a       == regs[b]) as usize,
+        OpCode::Eqri => regs[c] = (regs[a] == b)       as usize,
+        OpCode::Eqrr => regs[c] = (regs[a] == regs[b]) as usize
     }
 }

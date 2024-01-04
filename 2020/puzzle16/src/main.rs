@@ -6,7 +6,7 @@ fn main()
     let mut input = parse_ticket_info(include_str!("../input.txt"));
 
     let mut error_rate = 0;
-    let valid_values   = input.field_ranges.values().map(|r| r.iter().cloned().flatten()).flatten().collect::<HashSet<_>>();
+    let valid_values   = input.field_ranges.values().flat_map(|r| r.iter().cloned().flatten()).collect::<HashSet<_>>();
     input.tickets.retain(|t| t.iter().fold(true, |v, k| if valid_values.contains(k) { v } else { error_rate += k; false }));
     println!("{}", error_rate);
 

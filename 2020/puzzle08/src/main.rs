@@ -12,8 +12,8 @@ fn main()
 
         match i
         {
-            Inst::NOP(k) => input[j] = Inst::JMP(k),
-            Inst::JMP(k) => input[j] = Inst::NOP(k),
+            Inst::Nop(k) => input[j] = Inst::Jmp(k),
+            Inst::Jmp(k) => input[j] = Inst::Nop(k),
             _            => continue
         }
 
@@ -30,9 +30,9 @@ fn main()
 #[derive(Clone)]
 enum Inst
 {
-    NOP(i64),
-    ACC(i64),
-    JMP(i64)
+    Nop(i64),
+    Acc(i64),
+    Jmp(i64)
 }
 
 impl Inst
@@ -45,9 +45,9 @@ impl Inst
 
         match op
         {
-            "nop" => Inst::NOP(arg),
-            "acc" => Inst::ACC(arg),
-            "jmp" => Inst::JMP(arg),
+            "nop" => Inst::Nop(arg),
+            "acc" => Inst::Acc(arg),
+            "jmp" => Inst::Jmp(arg),
             _     => unreachable!()
         }
     }
@@ -64,9 +64,9 @@ impl Inst
             match prog.get(pc as usize)
             {
                 None               => break Ok(acc),
-                Some(Inst::NOP(_)) => { pc += 1 },
-                Some(Inst::ACC(k)) => { pc += 1; acc += k },
-                Some(Inst::JMP(k)) => { pc += k }
+                Some(Inst::Nop(_)) => { pc += 1 },
+                Some(Inst::Acc(k)) => { pc += 1; acc += k },
+                Some(Inst::Jmp(k)) => { pc += k }
             }
         }
     }

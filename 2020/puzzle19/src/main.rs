@@ -52,7 +52,7 @@ impl Rule
             Rule::Char(c)      => src.strip_prefix(|d| *c == d).into_iter().collect(),
             Rule::SubRules(rs) => rs.iter().flat_map(|alt| alt.iter().fold(vec![src], |v, id|
             {
-                let r = rules.get(&id).unwrap();
+                let r = rules.get(id).unwrap();
                 v.into_iter().flat_map(|s| r.prefix_match(s, rules).into_iter()).collect()
             }))
             .collect()

@@ -23,7 +23,7 @@ fn main()
                 let vi = if i.vertical { y } else { x };
                 let vj = if j.vertical { y } else { x };
 
-                let steps = i.length + j.length + (vi - i.start).abs() as u64 + (vj - j.start).abs() as u64;
+                let steps = i.length + j.length + (vi - i.start).unsigned_abs() + (vj - j.start).unsigned_abs();
                 minhattan = minhattan.min((x.abs() + y.abs()) as u64);
                 min_steps = min_steps.min(steps);
             }

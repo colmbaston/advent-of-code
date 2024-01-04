@@ -23,7 +23,7 @@ fn parse(s : &str) -> (i32, i32, Reservoir)
 {
     fn parse_digits(s : &str) -> (i32, &str)
     {
-        let (digits, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()));
+        let (digits, s) = s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()));
         (digits.parse().unwrap(), s)
     }
 

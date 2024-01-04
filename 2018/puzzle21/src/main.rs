@@ -56,13 +56,13 @@ struct Instruction
 #[derive(Clone, Copy)]
 enum OpCode
 {
-    ADDR, ADDI,
-    MULR, MULI,
-    BANR, BANI,
-    BORR, BORI,
-    SETR, SETI,
-    GTIR, GTRI, GTRR,
-    EQIR, EQRI, EQRR
+    Addr, Addi,
+    Mulr, Muli,
+    Banr, Bani,
+    Borr, Bori,
+    Setr, Seti,
+    Gtir, Gtri, Gtrr,
+    Eqir, Eqri, Eqrr
 }
 
 fn parse(s : &str) -> (usize, Vec<Instruction>)
@@ -79,22 +79,22 @@ fn parse_instruction(s : &str) -> Instruction
 
     let op = match it.next().unwrap()
     {
-        "addr" => OpCode::ADDR,
-        "addi" => OpCode::ADDI,
-        "mulr" => OpCode::MULR,
-        "muli" => OpCode::MULI,
-        "banr" => OpCode::BANR,
-        "bani" => OpCode::BANI,
-        "borr" => OpCode::BORR,
-        "bori" => OpCode::BORI,
-        "setr" => OpCode::SETR,
-        "seti" => OpCode::SETI,
-        "gtir" => OpCode::GTIR,
-        "gtri" => OpCode::GTRI,
-        "gtrr" => OpCode::GTRR,
-        "eqir" => OpCode::EQIR,
-        "eqri" => OpCode::EQRI,
-        "eqrr" => OpCode::EQRR,
+        "addr" => OpCode::Addr,
+        "addi" => OpCode::Addi,
+        "mulr" => OpCode::Mulr,
+        "muli" => OpCode::Muli,
+        "banr" => OpCode::Banr,
+        "bani" => OpCode::Bani,
+        "borr" => OpCode::Borr,
+        "bori" => OpCode::Bori,
+        "setr" => OpCode::Setr,
+        "seti" => OpCode::Seti,
+        "gtir" => OpCode::Gtir,
+        "gtri" => OpCode::Gtri,
+        "gtrr" => OpCode::Gtrr,
+        "eqir" => OpCode::Eqir,
+        "eqri" => OpCode::Eqri,
+        "eqrr" => OpCode::Eqrr,
         _      => unreachable!()
     };
 
@@ -109,22 +109,22 @@ fn step(pc_reg : usize, &Instruction { op, a, b, c } : &Instruction, regs : &mut
 {
     match op
     {
-        OpCode::ADDR => regs[c] =  regs[a] +  regs[b],
-        OpCode::ADDI => regs[c] =  regs[a] +       b,
-        OpCode::MULR => regs[c] =  regs[a] *  regs[b],
-        OpCode::MULI => regs[c] =  regs[a] *       b,
-        OpCode::BANR => regs[c] =  regs[a] &  regs[b],
-        OpCode::BANI => regs[c] =  regs[a] &       b,
-        OpCode::BORR => regs[c] =  regs[a] |  regs[b],
-        OpCode::BORI => regs[c] =  regs[a] |       b,
-        OpCode::SETR => regs[c] =  regs[a],
-        OpCode::SETI => regs[c] =       a,
-        OpCode::GTIR => regs[c] = (     a  >  regs[b]) as usize,
-        OpCode::GTRI => regs[c] = (regs[a] >       b ) as usize,
-        OpCode::GTRR => regs[c] = (regs[a] >  regs[b]) as usize,
-        OpCode::EQIR => regs[c] = (     a  == regs[b]) as usize,
-        OpCode::EQRI => regs[c] = (regs[a] ==      b ) as usize,
-        OpCode::EQRR => regs[c] = (regs[a] == regs[b]) as usize
+        OpCode::Addr => regs[c] =  regs[a] +  regs[b],
+        OpCode::Addi => regs[c] =  regs[a] +       b,
+        OpCode::Mulr => regs[c] =  regs[a] *  regs[b],
+        OpCode::Muli => regs[c] =  regs[a] *       b,
+        OpCode::Banr => regs[c] =  regs[a] &  regs[b],
+        OpCode::Bani => regs[c] =  regs[a] &       b,
+        OpCode::Borr => regs[c] =  regs[a] |  regs[b],
+        OpCode::Bori => regs[c] =  regs[a] |       b,
+        OpCode::Setr => regs[c] =  regs[a],
+        OpCode::Seti => regs[c] =       a,
+        OpCode::Gtir => regs[c] = (     a  >  regs[b]) as usize,
+        OpCode::Gtri => regs[c] = (regs[a] >       b ) as usize,
+        OpCode::Gtrr => regs[c] = (regs[a] >  regs[b]) as usize,
+        OpCode::Eqir => regs[c] = (     a  == regs[b]) as usize,
+        OpCode::Eqri => regs[c] = (regs[a] ==      b ) as usize,
+        OpCode::Eqrr => regs[c] = (regs[a] == regs[b]) as usize
     }
     regs[pc_reg] += 1;
 }

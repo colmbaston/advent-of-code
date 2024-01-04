@@ -20,7 +20,7 @@ fn parse_dims(s : &str) -> (u32, u32, u32)
 
 fn span_digit(s : &str) -> (&str, &str)
 {
-    s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()))
+    s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()))
 }
 
 fn solve(&(l, w, h) : &(u32, u32, u32)) -> (u32, u32)

@@ -5,7 +5,7 @@ fn main()
     // the lexicographic ordering of the strings is the chronological ordering
     let mut input = include_str!("../input.txt").lines().collect::<Vec<&str>>();
     input.sort_unstable();
-    let mut input = input.into_iter().map(|s| parse_record(s)).peekable();
+    let mut input = input.into_iter().map(parse_record).peekable();
 
     // a mapping of guard ids to the frequency they are asleep per minute
     let mut sleep_logs = HashMap::new();
@@ -56,7 +56,7 @@ fn parse_record(s : &str) -> Record
 {
     fn span_digits(s : &str) -> (&str, &str)
     {
-        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or_else(|| s.len()))
+        s.split_at(s.find(|c : char| !c.is_ascii_digit()).unwrap_or(s.len()))
     }
 
     let (minute, s) = span_digits(&s[15..]);

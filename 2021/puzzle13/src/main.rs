@@ -30,7 +30,10 @@ fn main()
     }
 }
 
-fn parse_instructions(s : &str) -> (HashSet<(i32, i32)>, Vec<(bool, i32)>)
+type Grid = HashSet<(i32, i32)>;
+type Inst = (bool, i32);
+
+fn parse_instructions(s : &str) -> (Grid, Vec<Inst>)
 {
     let mut i  = s.split("\n\n");
     let points = i.next().unwrap().lines().map(|t|

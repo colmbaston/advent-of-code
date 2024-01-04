@@ -27,7 +27,7 @@ fn main()
         let mut active : HashSet<usize> = (0 .. THREADS).collect();
         while let Some(i) = active.iter().next().copied()
         {
-            let mut interpreter = threads[i as usize].0.iter();
+            let mut interpreter = threads[i].0.iter();
             match interpreter.next()
             {
                 None    => { active.remove(&i); },

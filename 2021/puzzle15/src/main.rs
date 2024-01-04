@@ -10,8 +10,8 @@ fn main()
     let orthogonal = |&(x, y) : &Pos|
     {
         [(x+1, y), (x, y+1)].into_iter()
-                            .chain(x.checked_sub(1).map(|x| (x, y)).into_iter())
-                            .chain(y.checked_sub(1).map(|y| (x, y)).into_iter())
+                            .chain(x.checked_sub(1).map(|x| (x, y)))
+                            .chain(y.checked_sub(1).map(|y| (x, y)))
     };
 
     let target   = |&(x, y) : &Pos| x == lx-1 && y == ly-1;
