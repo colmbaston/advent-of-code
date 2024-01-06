@@ -5,6 +5,8 @@ puzzle02:
   69642
   8CB23
 puzzle03:
+  917
+  1649
 puzzle04:
 puzzle05:
 puzzle06:
