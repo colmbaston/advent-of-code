@@ -2,6 +2,8 @@ puzzle01:
   288
   111
 puzzle02:
+  69642
+  8CB23
 puzzle03:
 puzzle04:
 puzzle05:
