@@ -7,32 +7,50 @@ then
 fi
 
 export TZ="America/New_York"
-year=$(date +%Y)
-month=$(date +%m)
-day=$(date +%d)
+repo="/home/colm/git/advent-of-code"
+regex="^$repo/(20[0-9][0-9])/puzzle([0-9][0-9])"
 
-if (( 10#$month < 12 || 10#$day > 25 ))
+if [[ $PWD =~ $regex ]]
 then
-  echo "no AoC event currently running"
+  year=${BASH_REMATCH[1]}
+  month=12
+  day=${BASH_REMATCH[2]}
+else
+  year=$(date +%Y)
+  month=$(date +%m)
+  day=$(date +%d)
+fi
+
+date="$year/$month/$day"
+
+if (( $year < 2015 || $month != 12 || 10#$day < 1 || 10#$day > 25 ))
+then
+  echo "invalid puzzle $date"
   exit 1
 fi
 
-file="/home/colm/git/advent-of-code/$year/puzzle$day/input.txt"
-
-if [[ ! -f $file ]]
+if (( $(date +%s) < $(date -d $date +%s) ))
 then
-  if [[ ! -w $(dirname $file) ]]
+  echo "puzzle $date not yet released"
+  exit 1
+fi
+
+path="$repo/$year/puzzle$day/input.txt"
+
+if [[ ! -f $path ]]
+then
+  if [[ ! -w $(dirname $path) ]]
   then
-    echo "cannot write to filepath"
+    echo "cannot write to $path"
     exit 1
   fi
 
-  echo "attempting to download $file"
+  echo "attempting to download $path"
   url="https://adventofcode.com/$year/day/$((10#$day))/input"
-  curl $url --cookie "session=$AOC_SESSION" > $file
+  curl $url --cookie "session=$AOC_SESSION" -o $path
 fi
 
 if [[ -v EDITOR ]]
 then
-  exec $EDITOR $file
+  exec $EDITOR $path
 fi
