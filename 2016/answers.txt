@@ -11,6 +11,8 @@ puzzle04:
   245102
   324
 puzzle05:
+  801b56a7
+  424a0197
 puzzle06:
 puzzle07:
 puzzle08:
