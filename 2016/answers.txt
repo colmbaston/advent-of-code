@@ -31,6 +31,8 @@ puzzle09:
   110346
   10774309173
 puzzle10:
+  27
+  13727
 puzzle11:
 puzzle12:
 puzzle13:
