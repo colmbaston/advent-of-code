@@ -34,6 +34,8 @@ puzzle10:
   27
   13727
 puzzle11:
+  31
+  55
 puzzle12:
 puzzle13:
 puzzle14:
