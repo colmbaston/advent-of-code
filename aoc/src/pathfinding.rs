@@ -35,7 +35,7 @@ pub fn bfs<P, C, A>(inits    : impl Iterator<Item = P>,
                     target   : impl Fn(&P) -> bool,
                     adjacent : impl Fn(&P) -> A) -> Option<C>
                       where
-                        P : Copy + Eq + Hash,
+                        P : Clone + Eq + Hash,
                         C : Copy + Zero + One + Add,
                         A : Iterator<Item = P>
 {
@@ -45,8 +45,8 @@ pub fn bfs<P, C, A>(inits    : impl Iterator<Item = P>,
 
     while let Some((c, p)) = queue.pop_front()
     {
-        if target(&p)         { return Some(c) }
-        if !visited.insert(p) { continue       }
+        if target(&p)                 { return Some(c) }
+        if !visited.insert(p.clone()) { continue       }
         queue.extend(adjacent(&p).filter(|p| !visited.contains(p))
                                  .map(|p| (c + C::one(), p)));
     }
@@ -57,7 +57,7 @@ pub fn dijkstra<P, C, A>(inits    : impl Iterator<Item = P>,
                          target   : impl Fn(&P) -> bool,
                          adjacent : impl Fn(&P) -> A) -> Option<C>
                            where
-                             P : Copy + Eq  + Hash,
+                             P : Clone + Eq  + Hash,
                              C : Copy + Ord + Zero + Add,
                              A : Iterator<Item = (P, C)>
 {
@@ -67,10 +67,10 @@ pub fn dijkstra<P, C, A>(inits    : impl Iterator<Item = P>,
 
     while let Some(HeapNode { payload, cost }) = queue.pop()
     {
-        if target(&payload)         { return Some(cost) }
-        if !visited.insert(payload) { continue          }
+        if target(&payload)                 { return Some(cost) }
+        if !visited.insert(payload.clone()) { continue          }
         queue.extend(adjacent(&payload).filter(|(p, _)| !visited.contains(p))
-                                       .map(|(p, c)| HeapNode { payload: p, cost: cost+c }))
+                                       .map(|(p, c)| HeapNode { payload: p.clone(), cost: cost+c }))
 
     }
     None
@@ -81,20 +81,20 @@ pub fn a_star<P, C, A>(inits     : impl Iterator<Item = P>,
                        adjacent  : impl Fn(&P) -> A,
                        heuristic : impl Fn(&P) -> C + Copy) -> Option<C>
                          where
-                           P : Copy + Eq  + Hash,
+                           P : Clone + Eq  + Hash,
                            C : Copy + Ord + Zero + Add,
                            A : Iterator<Item = (P, C)>
 {
     let mut queue   = BinaryHeap::new();
     let mut visited = HashSet::new();
-    queue.extend(inits.map(|init| HeapNode { payload: init, cost: (heuristic(&init), C::zero()) }));
+    queue.extend(inits.map(|init| { let h = heuristic(&init); HeapNode { payload: init, cost: (h, C::zero()) }}));
 
     while let Some(HeapNode { payload, cost: (_, cost) }) = queue.pop()
     {
-        if target(&payload)         { return Some(cost) }
-        if !visited.insert(payload) { continue          }
+        if target(&payload)                 { return Some(cost) }
+        if !visited.insert(payload.clone()) { continue          }
         queue.extend(adjacent(&payload).filter(|(p, _)| !visited.contains(p))
-                                       .map(|(p, c)| HeapNode { payload: p, cost: (cost+c+heuristic(&p), cost+c) }))
+                                       .map(|(p, c)| { let h = heuristic(&p); HeapNode { payload: p, cost: (cost+c+h, cost+c) }}))
 
     }
     None
