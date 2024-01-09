@@ -77,46 +77,90 @@ impl<T : Clone + Ord> State<T>
     fn adjacent(&self) -> impl Iterator<Item = State<T>>
     {
         let mut adjs = Vec::new();
-        let mut next = Vec::new();
-        if self.elevator   > 0                 { next.push(self.elevator-1) }
-        if self.elevator+1 < self.floors.len() { next.push(self.elevator+1) }
 
-        for (p1, current) in self.floors[self.elevator].remove_one()
+        if self.elevator+1 < self.floors.len()
         {
-            if current.valid()
+            let mut any = false;
+            for (p1, p2, current) in self.floors[self.elevator].remove_two()
             {
-                for &i in next.iter()
+                if current.valid()
                 {
-                    let mut next = self.floors[i].clone();
+                    let mut next = self.floors[self.elevator+1].clone();
                     next.insert(p1.clone());
+                    next.insert(p2.clone());
                     if next.valid()
                     {
-                        let mut state               = self.clone();
-                        state.elevator              = i;
-                        state.floors[self.elevator] = current.clone();
-                        state.floors[i]             = next;
-                        adjs.push(state)
+                        let mut state                 = self.clone();
+                        state.elevator               += 1;
+                        state.floors[self.elevator]   = current;
+                        state.floors[self.elevator+1] = next;
+                        adjs.push(state);
+
+                        any = true
+                    }
+                }
+            }
+
+            if !any
+            {
+                for (p1, current) in self.floors[self.elevator].remove_one()
+                {
+                    if current.valid()
+                    {
+                        let mut next = self.floors[self.elevator+1].clone();
+                        next.insert(p1.clone());
+                        if next.valid()
+                        {
+                            let mut state                 = self.clone();
+                            state.elevator               += 1;
+                            state.floors[self.elevator]   = current;
+                            state.floors[self.elevator+1] = next;
+                            adjs.push(state)
+                        }
                     }
                 }
             }
         }
 
-        for (p1, p2, current) in self.floors[self.elevator].remove_two()
+        if 0 < self.elevator
         {
-            if current.valid()
+            let mut any = false;
+            for (p1, current) in self.floors[self.elevator].remove_one()
             {
-                for &i in next.iter()
+                if current.valid()
                 {
-                    let mut next = self.floors[i].clone();
+                    let mut next = self.floors[self.elevator-1].clone();
                     next.insert(p1.clone());
-                    next.insert(p2.clone());
                     if next.valid()
                     {
-                        let mut state               = self.clone();
-                        state.elevator              = i;
-                        state.floors[self.elevator] = current.clone();
-                        state.floors[i]             = next;
-                        adjs.push(state)
+                        let mut state                 = self.clone();
+                        state.elevator               -= 1;
+                        state.floors[self.elevator]   = current;
+                        state.floors[self.elevator-1] = next;
+                        adjs.push(state);
+
+                        any = true
+                    }
+                }
+            }
+
+            if !any
+            {
+                for (p1, p2, current) in self.floors[self.elevator].remove_two()
+                {
+                    if current.valid()
+                    {
+                        let mut next = self.floors[self.elevator-1].clone();
+                        next.insert(p1.clone());
+                        next.insert(p2.clone());
+                        if next.valid()
+                        {
+                            let mut state                 = self.clone();
+                            state.elevator               -= 1;
+                            state.floors[self.elevator]   = current;
+                            state.floors[self.elevator-1] = next;
+                            adjs.push(state)
+                        }
                     }
                 }
             }
