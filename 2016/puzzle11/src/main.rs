@@ -1,43 +1,47 @@
+use std::collections::HashMap;
+
 fn main()
 {
-    let mut state = State::parse(include_str!("../input.txt"));
+    let mut cache = HashMap::new();
+    let mut state = State::parse(include_str!("../input.txt"), &mut cache);
     println!("{}", aoc::pathfinding::bfs(std::iter::once(state.clone()),
                                          State::target,
                                          State::adjacent).unwrap_or(0usize));
 
-    state.floors[0].generators.extend(["elerium", "dilithium"]);
-    state.floors[0].microchips.extend(["elerium", "dilithium"]);
+    let elements = cache.len() as u8;
+    state.floors[0].generators.extend((elements ..).take(2));
+    state.floors[0].microchips.extend((elements ..).take(2));
     println!("{}", aoc::pathfinding::bfs(std::iter::once(state),
                                          State::target,
                                          State::adjacent).unwrap_or(0usize));
 }
 
 #[derive(Clone, PartialEq, Eq, Hash)]
-struct State<T>
+struct State
 {
     elevator: usize,
-    floors:   Vec<Floor<T>>
+    floors:   Vec<Floor>
 }
 
 #[derive(Clone, PartialEq, Eq, Hash)]
-struct Floor<T>
+struct Floor
 {
-    generators: Vec<T>,
-    microchips: Vec<T>
+    generators: Vec<u8>,
+    microchips: Vec<u8>
 }
 
-impl State<&str>
+impl State
 {
-    fn parse(s : &str) -> State<&str>
+    fn parse<'a>(s : &'a str, cache : &mut HashMap<&'a str, u8>) -> State
     {
-        let floors = s.lines().map(Floor::parse).collect();
+        let floors = s.lines().map(|l| Floor::parse(l, cache)).collect();
         State { elevator: 0, floors }
     }
 }
 
-impl Floor<&str>
+impl Floor
 {
-    fn parse(s : &str) -> Floor<&str>
+    fn parse<'a>(s : &'a str, cache : &mut HashMap<&'a str, u8>) -> Floor
     {
         let (_, s) = s.strip_suffix('.').unwrap()
                       .split_once("contains ").unwrap();
@@ -50,10 +54,13 @@ impl Floor<&str>
             {
                 let (a, b) = s.split_once([' ', '-']).unwrap();
 
+                let len     = cache.len() as u8;
+                let element = *cache.entry(a).or_insert(len);
+
                 match b
                 {
-                    "generator"            => generators.push(a),
-                    "compatible microchip" => microchips.push(a),
+                    "generator"            => generators.push(element),
+                    "compatible microchip" => microchips.push(element),
                     _                      => unreachable!()
                 }
             }
@@ -62,7 +69,7 @@ impl Floor<&str>
     }
 }
 
-impl<T> State<T>
+impl State
 {
     fn target(&self) -> bool
     {
@@ -70,11 +77,8 @@ impl<T> State<T>
                    .map(|(_, rest)| rest.iter().all(Floor::is_empty))
                    .unwrap_or(true)
     }
-}
 
-impl<T : Clone + Ord> State<T>
-{
-    fn adjacent(&self) -> impl Iterator<Item = State<T>>
+    fn adjacent(&self) -> impl Iterator<Item = State>
     {
         let mut adjs = Vec::new();
 
@@ -86,8 +90,8 @@ impl<T : Clone + Ord> State<T>
                 if current.valid()
                 {
                     let mut next = self.floors[self.elevator+1].clone();
-                    next.insert(p1.clone());
-                    next.insert(p2.clone());
+                    next.insert(p1);
+                    next.insert(p2);
                     if next.valid()
                     {
                         let mut state                 = self.clone();
@@ -108,7 +112,7 @@ impl<T : Clone + Ord> State<T>
                     if current.valid()
                     {
                         let mut next = self.floors[self.elevator+1].clone();
-                        next.insert(p1.clone());
+                        next.insert(p1);
                         if next.valid()
                         {
                             let mut state                 = self.clone();
@@ -130,7 +134,7 @@ impl<T : Clone + Ord> State<T>
                 if current.valid()
                 {
                     let mut next = self.floors[self.elevator-1].clone();
-                    next.insert(p1.clone());
+                    next.insert(p1);
                     if next.valid()
                     {
                         let mut state                 = self.clone();
@@ -151,8 +155,8 @@ impl<T : Clone + Ord> State<T>
                     if current.valid()
                     {
                         let mut next = self.floors[self.elevator-1].clone();
-                        next.insert(p1.clone());
-                        next.insert(p2.clone());
+                        next.insert(p1);
+                        next.insert(p2);
                         if next.valid()
                         {
                             let mut state                 = self.clone();
@@ -169,27 +173,22 @@ impl<T : Clone + Ord> State<T>
         adjs.iter_mut().for_each(State::normalise);
         adjs.into_iter()
     }
+
+    fn normalise(&mut self)
+    {
+        let mut cache = HashMap::new();
+        self.floors.iter_mut().for_each(|floor| floor.normalise(&mut cache))
+    }
 }
 
-impl<T : Eq> Floor<T>
+impl Floor
 {
     fn valid(&self) -> bool
     {
         self.generators.is_empty() ||
         self.microchips.iter().all(|k| self.generators.contains(k))
     }
-}
 
-impl<T : Ord> State<T>
-{
-    fn normalise(&mut self)
-    {
-        self.floors.iter_mut().for_each(Floor::normalise)
-    }
-}
-
-impl<T> Floor<T>
-{
     fn is_empty(&self) -> bool
     {
         self.generators.is_empty() && self.microchips.is_empty()
@@ -200,24 +199,21 @@ impl<T> Floor<T>
         self.generators.len() + self.microchips.len()
     }
 
-    fn insert(&mut self, (gen, element) : (bool, T))
+    fn insert(&mut self, (gen, element) : (bool, u8))
     {
         if gen { self.generators.push(element) }
         else   { self.microchips.push(element) }
     }
 
-    fn remove(&mut self, i : usize) -> (bool, T)
+    fn remove(&mut self, i : usize) -> (bool, u8)
     {
         let gen = i < self.generators.len();
 
         (gen, if gen { self.generators.swap_remove(i)                         }
               else   { self.microchips.swap_remove(i - self.generators.len()) })
     }
-}
 
-impl<T : Clone> Floor<T>
-{
-    fn remove_one(&self) -> impl Iterator<Item = ((bool, T), Floor<T>)> + '_
+    fn remove_one(&self) -> impl Iterator<Item = ((bool, u8), Floor)> + '_
     {
         (0 .. self.len()).map(|i|
         {
@@ -226,7 +222,7 @@ impl<T : Clone> Floor<T>
         })
     }
 
-    fn remove_two(&self) -> impl Iterator<Item = ((bool, T), (bool, T), Floor<T>)> + '_
+    fn remove_two(&self) -> impl Iterator<Item = ((bool, u8), (bool, u8), Floor)> + '_
     {
         (1 .. self.len()).flat_map(move |i| (0 .. i).map(move |j|
         {
@@ -234,13 +230,16 @@ impl<T : Clone> Floor<T>
             (floor.remove(i), floor.remove(j), floor)
         }))
     }
-}
 
-impl<T : Ord> Floor<T>
-{
-    fn normalise(&mut self)
+    fn normalise(&mut self, cache : &mut HashMap<u8, u8>)
     {
         self.generators.sort_unstable();
         self.microchips.sort_unstable();
+
+        for element in self.generators.iter_mut().chain(self.microchips.iter_mut())
+        {
+            let len  = cache.len() as u8;
+            *element = *cache.entry(*element).or_insert(len);
+        }
     }
 }
