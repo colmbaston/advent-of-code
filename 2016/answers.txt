@@ -50,5 +50,7 @@ puzzle20:
 puzzle21:
 puzzle22:
 puzzle23:
+  10365
+  479006925
 puzzle24:
 puzzle25:

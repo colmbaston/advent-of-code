@@ -1,11 +1,14 @@
+#[derive(Copy, Clone)]
 pub enum Inst
 {
-    Cpy(Value, Reg),
-    Inc(Reg),
-    Dec(Reg),
-    Jnz(Value, i32)
+    Cpy(Value, Value),
+    Inc(Value),
+    Dec(Value),
+    Jnz(Value, Value),
+    Tgl(Value)
 }
 
+#[derive(Copy, Clone)]
 pub enum Value
 {
     Lit(i32),
@@ -21,22 +24,43 @@ impl Inst
     {
         match s.split_whitespace().collect::<Vec<&str>>()[..]
         {
-            ["cpy", v, r] => Inst::Cpy(Value::parse(v), Reg::parse(r)),
-            ["inc", r]    => Inst::Inc(Reg::parse(r)),
-            ["dec", r]    => Inst::Dec(Reg::parse(r)),
-            ["jnz", v, i] => Inst::Jnz(Value::parse(v), i.parse().unwrap()),
+            ["cpy", a, b] => Inst::Cpy(Value::parse(a), Value::parse(b)),
+            ["inc", a]    => Inst::Inc(Value::parse(a)),
+            ["dec", a]    => Inst::Dec(Value::parse(a)),
+            ["jnz", a, b] => Inst::Jnz(Value::parse(a), Value::parse(b)),
+            ["tgl", a]    => Inst::Tgl(Value::parse(a)),
             _             => unreachable!()
         }
     }
 
-    pub fn step(&self, pc : &mut i32, regs : &mut [i32 ; 4])
+    pub fn step(&self, pc : &mut i32, regs : &mut [i32 ; 4], prog : &mut [Inst])
     {
         match self
         {
-            Inst::Cpy(v, r) => { regs[*r as usize]  = v.deref(regs);     *pc += 1 },
-            Inst::Inc(r)    => { regs[*r as usize] += 1;                 *pc += 1 },
-            Inst::Dec(r)    => { regs[*r as usize] -= 1;                 *pc += 1 },
-            Inst::Jnz(v, i) => if v.deref(regs) != 0 { *pc += i } else { *pc += 1 },
+            Inst::Cpy(a, Value::Reg(b)) => { regs[*b as usize]  = a.deref(regs); *pc += 1 },
+            Inst::Inc(Value::Reg(a))    => { regs[*a as usize] += 1;             *pc += 1 },
+            Inst::Dec(Value::Reg(a))    => { regs[*a as usize] -= 1;             *pc += 1 },
+            Inst::Jnz(a, b)             => *pc += if a.deref(regs) != 0 { b.deref(regs) } else { 1 },
+            Inst::Tgl(a)                =>
+            {
+                (*pc + a.deref(regs)).try_into().ok()
+                                     .and_then(|i : usize| prog.get_mut(i))
+                                     .map(Inst::tgl);
+                *pc += 1;
+            },
+            _ => ()
+        }
+    }
+
+    fn tgl(&mut self)
+    {
+        *self = match *self
+        {
+            Inst::Cpy(a, b) => Inst::Jnz(a, b),
+            Inst::Inc(a)    => Inst::Dec(a),
+            Inst::Dec(a)    => Inst::Inc(a),
+            Inst::Jnz(a, b) => Inst::Cpy(a, b),
+            Inst::Tgl(a)    => Inst::Inc(a)
         }
     }
 }
