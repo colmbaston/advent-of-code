@@ -58,6 +58,8 @@ puzzle18:
   1987
   19984714
 puzzle19:
+  1834471
+  1420064
 puzzle20:
 puzzle21:
 puzzle22:
