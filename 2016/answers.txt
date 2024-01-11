@@ -61,6 +61,8 @@ puzzle19:
   1834471
   1420064
 puzzle20:
+  31053880
+  117
 puzzle21:
 puzzle22:
 puzzle23:
