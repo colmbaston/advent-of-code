@@ -43,6 +43,8 @@ puzzle13:
   96
   141
 puzzle14:
+  23890
+  22696
 puzzle15:
 puzzle16:
 puzzle17:
