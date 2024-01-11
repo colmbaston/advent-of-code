@@ -55,6 +55,8 @@ puzzle17:
   DDRRUDLRRD
   488
 puzzle18:
+  1987
+  19984714
 puzzle19:
 puzzle20:
 puzzle21:
