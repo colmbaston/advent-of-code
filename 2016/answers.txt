@@ -74,3 +74,4 @@ puzzle23:
   479006925
 puzzle24:
 puzzle25:
+  182

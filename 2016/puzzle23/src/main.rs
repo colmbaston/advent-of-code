@@ -8,10 +8,7 @@ fn main()
     {
         let mut pc   = 0;
         let mut prog = prog.clone();
-        while let Some(&inst) = pc.try_into().ok().and_then(|i : usize| prog.get(i))
-        {
-            inst.step(&mut pc, &mut regs, &mut prog);
-        }
+        Inst::run(&mut pc, &mut regs, &mut prog);
         println!("{}", regs[Reg::A as usize]);
     }
 }
