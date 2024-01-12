@@ -64,6 +64,8 @@ puzzle20:
   31053880
   117
 puzzle21:
+  fdhbcgea
+  egfbcadh
 puzzle22:
 puzzle23:
   10365
