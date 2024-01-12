@@ -12,7 +12,7 @@ fn main()
 fn run(input : &[i64], feedback : bool)
 {
     let mut max = std::i64::MIN;
-    for perm in Permutations::new(if feedback { 5 .. 10 } else { 0 .. 5 })
+    for perm in Permutations::from_sorted(if feedback { 5 .. 10 } else { 0 .. 5 })
     {
         let (first_send, first_recv) = channel();
         let mut last_recv = first_recv;

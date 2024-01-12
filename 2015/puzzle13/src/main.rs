@@ -8,7 +8,7 @@ fn main()
     let mut table  = include_str!("../input.txt").lines().map(parse_row).collect::<HashMap<(&str, &str), i32>>();
     let mut people = table.keys().map(|&(a, _)| a).collect::<BTreeSet<&str>>();
 
-    println!("{}", Permutations::new(people.iter().cloned()).filter_map(|p| le_reverse(&p).then(|| happiness(p, &table))).max().unwrap());
+    println!("{}", Permutations::from_sorted(people.iter().cloned()).filter_map(|p| le_reverse(&p).then(|| happiness(p, &table))).max().unwrap());
 
     for p in people.iter()
     {
@@ -17,7 +17,7 @@ fn main()
     }
     people.insert(ME);
 
-    println!("{}", Permutations::new(people.into_iter()).filter_map(|p| le_reverse(&p).then(|| happiness(p, &table))).max().unwrap());
+    println!("{}", Permutations::from_sorted(people.into_iter()).filter_map(|p| le_reverse(&p).then(|| happiness(p, &table))).max().unwrap());
 }
 
 fn parse_row(s : &str) -> ((&str, &str), i32)

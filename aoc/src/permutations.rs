@@ -5,9 +5,16 @@ pub struct Permutations<T>
 
 impl<T : Ord> Permutations<T>
 {
-    pub fn new(values : impl Iterator<Item = T>) -> Permutations<T>
+    pub fn from_sorted(values : impl Iterator<Item = T>) -> Permutations<T>
     {
-        Permutations{ data: Some(values.collect()) }
+        Permutations { data: Some(values.collect()) }
+    }
+
+    pub fn from_unsorted(values : impl Iterator<Item = T>) -> Permutations<T>
+    {
+        let mut data = values.collect::<Vec<T>>();
+        data.sort_unstable();
+        Permutations { data: Some(data) }
     }
 }
 
