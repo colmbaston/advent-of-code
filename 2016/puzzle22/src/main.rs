@@ -1,25 +1,41 @@
 fn main()
 {
-    let nodes = include_str!("../input.txt").lines().skip(2).map(Node::parse).collect::<Vec<Node>>();
+    let nodes  = include_str!("../input.txt").lines().skip(2).map(Node::parse).collect::<Vec<Node>>();
+    let height = nodes.iter().take_while(|n| n.pos.0 == 0).count();
+    let width  = nodes.len() / height;
 
     let mut count = 0;
-    for na in nodes.iter()
+    for (i, na) in nodes.iter().enumerate()
     {
-        for nb in nodes.iter()
+        for nb in nodes.iter().take(i).chain(nodes.iter().skip(i+1))
         {
-            if !na.is_empty()
-            && na.pos  != nb.pos
-            && na.used <= nb.avail() { count += 1 }
+            if !na.is_empty() && na.used <= nb.avail() { count += 1 }
         }
     }
     println!("{count}");
+
+    // part two makes several simplifying assumptions which don't hold in general
+    // assume exactly one empty position which is used for every data transfer
+    let (ex, ey) = nodes.iter().find(|n| n.is_empty()).unwrap().pos;
+
+    // nearest open column to empty node
+    // a column is open when it contains no blocking nodes between the empty node and y=0
+    // a blocking node contains so much data that it can never transfer it to its neighbours
+    let open = (0 .. width).filter(|x| (1 .. ey).all(|y| nodes[y + x * height].used <= nodes[y-1 + x * height].size))
+                           .min_by_key(|x| x.abs_diff(ex))
+                           .unwrap();
+
+    println!("{}", ex.abs_diff(open)                                        // moving the empty node to the nearest open column
+                 + ey                                                       // moving the empty node to y=0
+                 + if open == width-1 { 2 } else { open.abs_diff(width-1) } // moving the empty node to the goal at the max x, shifting the goal left
+                 + 5 * (width - 2))                                         // moving the goal to x=0, each shift needing five moves of the empty node
 }
 
-type Pos = (u32, u32);
+type Pos = (usize, usize);
 
 struct Node
 {
-    pos: Pos,
+    pos:  Pos,
     size: u32,
     used: u32
 }
