@@ -67,6 +67,7 @@ puzzle21:
   fdhbcgea
   egfbcadh
 puzzle22:
+  1034
 puzzle23:
   10365
   479006925
