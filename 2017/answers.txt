@@ -2,6 +2,8 @@ puzzle01:
   1141
   950
 puzzle02:
+  53978
+  314
 puzzle03:
 puzzle04:
 puzzle05:
