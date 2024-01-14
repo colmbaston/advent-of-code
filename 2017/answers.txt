@@ -8,6 +8,8 @@ puzzle03:
   419
   295229
 puzzle04:
+  325
+  119
 puzzle05:
 puzzle06:
 puzzle07:
