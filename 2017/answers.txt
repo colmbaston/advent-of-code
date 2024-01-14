@@ -11,6 +11,8 @@ puzzle04:
   325
   119
 puzzle05:
+  358131
+  25558839
 puzzle06:
 puzzle07:
 puzzle08:
