@@ -17,6 +17,8 @@ puzzle06:
   14029
   2765
 puzzle07:
+  vmpywg
+  1674
 puzzle08:
 puzzle09:
 puzzle10:
