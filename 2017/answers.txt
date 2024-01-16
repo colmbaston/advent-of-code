@@ -20,6 +20,8 @@ puzzle07:
   vmpywg
   1674
 puzzle08:
+  4448
+  6582
 puzzle09:
 puzzle10:
 puzzle11:
