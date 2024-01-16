@@ -23,6 +23,8 @@ puzzle08:
   4448
   6582
 puzzle09:
+  10050
+  4482
 puzzle10:
 puzzle11:
 puzzle12:
