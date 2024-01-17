@@ -35,6 +35,8 @@ puzzle12:
   169
   179
 puzzle13:
+  1640
+  3960702
 puzzle14:
 puzzle15:
 puzzle16:
