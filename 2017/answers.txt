@@ -38,6 +38,8 @@ puzzle13:
   1640
   3960702
 puzzle14:
+  8230
+  1103
 puzzle15:
 puzzle16:
 puzzle17:

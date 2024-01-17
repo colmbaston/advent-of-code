@@ -8,14 +8,13 @@ fn main()
 
     println!("{}", purge(0, &mut graph));
 
-    for k in 1 ..
+    let mut count = 1;
+    while let Some(&v) = graph.keys().next()
     {
-        match graph.keys().next()
-        {
-            None     => { println!("{k}"); break },
-            Some(&v) => { purge(v, &mut graph);  }
-        }
+        purge(v, &mut graph);
+        count += 1
     }
+    println!("{count}")
 }
 
 fn parse_vertex(s : &str) -> (u32, Vec<u32>)
