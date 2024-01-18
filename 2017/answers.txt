@@ -41,6 +41,8 @@ puzzle14:
   8230
   1103
 puzzle15:
+  612
+  285
 puzzle16:
 puzzle17:
 puzzle18:
