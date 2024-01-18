@@ -44,6 +44,8 @@ puzzle15:
   612
   285
 puzzle16:
+  kpbodeajhlicngmf
+  ahgpjdkcbfmneloi
 puzzle17:
 puzzle18:
 puzzle19:
