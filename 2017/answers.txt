@@ -50,6 +50,8 @@ puzzle17:
   417
   34334221
 puzzle18:
+  2951
+  7366
 puzzle19:
 puzzle20:
 puzzle21:
