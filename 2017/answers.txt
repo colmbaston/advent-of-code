@@ -53,6 +53,8 @@ puzzle18:
   2951
   7366
 puzzle19:
+  VEBTPXCHLI
+  18702
 puzzle20:
 puzzle21:
 puzzle22:
