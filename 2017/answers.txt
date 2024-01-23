@@ -62,6 +62,8 @@ puzzle21:
   142
   1879071
 puzzle22:
+  5261
+  2511927
 puzzle23:
 puzzle24:
 puzzle25:
