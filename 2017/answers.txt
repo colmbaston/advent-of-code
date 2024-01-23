@@ -59,6 +59,8 @@ puzzle20:
   119
   471
 puzzle21:
+  142
+  1879071
 puzzle22:
 puzzle23:
 puzzle24:
