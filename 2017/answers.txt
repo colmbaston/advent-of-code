@@ -65,5 +65,7 @@ puzzle22:
   5261
   2511927
 puzzle23:
+  3969
+  917
 puzzle24:
 puzzle25:
