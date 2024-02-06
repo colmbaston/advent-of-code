@@ -1,4 +1,4 @@
-#![feature(slice_group_by, iter_next_chunk)]
+#![feature(iter_next_chunk)]
 use std::cmp::Ordering;
 
 fn main()
@@ -41,7 +41,7 @@ impl Hand
             Some(p) => p
         };
 
-        let mut counts = hand[jokers..].group_by(|a, b| a == b)
+        let mut counts = hand[jokers..].chunk_by(|a, b| a == b)
                                        .map(|g| g.len())
                                        .collect::<Vec<usize>>();
 

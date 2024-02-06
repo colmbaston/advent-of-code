@@ -1,5 +1,5 @@
-use std::hash::{ Hash, Hasher };
-use std::collections::{ VecDeque, HashSet, hash_map::DefaultHasher };
+use std::hash::{ Hash, Hasher, DefaultHasher };
+use std::collections::{ VecDeque, HashSet };
 
 fn main()
 {

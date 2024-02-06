@@ -1,4 +1,4 @@
-#![feature(iter_next_chunk, slice_group_by)]
+#![feature(iter_next_chunk)]
 use std::ops::AddAssign;
 
 fn main()
@@ -26,7 +26,7 @@ fn main()
         particles.sort_unstable();
 
         buffer.clear();
-        for group in particles.group_by(|a, b| a.pos == b.pos)
+        for group in particles.chunk_by(|a, b| a.pos == b.pos)
         {
             let (first, rest) = group.split_first().unwrap();
             if rest.is_empty() { buffer.push(first.clone()) }

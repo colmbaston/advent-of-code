@@ -1,4 +1,3 @@
-#![feature(slice_first_last_chunk)]
 use std::collections::HashSet;
 use aoc::direction::Direction;
 
