@@ -22,7 +22,7 @@ fn parse_row(s : &str) -> [Option<u32> ; COMPOUND_COUNT]
 
     while let (Some(a), Some(b)) = (i.next(), i.next())
     {
-        compounds[compound_index(a)] = Some(b.trim_end_matches(|c| c == ',').parse().unwrap())
+        compounds[compound_index(a)] = Some(b.trim_end_matches(',').parse().unwrap())
     }
 
     compounds

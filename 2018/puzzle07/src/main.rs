@@ -53,9 +53,9 @@ fn topological_sort(mut graph : BTreeMap<u8, HashSet<u8>>, workers : usize) -> (
                 unsafe
                 {
                     use std::mem::transmute;
-                    let mut queue_vec : Vec<(Reverse<u32>, u8)> = transmute(queue);
+                    let mut queue_vec = transmute::<BinaryHeap<(Reverse<u32>, u8)>, Vec<(Reverse<u32>, u8)>>(queue);
                     for (Reverse(s), _) in queue_vec.iter_mut() { *s -= t }
-                    queue = transmute(queue_vec);
+                    queue = transmute::<Vec<(Reverse<u32>, u8)>, BinaryHeap<(Reverse<u32>, u8)>>(queue_vec);
                 }
             }
         }

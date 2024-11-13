@@ -78,7 +78,7 @@ fn ore_required<'a>(mut q_required : u64, chem : &'a str, reactions : &Reactions
         None => panic!("chemical {} not produced by any reaction!", chem),
         Some((q_output, inputs)) =>
         {
-            let runs     = (q_required + q_output - 1) / q_output;
+            let runs     = q_required.div_ceil(*q_output);
             let produced = q_output * runs;
             let left     = produced - q_required;
             *leftover.entry(chem).or_insert(0) += left;

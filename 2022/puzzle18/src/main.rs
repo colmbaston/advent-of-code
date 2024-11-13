@@ -7,11 +7,10 @@ fn main()
 {
     let mut min = Pos { x: i32::MAX, y: i32::MAX, z: i32::MAX };
     let mut max = Pos { x: i32::MIN, y: i32::MIN, z: i32::MIN };
-    let shape   = include_str!("../input.txt").lines().filter_map(Pos::parse).map(|pos|
+    let shape   = include_str!("../input.txt").lines().filter_map(Pos::parse).inspect(|&pos|
     {
         min = min.min_corner(pos);
-        max = max.max_corner(pos);
-        pos
+        max = max.max_corner(pos)
     })
     .collect::<HashSet<Pos>>();
 

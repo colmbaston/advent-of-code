@@ -14,8 +14,8 @@ fn react(polymer : impl Iterator<Item = u8>) -> usize
     {
         match v.last()
         {
-            Some(&d) if c != d && c.to_ascii_lowercase() == d.to_ascii_lowercase() => { v.pop();  },
-            _                                                                      => { v.push(c) }
+            Some(&d) if c != d && c.eq_ignore_ascii_case(&d) => { v.pop();  },
+            _                                                => { v.push(c) }
         }
     }
     v.len()

@@ -17,7 +17,7 @@ fn main()
 
 fn parse_row(s : &str) -> Vec<i32>
 {
-    s.split(|c| c == ' ' || c == ':' || c == ',')
+    s.split([' ', ':', ','])
      .filter_map(|s| s.parse().ok())
      .collect()
 }

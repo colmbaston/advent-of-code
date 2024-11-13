@@ -48,7 +48,7 @@ impl Op<'_>
 {
     fn parse(s : &str) -> Op
     {
-        let (label, s) = s.split_at(s.find(|c : char| c == '-' || c == '=').unwrap());
+        let (label, s) = s.split_at(s.find(['-', '=']).unwrap());
         let (op,    s) = s.split_at(1);
 
         match op

@@ -20,7 +20,7 @@ impl Cuboid
 {
     fn parse(s : &str) -> (bool, Cuboid)
     {
-        let mut i = s.split(|c : char| c == ' ' || c == '=' || c == ',' || c == '.').step_by(2);
+        let mut i = s.split([' ', '=', ',', '.']).step_by(2);
         let on    = i.next().unwrap() == "on";
         let min_x = i.next().unwrap().parse().unwrap();
         let max_x = i.next().unwrap().parse().unwrap();

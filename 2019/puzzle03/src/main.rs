@@ -9,8 +9,8 @@ fn main()
     let wire_one = parse_next();
     let wire_two = parse_next();
 
-    let mut minhattan = std::u64::MAX;
-    let mut min_steps = std::u64::MAX;
+    let mut minhattan = u64::MAX;
+    let mut min_steps = u64::MAX;
 
     for i in &wire_one
     {

@@ -62,7 +62,7 @@ enum Mode
 
 fn parse_inst(s : &str) -> Inst
 {
-    let mut i = s.split(|c| c == ' ' || c == ',');
+    let mut i = s.split([' ', ',']);
 
     let mode = match i.next()
     {

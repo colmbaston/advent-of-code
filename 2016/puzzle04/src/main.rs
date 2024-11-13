@@ -24,7 +24,7 @@ struct Room<'a>
     checksum: &'a str
 }
 
-impl<'a> Room<'a>
+impl Room<'_>
 {
     fn parse(s : &str) -> Room
     {
