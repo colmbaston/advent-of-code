@@ -54,3 +54,9 @@ test_2023:
   script: bash ./check.sh 2023
   rules:
   - changes: [2023/**/*, aoc/**/*]
+
+test_2024:
+  stage:  test
+  script: bash ./check.sh 2024
+  rules:
+  - changes: [2024/**/*, aoc/**/*]
