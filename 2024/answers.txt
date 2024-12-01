@@ -1,4 +1,6 @@
 puzzle01:
+  1151792
+  21790168
 puzzle02:
 puzzle03:
 puzzle04:
