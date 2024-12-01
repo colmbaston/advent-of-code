@@ -2,23 +2,28 @@
 
 fn main()
 {
-    let (mut list_one, mut list_two) = parse_lists(include_str!("../input.txt"));
-    list_one.sort_unstable();
-    list_two.sort_unstable();
-    println!("{}", list_one.iter().zip(list_two.iter()).map(|(a, b)| (a-b).abs()).sum::<i32>());
-    println!("{}", list_one.iter().map(|&a| a * list_two.iter().filter(|&&b| a == b).count() as i32).sum::<i32>());
-}
+    let (mut left, mut right) : (Vec<u32>, Vec<u32>) = include_str!("../input.txt").split_whitespace()
+                                                                                   .map(|t| t.parse::<u32>().unwrap())
+                                                                                   .array_chunks()
+                                                                                   .map(|[a, b]| (a, b))
+                                                                                   .unzip();
 
-fn parse_lists(s : &str) -> (Vec<i32>, Vec<i32>)
-{
-    let mut list_one = Vec::new();
-    let mut list_two = Vec::new();
+    left.sort_unstable();
+    right.sort_unstable();
+    println!("{}", left.iter()
+                       .zip(right.iter())
+                       .map(|(a, b)| a.abs_diff(*b))
+                       .sum::<u32>());
 
-    for [a, b] in s.split_whitespace().array_chunks()
+    let mut i = 0;
+    println!("{}", left.iter().fold(0, |a, &l|
     {
-        list_one.push(a.parse().unwrap());
-        list_two.push(b.parse().unwrap());
-    }
+        let c = right[i..].iter()
+                          .skip_while(|&&r| l >  r)
+                          .take_while(|&&r| l == r)
+                          .count();
 
-    (list_one, list_two)
+        i += c;
+        a + l * c as u32
+    }))
 }
