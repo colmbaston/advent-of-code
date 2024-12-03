@@ -5,6 +5,8 @@ puzzle02:
   598
   634
 puzzle03:
+  167090022
+  89823704
 puzzle04:
 puzzle05:
 puzzle06:
