@@ -15,55 +15,23 @@ fn main()
         {
             if y+3 < height
             {
-                match (grid[y][x], grid[y+1][x], grid[y+2][x], grid[y+3][x])
-                {
-                    (b'X', b'M', b'A', b'S') => count_one += 1,
-                    (b'S', b'A', b'M', b'X') => count_one += 1,
-                    _                        => ()
-                }
+                count_one += matches!(&[grid[y][x], grid[y+1][x], grid[y+2][x], grid[y+3][x]], b"XMAS" | b"SAMX") as u32;
             }
-
             if x+3 < width
             {
-                match (grid[y][x], grid[y][x+1], grid[y][x+2], grid[y][x+3])
-                {
-                    (b'X', b'M', b'A', b'S') => count_one += 1,
-                    (b'S', b'A', b'M', b'X') => count_one += 1,
-                    _                        => ()
-                }
+                count_one += matches!(&[grid[y][x], grid[y][x+1], grid[y][x+2], grid[y][x+3]], b"XMAS" | b"SAMX") as u32;
             }
-
             if y+3 < height && x+3 < width
             {
-                match (grid[y][x], grid[y+1][x+1], grid[y+2][x+2], grid[y+3][x+3])
-                {
-                    (b'X', b'M', b'A', b'S') => count_one += 1,
-                    (b'S', b'A', b'M', b'X') => count_one += 1,
-                    _                        => ()
-                }
+                count_one += matches!(&[grid[y][x], grid[y+1][x+1], grid[y+2][x+2], grid[y+3][x+3]], b"XMAS" | b"SAMX") as u32;
             }
-
             if y+3 < height && x >= 3
             {
-                match (grid[y][x], grid[y+1][x-1], grid[y+2][x-2], grid[y+3][x-3])
-                {
-                    (b'X', b'M', b'A', b'S') => count_one += 1,
-                    (b'S', b'A', b'M', b'X') => count_one += 1,
-                    _                        => ()
-
-                }
+                count_one += matches!(&[grid[y][x], grid[y+1][x-1], grid[y+2][x-2], grid[y+3][x-3]], b"XMAS" | b"SAMX") as u32;
             }
-
             if y+2 < height && x+2 < width
             {
-                match (grid[y][x], grid[y+1][x+1], grid[y+2][x+2], grid[y+2][x], grid[y][x+2])
-                {
-                    (b'M', b'A', b'S', b'M', b'S') => count_two += 1,
-                    (b'S', b'A', b'M', b'M', b'S') => count_two += 1,
-                    (b'M', b'A', b'S', b'S', b'M') => count_two += 1,
-                    (b'S', b'A', b'M', b'S', b'M') => count_two += 1,
-                    _                              => ()
-                }
+                count_two += matches!(&[grid[y][x], grid[y+1][x+1], grid[y+2][x+2], grid[y+2][x], grid[y][x+2]], b"MASMS" | b"SAMMS" | b"MASSM" | b"SAMSM") as u32;
             }
         }
     }
