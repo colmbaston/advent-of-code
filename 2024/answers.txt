@@ -8,6 +8,8 @@ puzzle03:
   167090022
   89823704
 puzzle04:
+  2434
+  1835
 puzzle05:
 puzzle06:
 puzzle07:
