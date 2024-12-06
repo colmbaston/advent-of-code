@@ -14,6 +14,8 @@ puzzle05:
   5091
   4681
 puzzle06:
+  4454
+  1503
 puzzle07:
 puzzle08:
 puzzle09:
