@@ -17,6 +17,8 @@ puzzle06:
   4454
   1503
 puzzle07:
+  1430271835320
+  456565678667482
 puzzle08:
 puzzle09:
 puzzle10:
