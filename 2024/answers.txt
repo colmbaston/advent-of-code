@@ -20,6 +20,8 @@ puzzle07:
   1430271835320
   456565678667482
 puzzle08:
+  400
+  1280
 puzzle09:
 puzzle10:
 puzzle11:
