@@ -7,11 +7,13 @@ fn main()
     println!("{}", antennae.values()
                            .flat_map(|ps| antinodes_one(ps))
                            .filter(|(x, y)| (0 .. width).contains(x) && (0 .. height).contains(y))
-                           .collect::<HashSet<Pos>>().len());
+                           .collect::<HashSet<Pos>>()
+                           .len());
 
     println!("{}", antennae.values()
                            .flat_map(|ps| antinodes_two(ps, bounds))
-                           .collect::<HashSet<Pos>>().len());
+                           .collect::<HashSet<Pos>>()
+                           .len());
 }
 
 type Pos = (i32, i32);
@@ -28,7 +30,9 @@ fn parse_grid(s : &str) -> (Pos, HashMap<u8, Vec<Pos>>)
         {
             if b != b'.'
             {
-                antennae.entry(b).or_insert(Vec::new()).push((x, y))
+                antennae.entry(b)
+                        .or_insert(Vec::new())
+                        .push((x, y))
             }
             width = width.max(x+1);
         }

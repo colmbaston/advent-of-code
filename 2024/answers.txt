@@ -23,6 +23,8 @@ puzzle08:
   400
   1280
 puzzle09:
+  6519155389266
+  6547228115826
 puzzle10:
 puzzle11:
 puzzle12:
