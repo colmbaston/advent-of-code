@@ -26,6 +26,8 @@ puzzle09:
   6519155389266
   6547228115826
 puzzle10:
+  644
+  1366
 puzzle11:
 puzzle12:
 puzzle13:
