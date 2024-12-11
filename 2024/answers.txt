@@ -29,6 +29,8 @@ puzzle10:
   644
   1366
 puzzle11:
+  233875
+  277444936413293
 puzzle12:
 puzzle13:
 puzzle14:
