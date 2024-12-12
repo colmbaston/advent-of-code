@@ -32,6 +32,8 @@ puzzle11:
   233875
   277444936413293
 puzzle12:
+  1546338
+  978590
 puzzle13:
 puzzle14:
 puzzle15:
