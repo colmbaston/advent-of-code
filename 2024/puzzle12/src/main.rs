@@ -41,55 +41,26 @@ fn purge_region(pos : Pos, plots : &mut HashMap<Pos, u8>, region : &mut HashSet<
 
 fn fence_cost_one(region : &HashSet<Pos>) -> usize
 {
-    let perimeter = region.iter()
-                          .map(|&pos| Direction::ELEMS.into_iter()
-                                                      .filter(|dir| !region.contains(&dir.step(pos)))
-                                                      .count())
-                          .sum::<usize>();
-
-    region.len() * perimeter
+    region.len() * region.iter()
+                         .map(|&pos| Direction::ELEMS.into_iter()
+                                                     .filter(|dir| !region.contains(&dir.step(pos)))
+                                                     .count())
+                         .sum::<usize>()
 }
 
 fn fence_cost_two(region : &HashSet<Pos>) -> usize
 {
-    let mut north_facing = region.iter().copied()
-                                 .filter(|&pos| !region.contains(&Direction::North.step(pos)))
-                                 .collect::<HashSet<Pos>>();
-
-    let mut sides = 0;
-    while let Some(mut current) = north_facing.iter().next().copied()
+    region.len() * region.iter().map(|&pos|
     {
-        let mut start  = None;
-        let mut facing = Direction::North;
-        loop
+        Direction::ELEMS.into_iter().filter(|dir|
         {
-            let mut next = facing.clockwise().step(current);
-            while region.contains(&next) && !region.contains(&facing.step(next))
-            {
-                if facing == Direction::North { north_facing.remove(&current); }
-                current = next;
-                next    = facing.clockwise().step(current);
-            }
-            if facing == Direction::North { north_facing.remove(&current); }
+            let a = dir.step(pos);
+            let b = dir.clockwise().step(pos);
+            let c = dir.step(b);
 
-            match start
-            {
-                None      => start = Some(current),
-                Some(pos) => if current == pos && facing == Direction::North { break }
-            }
-            sides += 1;
-
-            if region.contains(&next)
-            {
-                current = facing.step(next);
-                facing  = facing.anticlockwise();
-            }
-            else
-            {
-                facing = facing.clockwise();
-            }
-        }
-    }
-
-    region.len() * sides
+            matches!([region.contains(&a), region.contains(&b), region.contains(&c)], [false, false, _] | [true, true, false])
+        })
+        .count()
+    })
+    .sum::<usize>()
 }
