@@ -35,6 +35,8 @@ puzzle12:
   1546338
   978590
 puzzle13:
+  31552
+  95273925552482
 puzzle14:
 puzzle15:
 puzzle16:
