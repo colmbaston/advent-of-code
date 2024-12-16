@@ -44,6 +44,8 @@ puzzle15:
   1437174
   1437468
 puzzle16:
+  73432
+  496
 puzzle17:
 puzzle18:
 puzzle19:

@@ -1,7 +1,7 @@
 use std::ops::{ Add, Sub };
 use num_traits::{ CheckedAdd, CheckedSub, One };
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Direction { North, East, South, West }
 
 impl Direction
