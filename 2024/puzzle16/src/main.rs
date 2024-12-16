@@ -5,15 +5,15 @@ fn main()
 {
     let (start, end, maze) = parse_maze(include_str!("../input.txt"));
 
-    let mut best    = None;
-    let mut visited = HashMap::new();
-    let mut queue   = BinaryHeap::new();
+    let mut best        = None;
+    let mut visited_one = HashMap::new();
+    let mut queue       = BinaryHeap::new();
     queue.push(Reverse((0, start, Direction::East)));
     while let Some(Reverse((steps, pos, dir))) = queue.pop()
     {
         if pos == end && *best.get_or_insert(steps) < steps { break }
 
-        match visited.entry((pos, dir))
+        match visited_one.entry((pos, dir))
         {
             Entry::Occupied(_) => continue,
             Entry::Vacant(e)   => { e.insert(steps); }
@@ -31,19 +31,18 @@ fn main()
     drop(queue);
     println!("{}", best.unwrap());
 
-    let mut paths = HashSet::new();
-    let mut stack = Direction::ELEMS.into_iter().map(|dir| (best.unwrap(), end, dir)).collect::<Vec<(u32, Pos, Direction)>>();
+    let mut visited_two = HashSet::new();
+    let mut stack       = Direction::ELEMS.into_iter().map(|dir| (best.unwrap(), end, dir)).collect::<Vec<(u32, Pos, Direction)>>();
     while let Some((steps, pos, dir)) = stack.pop()
     {
-        if visited.get(&(pos, dir)) == Some(&steps)
+        if visited_one.get(&(pos, dir)) == Some(&steps) && visited_two.insert((pos, dir))
         {
-            paths.insert(pos);
             stack.push((steps.wrapping_sub(1000), pos,                      dir.clockwise()));
             stack.push((steps.wrapping_sub(1000), pos,                      dir.anticlockwise()));
             stack.push((steps.wrapping_sub(1),    dir.opposite().step(pos), dir));
         }
     }
-    println!("{}", paths.len());
+    println!("{}", visited_two.into_iter().map(|(pos, _)| pos).collect::<HashSet<Pos>>().len());
 }
 
 type Pos = (i32, i32);
