@@ -53,6 +53,8 @@ puzzle18:
   384
   36,10
 puzzle19:
+  269
+  758839075658876
 puzzle20:
 puzzle21:
 puzzle22:
