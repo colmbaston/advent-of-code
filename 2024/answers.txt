@@ -59,6 +59,8 @@ puzzle20:
   1411
   1010263
 puzzle21:
+  237342
+  294585598101704
 puzzle22:
 puzzle23:
 puzzle24:
