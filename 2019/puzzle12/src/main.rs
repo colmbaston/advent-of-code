@@ -61,11 +61,13 @@ fn step(moons : &mut [([i64 ; 3], [i64 ; 3])])
             moons[i].1.iter_mut().zip(g.clone()).for_each(|(a, b)| *a -= b);
             moons[j].1.iter_mut().zip(g        ).for_each(|(a, b)| *a += b);
         }
-        moons[i].0.iter_mut().zip(moons[i].1.iter()).for_each(|(a, b)| *a += b);
+
+        let (pos, vel) = &mut moons[i];
+        pos.iter_mut().zip(vel.iter()).for_each(|(p, v)| *p += *v)
     }
 }
 
-fn check_cycles(i : u64, input : &[([i64 ; 3], [i64 ; 3])], moons :  &[([i64 ; 3], [i64 ; 3])], cycles : &mut [Option<u64> ; 3])
+fn check_cycles(i : u64, input : &[([i64 ; 3], [i64 ; 3])], moons : &[([i64 ; 3], [i64 ; 3])], cycles : &mut [Option<u64> ; 3])
 {
     for j in 0 .. 3
     {
