@@ -14,7 +14,7 @@ fn main()
     while let Some(Record::Guard(guard_id)) = input.next()
     {
         // each guard will be followed by an even number of toggles
-        while input.peek().map_or(false, |r| matches!(r, Record::Toggle(_)))
+        while input.peek().is_some_and(|r| matches!(r, Record::Toggle(_)))
         {
             // the first of each pair of toggles denotes the minute the guard
             // falls asleep and the second denotes the minute the guard wakes up
