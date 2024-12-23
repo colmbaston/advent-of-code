@@ -65,5 +65,7 @@ puzzle22:
   14623556510
   1701
 puzzle23:
+  1308
+  bu,fq,fz,pn,rr,st,sv,tr,un,uy,zf,zi,zy
 puzzle24:
 puzzle25:
