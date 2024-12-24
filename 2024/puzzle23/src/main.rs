@@ -44,18 +44,22 @@ where T : Copy + Eq + std::hash::Hash
     {
         if p.is_empty() && x.is_empty() && r.len() > max_clique.len()
         {
-            max_clique = r.clone();
+            max_clique = r;
+            continue
         }
 
-        while let Some(&v) = p.iter().next()
+        if let Some(&u) = p.union(&x).next()
         {
-            let nv = &graph[&v];
-            stack.push((r.iter().copied().chain(std::iter::once(v)).collect(),
-                        p.intersection(nv).copied().collect(),
-                        x.intersection(nv).copied().collect()));
+            while let Some(&v) = p.difference(&graph[&u]).next()
+            {
+                let nv = &graph[&v];
+                stack.push((r.iter().copied().chain(std::iter::once(v)).collect(),
+                            p.intersection(nv).copied().collect(),
+                            x.intersection(nv).copied().collect()));
 
-            p.remove(&v);
-            x.insert(v);
+                p.remove(&v);
+                x.insert(v);
+            }
         }
     }
 
