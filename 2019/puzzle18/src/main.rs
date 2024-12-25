@@ -79,11 +79,11 @@ fn adjacency_matrix(entrances : Vec<(i64, i64)>, vault : &HashMap<(i64, i64), u8
     matrix
 }
 
-fn collect_keys(current : Vec<u8>, keys : BTreeSet<u8>, matrix : &HashMap<(u8, u8), (u64, Vec<u8>)>, cache : &mut HashMap<(Vec<u8>, BTreeSet<u8>), u64>) -> u64
+fn collect_keys(current : Vec<u8>, keys : BTreeSet<u8>, matrix : &HashMap<(u8, u8), (u64, Vec<u8>)>, cache : &mut HashMap<Vec<u8>, HashMap<BTreeSet<u8>, u64>>) -> u64
 {
     if keys.is_empty() { return 0 }
 
-    if let Some(&x) = cache.get(&(current.clone(), keys.clone()))
+    if let Some(&x) = cache.get(&current).and_then(|m| m.get(&keys))
     {
         return x
     }
@@ -118,6 +118,6 @@ fn collect_keys(current : Vec<u8>, keys : BTreeSet<u8>, matrix : &HashMap<(u8, u
     })
     .fold(u64::MAX, std::cmp::min);
 
-    cache.insert((current, keys), result);
+    cache.entry(current).or_default().insert(keys, result);
     result
 }
