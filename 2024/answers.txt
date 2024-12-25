@@ -68,4 +68,6 @@ puzzle23:
   1308
   bu,fq,fz,pn,rr,st,sv,tr,un,uy,zf,zi,zy
 puzzle24:
+  42410633905894
+  cqm,mps,vcv,vjv,vwp,z13,z19,z25
 puzzle25:
