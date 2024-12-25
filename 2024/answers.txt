@@ -71,3 +71,4 @@ puzzle24:
   42410633905894
   cqm,mps,vcv,vjv,vwp,z13,z19,z25
 puzzle25:
+  3155
