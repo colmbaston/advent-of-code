@@ -1,7 +1,8 @@
 # Advent of Code
 
 My solutions to [Advent of Code](https://adventofcode.com/about) puzzles, written in Rust.
-I tend to optimise for code quality rather than fast puzzle completion time.
+I tend to optimise for code quality, preferring to engineer elegant and efficient solutions to problems rather than racing to get to the answer ASAP.
+This repository contains solutions for all 250 puzzles released to date, 25 per year from AoC 2015-2024.
 
 Each year's puzzles are organised into a Cargo workspace consisting of one binary crate per puzzle.
 Each puzzle's binary (with a few exceptions):
@@ -12,5 +13,7 @@ Each puzzle's binary (with a few exceptions):
 
 A Bash script [`check.sh`](check.sh) is provided to compile and run all puzzle solutions for a given year, checking their output against that year's `answers.txt` file.
 Call the script with the desired year, for example `./check.sh 2015`, `./check.sh all` for all years, or `./check.sh clean` to call `cargo clean` in each year's directory.
+
+An animation demonstrating a recursive solution to [puzzle 17, 2018](https://adventofcode.com/2018/day/17); water flows over the left side of a container, all the way down the reservoir until it settles, and then over the right side:
 
 ![2018/puzzle17](animation.gif)
