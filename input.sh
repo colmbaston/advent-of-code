@@ -23,7 +23,7 @@ fi
 
 date="$year/$month/$day"
 
-if (( $year < 2015 || $month != 12 || 10#$day < 1 || 10#$day > 25 ))
+if (( $year < 2015 || $month != 12 || 10#$day < 1 || 10#$day > 25 || $year >= 2025 && 10#$day > 12 ))
 then
   echo "invalid puzzle $date"
   exit 1
