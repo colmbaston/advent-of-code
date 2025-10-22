@@ -60,3 +60,9 @@ test_2024:
   script: bash ./check.sh 2024
   rules:
   - changes: [2024/**/*, aoc/**/*]
+
+test_2025:
+  stage:  test
+  script: bash ./check.sh 2025
+  rules:
+  - changes: [2025/**/*, aoc/**/*]

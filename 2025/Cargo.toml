@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members  = [ "puzzle01",
+             "puzzle02",
+             "puzzle03",
+             "puzzle04",
+             "puzzle05",
+             "puzzle06",
+             "puzzle07",
+             "puzzle08",
+             "puzzle09",
+             "puzzle10",
+             "puzzle11",
+             "puzzle12" ]
