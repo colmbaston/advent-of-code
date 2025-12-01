@@ -1,4 +1,6 @@
 puzzle01:
+  999
+  6099
 puzzle02:
 puzzle03:
 puzzle04:
