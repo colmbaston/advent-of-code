@@ -2,6 +2,8 @@ puzzle01:
   999
   6099
 puzzle02:
+  23701357374
+  34284458938
 puzzle03:
 puzzle04:
 puzzle05:
