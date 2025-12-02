@@ -1,43 +1,33 @@
 use std::ops::RangeInclusive;
+use std::collections::HashSet;
 
 fn main()
 {
-    let ranges = parse_ranges(include_str!("../input.txt").trim_end());
+    let ranges     = parse_ranges(include_str!("../input.txt").trim_end());
+    let max_digits = ranges.iter().map(|r| *r.end()).max().unwrap().ilog10()+1;
 
     let mut sum_one = 0;
-    let mut sum_two = 0;
-    for range in ranges
+    let mut invalid = HashSet::new();
+    for digits in 1 ..= max_digits/2
     {
-        for n in range
+        for repeat in 10_u64.pow(digits-1) .. 10_u64.pow(digits)
         {
-            let digits = n.ilog10() + 1;
-
-            // all primes <= digits(u32::MAX)
-            'outer: for p in [2, 3, 5, 7, 11, 13, 17, 19]
+            let mut m = repeat;
+            for i in 2 ..= max_digits / digits
             {
-                // redundant, but increases speed by avoiding
-                // the more expensive mod check in many cases
-                if digits < p      { continue }
-                if digits % p != 0 { continue }
+                m *= 10_u64.pow(digits);
+                m += repeat;
 
-                let divisor = 10_u64.pow(digits / p);
-                let first   = n % divisor;
-
-                let mut m = n;
-                for _ in 1 .. p
+                if ranges.iter().any(|r| r.contains(&m))
                 {
-                    m /= divisor;
-                    if first != m % divisor { continue 'outer }
+                    if i == 2 { sum_one += m }
+                    invalid.insert(m);
                 }
-
-                if p == 2 { sum_one += n }
-                sum_two += n;
-                break
             }
         }
     }
     println!("{sum_one}");
-    println!("{sum_two}");
+    println!("{}", invalid.into_iter().sum::<u64>());
 }
 
 fn parse_ranges(s : &str) -> Vec<RangeInclusive<u64>>
