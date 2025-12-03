@@ -39,15 +39,13 @@ fn main()
 fn increment(x : i8, y : i8, grid : &mut Vec<Vec<Option<u8>>>)
 {
     if let Some(e) = grid.get_mut(x as usize).and_then(|v| v.get_mut(y as usize))
+    && let Some(f) = e
     {
-        if let Some(f) = e
+        *f += 1;
+        if *f > 9
         {
-            *f += 1;
-            if *f > 9
-            {
-                *e = None;
-                adjacent(x, y).for_each(|(x, y)| increment(x, y, grid));
-            }
+            *e = None;
+            adjacent(x, y).for_each(|(x, y)| increment(x, y, grid));
         }
     }
 }

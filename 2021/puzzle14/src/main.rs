@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 use std::collections::HashMap;
 
 fn main()
@@ -37,9 +39,9 @@ fn parse_polymer(s : &str) -> (u8, u8, Polymer, Rules)
     let last        = *polymer_raw.last().unwrap();
 
     let mut polymer = HashMap::new();
-    for w in polymer_raw.windows(2)
+    for &[a, b] in polymer_raw.array_windows()
     {
-        *polymer.entry((w[0], w[1])).or_insert(0) += 1;
+        *polymer.entry((a, b)).or_insert(0) += 1;
     }
 
     let rules = i.next().unwrap().lines().map(|t| match *t.as_bytes()
@@ -59,13 +61,11 @@ fn react(polymer : &Polymer, rules : &Rules) -> Polymer
     for (&(a, b), &c) in rules.iter()
     {
         if let Some(k) = polymer.get(&(a, b))
+        && let Some(freq) = next.get_mut(&(a, b))
         {
-            if let Some(freq) = next.get_mut(&(a, b))
-            {
-                *freq                            -= k;
-                *next.entry((a, c)).or_insert(0) += k;
-                *next.entry((c, b)).or_insert(0) += k;
-            }
+            *freq                            -= k;
+            *next.entry((a, c)).or_insert(0) += k;
+            *next.entry((c, b)).or_insert(0) += k;
         }
     }
 

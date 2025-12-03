@@ -38,7 +38,7 @@ fn gamma_rate(ns : &[Vec<bool>]) -> Vec<bool>
         }
     }
 
-    let half = (ns.len()+1) / 2;
+    let half = ns.len().div_ceil(2);
     hist.into_iter().map(|n| half <= n).collect()
 }
 
