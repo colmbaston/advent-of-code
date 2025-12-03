@@ -20,6 +20,16 @@ then
   exit
 fi
 
+if [ $1 == "clippy" ]
+then
+  (cd aoc; cargo clippy)
+  for year in $(ls | grep "^20")
+  do
+    (cd $year; cargo clippy)
+  done
+  exit
+fi
+
 check()
 {
   if [ ! -d $year ]

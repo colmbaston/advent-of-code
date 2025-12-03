@@ -42,8 +42,8 @@ fn parse_graph(s : &str) -> Graph<&str>
 
 fn karger<T : Copy + Eq + Hash>(graph : &mut Graph<T>, mapping : &mut HashMap<T, T>)
 {
-    use rand::seq::{ IteratorRandom, SliceRandom };
-    let mut rng = rand::thread_rng();
+    use rand::seq::{ IteratorRandom, IndexedRandom };
+    let mut rng = rand::rng();
 
     for _ in 2 .. graph.len()
     {

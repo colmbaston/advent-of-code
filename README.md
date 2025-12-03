@@ -2,7 +2,7 @@
 
 My solutions to [Advent of Code](https://adventofcode.com/about) puzzles, written in Rust.
 I tend to optimise for code quality, preferring to engineer elegant and efficient solutions to problems rather than racing to get to the answer ASAP.
-This repository contains solutions for all 250 puzzles released to date, 25 per year from AoC 2015-2024.
+This repository contains solutions for all 250 puzzles, 25 per year, from AoC 2015-2024, and the 12 AoC 2025 puzzles are currently ongoing.
 
 Each year's puzzles are organised into a Cargo workspace consisting of one binary crate per puzzle.
 Each puzzle's binary (with a few exceptions):
