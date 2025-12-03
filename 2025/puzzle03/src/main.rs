@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 fn main()
 {
     let mut sum_one = 0;
@@ -17,15 +19,9 @@ fn best_joltage(bank : &[u8], size : usize) -> u64
     for &joltage in &bank[size ..]
     {
         best.push(joltage);
-        for i in 0 .. size
-        {
-            if best[i] < best[i+1]
-            {
-                best.remove(i);
-                break
-            }
-        }
-        if best.len() > size { best.pop(); }
+        best.remove(best.array_windows()
+                        .position(|[a, b]| a < b)
+                        .unwrap_or(size));
     }
     best.into_iter().fold(0, |a, j| a*10 + j as u64)
 }
