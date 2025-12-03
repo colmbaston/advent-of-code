@@ -1,4 +1,3 @@
-use std::iter::repeat;
 
 fn main()
 {
@@ -10,11 +9,13 @@ fn main()
 
         fn base_pattern(x : usize) -> impl Iterator<Item = i64>
         {
-                   repeat( 0).take(x)
-            .chain(repeat( 1).take(x))
-            .chain(repeat( 0).take(x))
-            .chain(repeat(-1).take(x))
-            .cycle().skip( 1)
+            use std::iter::repeat_n;
+
+                   repeat_n( 0, x)
+            .chain(repeat_n( 1, x))
+            .chain(repeat_n( 0, x))
+            .chain(repeat_n(-1, x))
+            .cycle().skip(1)
         }
 
         for _ in 0 .. 100

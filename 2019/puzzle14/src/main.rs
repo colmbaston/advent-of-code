@@ -33,7 +33,7 @@ fn main()
     println!("{}", lower);
 }
 
-fn parse_reaction(s : &str) -> (&str, (u64, Inputs))
+fn parse_reaction(s : &str) -> (&str, (u64, Inputs<'_>))
 {
     fn parse_chem(s : &str) -> (u64, &str)
     {
