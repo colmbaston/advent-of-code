@@ -29,7 +29,7 @@ enum Atom<'a>
     Var(&'a str)
 }
 
-fn parse_op(s : &str) -> (&str, Op)
+fn parse_op(s : &str) -> (&str, Op<'_>)
 {
     match s.split(' ').collect::<Vec<&str>>()[..]
     {
@@ -43,7 +43,7 @@ fn parse_op(s : &str) -> (&str, Op)
     }
 }
 
-fn parse_atom(s : &str) -> Atom
+fn parse_atom(s : &str) -> Atom<'_>
 {
     match s.parse()
     {

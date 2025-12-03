@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 fn main()
 {
     let input = include_str!("../input.txt");
@@ -14,10 +16,10 @@ fn nice_one(s : &str) -> bool
     if s.bytes().filter(|b| VOWELS.contains(b)).count() < 3 { return false }
 
     let mut twice = false;
-    for w in s.as_bytes().windows(2)
+    for &w@[a, b] in s.as_bytes().array_windows()
     {
-        if BANNED.contains(&w) { return false }
-        if w[0] == w[1]        { twice = true }
+        if BANNED.contains(&w.as_slice()) { return false }
+        if a == b                         { twice = true }
     }
     twice
 }
@@ -25,9 +27,9 @@ fn nice_one(s : &str) -> bool
 fn nice_two(s : &str) -> bool
 {
     let mut found = false;
-    for w in s.as_bytes().windows(3)
+    for &[a, _, c] in s.as_bytes().array_windows()
     {
-        if w[0] == w[2] { found = true; break }
+        if a == c { found = true; break }
     }
     if !found { return false }
 

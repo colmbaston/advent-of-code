@@ -10,7 +10,7 @@ fn main()
 
 type Grammar<'a> = HashMap<&'a str, Vec<&'a str>>;
 
-fn parse_grammar(s : &str) -> (Grammar, &str)
+fn parse_grammar(s : &str) -> (Grammar<'_>, &str)
 {
     let mut i       = s.split("\n\n");
     let mut grammar = HashMap::new();

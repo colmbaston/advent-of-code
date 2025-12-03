@@ -37,7 +37,7 @@ fn parse_grid(s : &str) -> impl '_ + Iterator<Item = (i8, i8)>
      .zip(0 ..)
      .flat_map(|(l, y)| l.bytes()
                          .zip(0 ..)
-                         .filter(|(b, _)| (*b == b'#'))
+                         .filter(|(b, _)| *b == b'#')
                          .map(move |(_, x)| (x, y)))
 }
 

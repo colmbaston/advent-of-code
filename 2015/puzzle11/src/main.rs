@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 fn main()
 {
     let mut input = include_str!("../input.txt").trim_end().bytes().collect::<Vec<u8>>();
@@ -29,9 +31,9 @@ fn valid(s : &[u8]) -> bool
     }
 
     let mut found = false;
-    for w in s.windows(3)
+    for &[a, b, c] in s.array_windows()
     {
-        if w[0]+1 == w[1] && w[1]+1 == w[2]
+        if a+1 == b && b+1 == c
         {
             found = true;
             break
@@ -39,13 +41,13 @@ fn valid(s : &[u8]) -> bool
     }
     if !found { return false }
 
-    for (i, w) in s.windows(2).enumerate()
+    for (i, &[a, b]) in s.array_windows().enumerate()
     {
-        if w[0] == w[1]
+        if a == b
         {
-            for v in s[i+2 ..].windows(2)
+            for &[c, d] in s[i+2 ..].array_windows()
             {
-                if v[0] == v[1] { return true }
+                if c == d { return true }
             }
             return false
         }

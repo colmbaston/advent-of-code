@@ -55,7 +55,7 @@ fn run_inst(i : &Inst, regs : &mut [usize ; 2], pc : &mut isize)
         Inst::Tpl(r)    => { *pc += 1; regs[*r] *= 3 },
         Inst::Inc(r)    => { *pc += 1; regs[*r] += 1 },
         Inst::Jmp(   o) =>   *pc += o,
-        Inst::Jie(r, o) =>   *pc += if regs[*r] % 2 == 0 { *o } else { 1 },
-        Inst::Jio(r, o) =>   *pc += if regs[*r]     == 1 { *o } else { 1 }
+        Inst::Jie(r, o) =>   *pc += if regs[*r].is_multiple_of(2) { *o } else { 1 },
+        Inst::Jio(r, o) =>   *pc += if regs[*r] == 1              { *o } else { 1 }
     }
 }

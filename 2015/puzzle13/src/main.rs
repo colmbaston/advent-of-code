@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 use std::collections::{ HashMap, BTreeSet };
 use aoc::permutations::Permutations;
 
@@ -38,5 +40,5 @@ fn le_reverse<T : Ord>(v : &[T]) -> bool
 fn happiness(mut p : Vec<&str>, table : &HashMap<(&str, &str), i32>) -> i32
 {
     p.push(p[0]);
-    p.windows(2).map(|w| table.get(&(w[0], w[1])).unwrap() + table.get(&(w[1], w[0])).unwrap()).sum()
+    p.array_windows().map(|&[a, b]| table.get(&(a, b)).unwrap() + table.get(&(b, a)).unwrap()).sum()
 }

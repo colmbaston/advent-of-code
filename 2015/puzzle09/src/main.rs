@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 use std::collections::{ HashMap, BTreeSet };
 use aoc::permutations::Permutations;
 
@@ -32,5 +34,5 @@ fn le_reverse<T : Ord>(v : &[T]) -> bool
 
 fn distance(path : &[&str], graph : &HashMap<(&str, &str), u32>) -> u32
 {
-    path.windows(2).map(|w| graph.get(&(w[0].min(w[1]), w[0].max(w[1]))).unwrap()).sum()
+    path.array_windows().map(|&[a, b]| graph.get(&(a.min(b), a.max(b))).unwrap()).sum()
 }
