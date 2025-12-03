@@ -22,20 +22,18 @@ fn main()
     while let Some(bot) = queue.pop()
     {
         if let Some(&Bot::Two(low, high)) = bots.get(&bot)
+        && let Inst::Bot(_, low_dest, high_dest) = insts[insts.binary_search_by_key(&bot, |i| i.bot()).unwrap()]
         {
-            if let Inst::Bot(_, low_dest, high_dest) = insts[insts.binary_search_by_key(&bot, |i| i.bot()).unwrap()]
+            for (v, d) in [(low, low_dest), (high, high_dest)]
             {
-                for (v, d) in [(low, low_dest), (high, high_dest)]
+                match d
                 {
-                    match d
+                    Dest::Output(o) => { outputs.insert(o, v); },
+                    Dest::Bot(b)    =>
                     {
-                        Dest::Output(o) => { outputs.insert(o, v); },
-                        Dest::Bot(b)    =>
-                        {
-                            let bot = bots.entry(b).or_insert(Bot::Zero);
-                            bot.insert(v);
-                            if matches!(bot, Bot::Two(_, _)) { queue.push(b) }
-                        }
+                        let bot = bots.entry(b).or_insert(Bot::Zero);
+                        bot.insert(v);
+                        if matches!(bot, Bot::Two(_, _)) { queue.push(b) }
                     }
                 }
             }

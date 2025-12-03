@@ -29,5 +29,5 @@ type Pos = (u32, u32);
 
 fn open((x, y) : Pos, k : u32) -> bool
 {
-    (x*x + 3*x + 2*x*y + y + y*y + k).count_ones() % 2 == 0
+    (x*x + 3*x + 2*x*y + y + y*y + k).count_ones().is_multiple_of(2)
 }

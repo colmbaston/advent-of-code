@@ -27,18 +27,14 @@ fn main()
             }
 
             if let Some(hash) = saturate(&mut hashes, hash, 1000)
+            && let Some(k) = hash.as_bytes().array_windows::<3>().find_map(|[k, rest@..]| rest.iter().all(|l| k == l).then_some(k))
+            && hashes.iter().any(|h| h.as_bytes().array_windows::<5>().any(|a| a.iter().all(|l| k == l)))
             {
-                if let Some(k) = hash.as_bytes().array_windows::<3>().find_map(|[k, rest@..]| rest.iter().all(|l| k == l).then_some(k))
+                count += 1;
+                if count == 64
                 {
-                    if hashes.iter().any(|h| h.as_bytes().array_windows::<5>().any(|a| a.iter().all(|l| k == l)))
-                    {
-                        count += 1;
-                        if count == 64
-                        {
-                            println!("{}", i - 1000);
-                            break
-                        }
-                    }
+                    println!("{}", i - 1000);
+                    break
                 }
             }
         }

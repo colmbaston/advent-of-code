@@ -26,7 +26,7 @@ struct Room<'a>
 
 impl Room<'_>
 {
-    fn parse(s : &str) -> Room
+    fn parse(s : &str) -> Room<'_>
     {
         let mut name = s.split('-').collect::<Vec<&str>>();
         let (sector, checksum) = name.pop().unwrap().split_once('[').unwrap();

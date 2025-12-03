@@ -6,14 +6,14 @@ fn main()
     let mut state = State::parse(include_str!("../input.txt"), &mut cache);
     println!("{}", aoc::pathfinding::bfs(std::iter::once(state.clone()),
                                          State::target,
-                                         State::adjacent).unwrap_or(0usize));
+                                         |s| s.adjacent().into_iter()).unwrap_or(0_usize));
 
     let elements = cache.len() as u8;
     state.floors[0].generators.extend((elements ..).take(2));
     state.floors[0].microchips.extend((elements ..).take(2));
     println!("{}", aoc::pathfinding::bfs(std::iter::once(state),
                                          State::target,
-                                         State::adjacent).unwrap_or(0usize));
+                                         |s| s.adjacent().into_iter()).unwrap_or(0_usize));
 }
 
 #[derive(Clone, PartialEq, Eq, Hash)]
@@ -78,7 +78,7 @@ impl State
                    .unwrap_or(true)
     }
 
-    fn adjacent(&self) -> impl Iterator<Item = State>
+    fn adjacent(&self) -> Vec<State>
     {
         let mut adjs = Vec::new();
 
@@ -171,7 +171,7 @@ impl State
         }
 
         adjs.iter_mut().for_each(State::normalise);
-        adjs.into_iter()
+        adjs
     }
 
     fn normalise(&mut self)
@@ -199,18 +199,18 @@ impl Floor
         self.generators.len() + self.microchips.len()
     }
 
-    fn insert(&mut self, (gen, element) : (bool, u8))
+    fn insert(&mut self, (g, element) : (bool, u8))
     {
-        if gen { self.generators.push(element) }
-        else   { self.microchips.push(element) }
+        if g { self.generators.push(element) }
+        else { self.microchips.push(element) }
     }
 
     fn remove(&mut self, i : usize) -> (bool, u8)
     {
-        let gen = i < self.generators.len();
+        let g = i < self.generators.len();
 
-        (gen, if gen { self.generators.swap_remove(i)                         }
-              else   { self.microchips.swap_remove(i - self.generators.len()) })
+        (g, if g { self.generators.swap_remove(i)                         }
+            else { self.microchips.swap_remove(i - self.generators.len()) })
     }
 
     fn remove_one(&self) -> impl Iterator<Item = ((bool, u8), Floor)> + '_

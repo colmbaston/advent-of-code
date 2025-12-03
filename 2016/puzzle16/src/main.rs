@@ -1,4 +1,4 @@
-#![feature(array_chunks)]
+#![feature(iter_array_chunks)]
 
 fn main()
 {
@@ -23,7 +23,8 @@ fn main()
 
 fn checksum(bits : &[bool]) -> u32
 {
-    let digest = |s : &[bool]| s.array_chunks()
+    let digest = |s : &[bool]| s.iter()
+                                .array_chunks()
                                 .map(|[a, b]| a == b)
                                 .collect::<Vec<bool>>();
 

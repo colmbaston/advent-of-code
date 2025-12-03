@@ -1,4 +1,4 @@
-#![feature(array_chunks)]
+#![feature(iter_array_chunks)]
 
 fn main()
 {
@@ -15,8 +15,7 @@ fn main()
     for matrix in [input, transposed]
     {
         println!("{}", matrix.iter()
-                             .flat_map(|a| a.array_chunks())
-                             .copied()
+                             .flat_map(|a| a.iter().copied().array_chunks())
                              .filter(|&a| valid(a))
                              .count());
     }
@@ -27,5 +26,5 @@ fn valid([a, b, c] : [u32 ; 3]) -> bool
     let max = a.max(b).max(c);
     let sum = a + b + c;
 
-    max < (sum+1) / 2
+    max < sum.div_ceil(2)
 }
