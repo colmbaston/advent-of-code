@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 fn main()
 {
     let reports = include_str!("../input.txt").lines()
@@ -14,8 +16,8 @@ fn safe_one(report : &[i32]) -> bool
 {
     let (l, u) = if report[0] < report[1] { (1, 3) } else { (-3, -1) };
 
-    report.windows(2)
-          .map(|w| w[1] - w[0])
+    report.array_windows()
+          .map(|&[a, b]| b - a)
           .all(|d| l <= d && d <= u)
 }
 

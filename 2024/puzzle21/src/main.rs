@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 use std::collections::HashMap;
 use aoc::direction::Direction;
 
@@ -24,8 +26,8 @@ fn sequence_cost(seq : impl Iterator<Item = u8>, layer : u8, limit : u8, cache :
     buttons.extend(seq);
     buttons.push(b'A');
 
-    buttons.windows(2)
-           .map(|w| button_cost(button_pos(w[0]), button_pos(w[1]), layer, limit, cache))
+    buttons.array_windows()
+           .map(|&[a, b]| button_cost(button_pos(a), button_pos(b), layer, limit, cache))
            .sum()
 }
 

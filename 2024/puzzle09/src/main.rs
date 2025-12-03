@@ -2,7 +2,7 @@ fn main()
 {
     let blocks = include_str!("../input.txt").trim_end().bytes().zip(0 ..)
                                              .zip([false, true].into_iter().cycle())
-                                             .flat_map(|((b, id), free)| std::iter::repeat((!free).then_some(id/2)).take((b - b'0') as usize))
+                                             .flat_map(|((b, id), free)| std::iter::repeat_n((!free).then_some(id/2), (b - b'0') as usize))
                                              .collect::<Vec<Option<u32>>>();
 
     let mut defrag = blocks.clone();

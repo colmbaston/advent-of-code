@@ -23,7 +23,7 @@ fn blink(stone : u64, iter : u32, cache : &mut HashMap<(u64, u32), u64>) -> u64
     else
     {
         let digits = stone.ilog10() + 1;
-        if digits % 2 == 0
+        if digits.is_multiple_of(2)
         {
             let div = 10_u64.pow(digits / 2);
             blink(stone / div, iter - 1, cache) + blink(stone % div, iter - 1, cache)

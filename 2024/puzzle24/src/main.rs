@@ -22,7 +22,7 @@ enum Expr<'a>
 
 impl Expr<'_>
 {
-    fn parse(s : &str) -> (&str, Expr)
+    fn parse(s : &str) -> (&str, Expr<'_>)
     {
         match s.split_once(": ")
         {
