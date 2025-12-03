@@ -28,7 +28,7 @@ impl<T : Clone + Ord> Iterator for Permutations<T>
 
         if let Some(data) = &mut self.data
         {
-            match data.windows(2).enumerate().rev().find(|(_, w)| w[0] < w[1])
+            match data.array_windows().enumerate().rev().find(|(_, [a, b])| a < b)
             {
                 None         => self.data = None,
                 Some((k, _)) =>
