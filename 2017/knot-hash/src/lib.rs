@@ -1,13 +1,14 @@
-#![feature(array_chunks, iter_next_chunk)]
+#![feature(iter_array_chunks, iter_next_chunk)]
+
 use std::collections::VecDeque;
 
 pub fn hash(data : &[u8]) -> [u8 ; 16]
 {
     let mut data = data.to_vec();
     data.extend([17, 31, 73, 47, 23]);
-    rounds(64, &data).make_contiguous()
+    rounds(64, &data).into_iter()
                      .array_chunks()
-                     .map(|chunk : &[u8 ; 16]| chunk.iter().fold(0, |a, b| a ^ b))
+                     .map(|chunk : [u8 ; 16]| chunk.iter().fold(0, |a, b| a ^ b))
                      .next_chunk().unwrap()
 }
 
