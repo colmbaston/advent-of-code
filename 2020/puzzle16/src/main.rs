@@ -42,7 +42,7 @@ struct TicketInfo<'a>
     tickets:      Vec<Vec<u64>>
 }
 
-fn parse_ticket_info(s : &str) -> TicketInfo
+fn parse_ticket_info(s : &str) -> TicketInfo<'_>
 {
     let mut it = s.split("\n\n");
 

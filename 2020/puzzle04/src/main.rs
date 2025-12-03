@@ -10,7 +10,7 @@ fn main()
 
 type Passport<'a> = Vec<(&'a str, &'a str)>;
 
-fn parse_passports(s : &str) -> Vec<Passport>
+fn parse_passports(s : &str) -> Vec<Passport<'_>>
 {
     s.split("\n\n").map(|p|
     {

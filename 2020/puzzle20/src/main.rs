@@ -79,13 +79,11 @@ fn build_image(mut tiles : HashMap<u64, Tile>) -> HashMap<(i32, i32), (u64, Tile
             image.get(&(x, y+1)).map(|(_, t2, o2)| match_above_below(t1, o1, t2, o2)).unwrap_or(true)
         })
         .map(|o| (id, o)))
+        && let Some(t) = tiles.remove(&id)
         {
-            if let Some(t) = tiles.remove(&id)
-            {
-                image.insert((x, y), (id, t, o));
-                if tiles.is_empty() { break }
-                queue.extend(vec![(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
-            }
+            image.insert((x, y), (id, t, o));
+            if tiles.is_empty() { break }
+            queue.extend(vec![(x-1, y), (x+1, y), (x, y-1), (x, y+1)])
         }
     }
 
