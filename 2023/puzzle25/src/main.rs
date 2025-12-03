@@ -48,7 +48,7 @@ fn karger<T : Copy + Eq + Hash>(graph : &mut Graph<T>, mapping : &mut HashMap<T,
     for _ in 2 .. graph.len()
     {
         let (&u, vs) = graph.iter().choose(&mut rng).unwrap();
-        let  &v      = vs.iter().collect::<Vec<_>>().choose_weighted(&mut rng, |(_, &k)| k).unwrap().0;
+        let  &v      = vs.iter().collect::<Vec<_>>().choose_weighted(&mut rng, |&(_, &k)| k).unwrap().0;
 
         contract(u, v, graph);
         mapping.insert(v, u);

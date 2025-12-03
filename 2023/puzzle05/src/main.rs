@@ -1,4 +1,4 @@
-#![feature(slice_as_chunks, iter_next_chunk)]
+#![feature(iter_next_chunk)]
 use std::ops::{ Range, Neg };
 
 fn main()

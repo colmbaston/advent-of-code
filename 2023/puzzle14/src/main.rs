@@ -1,4 +1,3 @@
-#![feature(hash_extract_if)]
 use std::collections::HashMap;
 use aoc::direction::Direction;
 
@@ -16,7 +15,7 @@ fn main()
     for n in 0 .. CYCLES
     {
         let mut rocks = platform.rocks.iter()
-                                      .filter(|(_, &v)| v)
+                                      .filter(|&(_, &v)| v)
                                       .map(|(&p, _)| p)
                                       .collect::<Vec<Pos>>();
         rocks.sort_unstable();
@@ -80,7 +79,7 @@ impl Platform
     fn load(&self) -> i32
     {
         self.rocks.iter()
-                  .filter(|(_, &v)| v)
+                  .filter(|&(_, &v)| v)
                   .map(|((_, y), _)| self.height - y)
                   .sum()
     }

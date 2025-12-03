@@ -10,7 +10,7 @@ fn calibration_one(line : &str) -> u32
     let mut digits = line.bytes().filter(|b| b.is_ascii_digit()).map(|b| b - b'0');
 
     let first = digits.next().unwrap_or(0);
-    let last  = digits.last().unwrap_or(first);
+    let last  = digits.next_back().unwrap_or(first);
 
     10 * first as u32 + last as u32
 }

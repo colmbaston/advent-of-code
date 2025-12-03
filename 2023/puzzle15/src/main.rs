@@ -46,7 +46,7 @@ enum Op<'a>
 
 impl Op<'_>
 {
-    fn parse(s : &str) -> Op
+    fn parse(s : &str) -> Op<'_>
     {
         let (label, s) = s.split_at(s.find(['-', '=']).unwrap());
         let (op,    s) = s.split_at(1);
