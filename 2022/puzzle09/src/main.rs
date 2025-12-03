@@ -12,7 +12,7 @@ fn main()
     for knots in [2, 10]
     {
         rope.clear();
-        rope.extend(std::iter::repeat(Pos::ORIGIN).take(knots));
+        rope.extend(std::iter::repeat_n(Pos::ORIGIN, knots));
 
         visited.clear();
         visited.insert(Pos::ORIGIN);
@@ -26,8 +26,9 @@ fn main()
                 {
                     let (lower, upper)                    = rope.split_at_mut(ix);
                     if let (Some(leader), Some(follower)) = (lower.last_mut(), upper.first_mut())
+                    && let Some(pos) = follower.step_towards(*leader)
                     {
-                        if let Some(pos) = follower.step_towards(*leader) { *follower = pos }
+                        *follower = pos
                     }
                 }
                 if let Some(tail) = rope.last() { visited.insert(*tail); }

@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 type Pos = (usize, usize);
 
 fn main()
@@ -14,10 +16,10 @@ fn main()
     let mut grid = vec![vec![true ; max_y+1] ; 2*max_y+1];
     for wall in walls
     {
-        for window in wall.windows(2)
+        for &[a, b] in wall.array_windows()
         {
-            let (ax, ay) = window[0];
-            let (bx, by) = window[1];
+            let (ax, ay) = a;
+            let (bx, by) = b;
 
             if ax == bx
             {

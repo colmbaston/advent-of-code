@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 mod packet;
 use packet::Packet;
 
@@ -7,8 +9,8 @@ fn main()
                                                   .filter_map(Packet::parse_all)
                                                   .collect::<Vec<Packet>>();
 
-    println!("{}", packets.windows(2).step_by(2).zip(1 ..)
-                          .filter_map(|(ps, ix)| (ps[0] <= ps[1]).then_some(ix))
+    println!("{}", packets.array_windows().step_by(2).zip(1 ..)
+                          .filter_map(|([a, b], ix)| (a <= b).then_some(ix))
                           .sum::<u32>());
 
     let dividers = ["[[2]]", "[[6]]"].into_iter()

@@ -1,3 +1,5 @@
+#![feature(array_windows)]
+
 use std::{ ops::RangeInclusive, collections::HashSet };
 
 mod sensor;
@@ -22,7 +24,7 @@ fn main()
     'outer: for y in 0 ..= 4_000_000
     {
         merge_coverage(y, sensors.iter(), &mut coverage, &mut merged);
-        for gap in merged.windows(2).map(|w| *w[0].end()+1 ..= *w[1].start()-1)
+        for gap in merged.array_windows().map(|[a, b]| a.end()+1 ..= b.start()-1)
         {
             let x = gap.start();
             if x == gap.end() && (0 ..= 4_000_000).contains(x)

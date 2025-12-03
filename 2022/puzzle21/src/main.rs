@@ -62,7 +62,7 @@ enum Op { Add, Sub, Mul, Div }
 
 impl<'a> Expr<'a>
 {
-    fn parse(s : &str) -> Option<Expr>
+    fn parse(s : &str) -> Option<Expr<'_>>
     {
         let mut words = s.split_whitespace();
 

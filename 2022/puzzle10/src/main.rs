@@ -46,7 +46,7 @@ fn exec(prog : impl Iterator<Item = Inst>) -> impl Iterator<Item = i32>
     {
         let reg_during = *reg;
         if let Inst::AddX(k) = inst { *reg += k }
-        Some(std::iter::repeat(reg_during).take(inst.cycles()))
+        Some(std::iter::repeat_n(reg_during, inst.cycles()))
     })
     .flatten()
 }

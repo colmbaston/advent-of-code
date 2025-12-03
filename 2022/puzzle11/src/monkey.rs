@@ -1,4 +1,4 @@
-use std::{ collections::VecDeque, rc::Rc };
+use std::{ collections::VecDeque };
 
 pub type WorryLevel = u64;
 
@@ -6,21 +6,27 @@ pub type WorryLevel = u64;
 pub struct Monkey
 {
     pub items: VecDeque<WorryLevel>,
-    op_fn:     Rc<dyn Fn(WorryLevel) -> WorryLevel>,
+    op:        Op,
     test:      (WorryLevel, usize, usize)
 }
+
+#[derive(Clone)]
+enum Op  { Add(Val, Val), Mul(Val, Val) }
+
+#[derive(Clone)]
+enum Val { Old, Const(u64) }
 
 impl Monkey
 {
     pub fn op(&self, k : WorryLevel) -> WorryLevel
     {
-        (self.op_fn)(k)
+        self.op.apply(k)
     }
 
     pub fn throw_to(&self, k : WorryLevel) -> usize
     {
         let (factor, if_t, if_f) = self.test;
-        if k % factor == 0 { if_t } else { if_f }
+        if k.is_multiple_of(factor) { if_t } else { if_f }
     }
 
     pub fn product<'a>(monkeys : impl Iterator<Item = &'a Monkey>) -> WorryLevel
@@ -36,26 +42,25 @@ impl Monkey
                              .split(", ")
                              .map(|w| w.parse::<WorryLevel>().ok())
                              .collect::<Option<VecDeque<WorryLevel>>>()?;
-        let op_fn     = Monkey::parse_op_fn(lines.next()?)?;
-        let test      = Monkey::parse_test(lines)?;
+        let op   = Monkey::parse_op(lines.next()?)?;
+        let test = Monkey::parse_test(lines)?;
 
-        Some(Monkey { items, op_fn, test })
+        Some(Monkey { items, op, test })
     }
 
-    fn parse_op_fn(line : &str) -> Option<Rc<impl Fn(WorryLevel) -> WorryLevel>>
+    fn parse_op(line : &str) -> Option<Op>
     {
-        enum Op { Add, Mul }
-
         let mut words = line.strip_prefix("  Operation: new = ")?.split_whitespace();
-        let arg_l     = words.next()?.parse::<WorryLevel>().ok();
-        let op        = match words.next()? { "+" => Some(Op::Add), "*" => Some(Op::Mul), _ => None }?;
-        let arg_r     = words.next()?.parse::<WorryLevel>().ok();
+        let l  = words.next()?.parse::<WorryLevel>().map(Val::Const).unwrap_or(Val::Old);
+        let op = words.next()?;
+        let r  = words.next()?.parse::<WorryLevel>().map(Val::Const).unwrap_or(Val::Old);
 
-        Some(Rc::new(move |old| match op
+        match op
         {
-            Op::Add => arg_l.unwrap_or(old) + arg_r.unwrap_or(old),
-            Op::Mul => arg_l.unwrap_or(old) * arg_r.unwrap_or(old)
-        }))
+            "+" => Some(Op::Add(l, r)),
+            "*" => Some(Op::Mul(l, r)),
+            _   => None
+        }
     }
 
     fn parse_test<'a>(mut lines : impl Iterator<Item = &'a str>) -> Option<(WorryLevel, usize, usize)>
@@ -64,5 +69,29 @@ impl Monkey
         let if_t   = lines.next()?.strip_prefix("    If true: throw to monkey ")?.parse().ok()?;
         let if_f   = lines.next()?.strip_prefix("    If false: throw to monkey ")?.parse().ok()?;
         Some((factor, if_t, if_f))
+    }
+}
+
+impl Op
+{
+    fn apply(&self, k : u64) -> u64
+    {
+        match self
+        {
+            Op::Add(a, b) => a.apply(k) + b.apply(k),
+            Op::Mul(a, b) => a.apply(k) * b.apply(k)
+        }
+    }
+}
+
+impl Val
+{
+    fn apply(&self, k : u64) -> u64
+    {
+        match self
+        {
+            Val::Old      => k,
+            Val::Const(j) => *j
+        }
     }
 }
