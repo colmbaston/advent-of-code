@@ -143,7 +143,7 @@ struct Group<'a>
     initiative:    u32
 }
 
-fn parse(s : &str) -> HashMap<(Team, usize), Group>
+fn parse(s : &str) -> HashMap<(Team, usize), Group<'_>>
 {
     let mut groups = HashMap::new();
     for (s, t) in s.split("\n\n").zip(vec![Team::ImmuneSystem, Team::Infection].into_iter())
@@ -155,7 +155,7 @@ fn parse(s : &str) -> HashMap<(Team, usize), Group>
 
 impl<'a> Group<'a>
 {
-    fn parse(s : &str) -> Group
+    fn parse(s : &str) -> Group<'_>
     {
         fn span(s : &str, pred : impl Fn(char) -> bool) -> (&str, &str)
         {

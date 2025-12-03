@@ -10,7 +10,7 @@ fn main()
 
     // part 2: what is the resouce values after 1_000_000_000 minutes?
     // detect the generation of the first repeated state
-    let mut gen     = 10;
+    let mut g       = 10;
     let mut visited = HashMap::new();
     let repeat = loop
     {
@@ -20,13 +20,13 @@ fn main()
         }
 
         let new = generation(&area);
-        visited.insert(area, gen);
+        visited.insert(area, g);
         area = new;
-        gen += 1;
+        g    += 1;
     };
 
     // simulate up to 1_000_000 mod the cycle length
-    let cycle = gen - repeat;
+    let cycle = g - repeat;
     for _ in 0 .. (1_000_000_000 - repeat) % cycle
     {
         area = generation(&area);

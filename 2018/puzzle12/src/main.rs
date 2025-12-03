@@ -18,14 +18,14 @@ fn main()
     println!("{}", prev_two);
 
     // part 2: detect the linear series and compute the fifty-billionth term
-    for gen in 22 ..
+    for g in 22 ..
     {
         state.next_generation(&rules);
         let current = state.sum();
 
         if current - prev_one == prev_one - prev_two
         {
-            println!("{:?}", current + (50_000_000_000 - gen) * (current - prev_one));
+            println!("{:?}", current + (50_000_000_000 - g) * (current - prev_one));
             break
         }
 
@@ -46,7 +46,7 @@ impl State
     fn parse(s : &str) -> (State, HashSet<u8>)
     {
         let mut ls        = s.lines();
-        let initial_bytes = ls.next().unwrap()[15..].as_bytes();
+        let initial_bytes = &ls.next().unwrap().as_bytes()[15..];
         ls.next();
 
         // always ensure the state is padded with four falses at each side

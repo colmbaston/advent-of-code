@@ -16,5 +16,5 @@ fn main()
     // computing the sum of the factors of VALUE; since, in principle, another
     // input could implement a different function, I leave this result hard-coded
     const VALUE : usize = 10_551_326;
-    println!("{}", (1 ..= VALUE).filter(|n| VALUE % n == 0).sum::<usize>());
+    println!("{}", (1 ..= VALUE).filter(|&n| VALUE.is_multiple_of(n)).sum::<usize>());
 }
