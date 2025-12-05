@@ -2,10 +2,10 @@ use std::collections::HashMap;
 
 fn main()
 {
-    let     points = parse_points(include_str!("../input.txt"));
-    let mut grid   = points.iter().map(|&p| (p, 0)).collect::<HashMap<Point, u8>>();
+    let points   = parse_points(include_str!("../input.txt"));
+    let mut grid = points.iter().map(|&p| (p, 0)).collect::<HashMap<Point, u8>>();
 
-    for p in points.into_iter().flat_map(|p| adjacent(p))
+    for p in points.into_iter().flat_map(adjacent)
     {
         if let Some(n) = grid.get_mut(&p) { *n += 1 }
     }
