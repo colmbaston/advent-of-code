@@ -8,14 +8,14 @@ fn main()
     let mut merged = fresh[.. 1].to_vec();
     for r in fresh[1 ..].iter()
     {
-        let i = merged.partition_point(|s| s.end()+1 < *r.start());
-        if i == merged.len()
+        let s = merged.last_mut().unwrap();
+        if s.end()+1 < *r.start()
         {
             merged.push(r.clone());
         }
         else
         {
-            merged[i] = *merged[i].start() ..= *merged[i].end().max(r.end());
+            *s = *s.start() ..= *s.end().max(r.end());
         }
     }
 
