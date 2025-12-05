@@ -11,6 +11,8 @@ puzzle04:
   1449
   8746
 puzzle05:
+  681
+  348820208020395
 puzzle06:
 puzzle07:
 puzzle08:
