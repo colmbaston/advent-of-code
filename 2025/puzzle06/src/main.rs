@@ -7,8 +7,8 @@ fn main()
     for (i, op) in ops.into_iter().enumerate()
     {
 
-        let row_wise = rows.iter().map(|row| trim_parse(&row[i]));
-        let col_wise = aoc::transpose::transpose(rows.iter().map(|row| row[i].as_slice()))
+        let row_wise = rows.iter().map(|row| trim_parse(row[i]));
+        let col_wise = aoc::transpose::transpose(rows.iter().map(|row| row[i]))
                                   .map(|col| trim_parse(&col));
 
         if let b'+' = op
@@ -33,7 +33,7 @@ fn trim_parse(bytes : &[u8]) -> u64
              .parse().unwrap()
 }
 
-fn parse_homework(s : &str) -> (Vec<u8>, Vec<Vec<Vec<u8>>>)
+fn parse_homework(s : &str) -> (Vec<u8>, Vec<Vec<&[u8]>>)
 {
     let mut ls      = s.lines();
     let mut ops     = Vec::new();
@@ -56,7 +56,7 @@ fn parse_homework(s : &str) -> (Vec<u8>, Vec<Vec<Vec<u8>>>)
         let mut cols = Vec::new();
         for &w in widths.iter()
         {
-            cols.push(l[.. w].to_vec());
+            cols.push(&l[.. w]);
             if l.len() > w { l = &l[w+1 ..] }
         }
         rows.push(cols);
