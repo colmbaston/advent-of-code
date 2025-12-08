@@ -1,56 +1,50 @@
-use std::collections::HashMap;
-
 fn main()
 {
-    let points    = include_str!("../input.txt").lines().map(Point::parse).collect::<Vec<Point>>();
+    let points = include_str!("../input.txt").lines().map(Point::parse).collect::<Vec<Point>>();
 
     let mut dists = Vec::new();
     for (i, &p) in points.iter().enumerate()
     {
-        for &q in points[i+1 ..].iter()
+        for (j, &q) in points.iter().enumerate().skip(i+1)
         {
-            dists.push((p.distance(q), p, q));
+            dists.push((p.distance_sq(q), i, j));
         }
     }
-    dists.sort_unstable_by(|a, b| a.0.total_cmp(&b.0));
+    dists.sort_unstable_by_key(|(d, _, _)| *d);
 
-    let mut reps     = points.iter().map(|&p| (p, p)).collect::<HashMap<Point, Point>>();
-    let mut circuits = points.iter().map(|&p| (p, vec![p])).collect::<HashMap<Point, Vec<Point>>>();
-    for (i, &(_, p, q)) in dists.iter().enumerate()
+    let mut reps     = (0 .. points.len()).collect::<Vec<usize>>();
+    let mut circuits = (0 .. points.len()).map(|i| vec![i]).collect::<Vec<Vec<usize>>>();
+    for (k, (_, p, q)) in dists.into_iter().enumerate()
     {
-        if i == 1000
+        if k == 1000
         {
             let mut sizes = Vec::new();
-            for (rp, rq) in reps.iter()
+            for (i, &j) in reps.iter().enumerate()
             {
-                if rp != rq { continue }
-                sizes.push(circuits[rp].len() as u32)
+                if i == j { sizes.push(circuits[i].len() as u32) }
             }
             sizes.sort_unstable();
             println!("{}", sizes.into_iter().rev().take(3).product::<u32>());
         }
 
-        let rp = reps[&p];
-        let rq = reps[&q];
+        let rp = reps[p];
+        let rq = reps[q];
         if rp == rq { continue }
 
-        let circuit = circuits.remove(&rq).unwrap();
-        for &r in circuit.iter()
-        {
-            reps.insert(r, rp);
-        }
-        circuits.entry(rp).and_modify(|c| c.extend(circuit));
+        let mut circuit = std::mem::take(&mut circuits[rq]);
+        for &r in circuit.iter() { reps[r] = rp }
+        circuits[rp].append(&mut circuit);
 
-        if circuits.len() == 1
+        if circuits[rp].len() == points.len()
         {
-            println!("{}", p.x * q.x);
+            println!("{}", points[p].x * points[q].x);
             break
         }
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
-struct Point { x: i64, y: i64, z: i64 }
+#[derive(Copy, Clone)]
+struct Point { x: u64, y: u64, z: u64 }
 
 impl Point
 {
@@ -65,10 +59,10 @@ impl Point
         }
     }
 
-    fn distance(self, other : Point) -> f32
+    fn distance_sq(self, other : Point) -> u64
     {
-        (((self.x-other.x).pow(2) +
-          (self.y-other.y).pow(2) +
-          (self.z-other.z).pow(2)) as f32).sqrt()
+        self.x.abs_diff(other.x).pow(2) +
+        self.y.abs_diff(other.y).pow(2) +
+        self.z.abs_diff(other.z).pow(2)
     }
 }
