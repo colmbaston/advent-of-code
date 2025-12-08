@@ -12,19 +12,22 @@ fn main()
     }
     dists.sort_unstable_by_key(|(d, _, _)| *d);
 
-    let mut reps     = (0 .. points.len()).collect::<Vec<usize>>();
-    let mut circuits = std::iter::repeat_n(1, points.len()).collect::<Vec<u32>>();
+    let mut reps  = (0 .. points.len()).collect::<Vec<usize>>();
+    let mut sizes = std::iter::repeat_n(1, points.len()).collect::<Vec<u32>>();
     for (k, (_, p, q)) in dists.into_iter().enumerate()
     {
         if k == 1000
         {
-            let mut sizes = Vec::new();
-            for (i, &j) in reps.iter().enumerate()
+            let mut max = Vec::new();
+            for &size in sizes.iter()
             {
-                if i == j { sizes.push(circuits[i]) }
+                match max.iter().position(|&s| s < size)
+                {
+                    None    => if max.len() < 3 { max.push(size) },
+                    Some(i) => { max.insert(i, size); max.truncate(3) }
+                }
             }
-            sizes.sort_unstable();
-            println!("{}", sizes.into_iter().rev().take(3).product::<u32>());
+            println!("{}", max.into_iter().product::<u32>());
         }
 
         let mut rp = p;
@@ -47,10 +50,10 @@ fn main()
 
         if rp != rq
         {
-            reps[rq] = rp;
-            circuits[rp] += circuits[rq];
+            reps[rq]   = rp;
+            sizes[rp] += std::mem::take(&mut sizes[rq]);
 
-            if circuits[rp] == points.len() as u32
+            if sizes[rp] == points.len() as u32
             {
                 println!("{}", points[p].x * points[q].x);
                 break
