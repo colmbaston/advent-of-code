@@ -13,7 +13,7 @@ fn main()
     dists.sort_unstable_by_key(|(d, _, _)| *d);
 
     let mut reps     = (0 .. points.len()).collect::<Vec<usize>>();
-    let mut circuits = (0 .. points.len()).map(|i| vec![i]).collect::<Vec<Vec<usize>>>();
+    let mut circuits = std::iter::repeat_n(1, points.len()).collect::<Vec<u32>>();
     for (k, (_, p, q)) in dists.into_iter().enumerate()
     {
         if k == 1000
@@ -21,24 +21,40 @@ fn main()
             let mut sizes = Vec::new();
             for (i, &j) in reps.iter().enumerate()
             {
-                if i == j { sizes.push(circuits[i].len() as u32) }
+                if i == j { sizes.push(circuits[i]) }
             }
             sizes.sort_unstable();
             println!("{}", sizes.into_iter().rev().take(3).product::<u32>());
         }
 
-        let rp = reps[p];
-        let rq = reps[q];
-        if rp == rq { continue }
-
-        let mut circuit = std::mem::take(&mut circuits[rq]);
-        for &r in circuit.iter() { reps[r] = rp }
-        circuits[rp].append(&mut circuit);
-
-        if circuits[rp].len() == points.len()
+        let mut rp = p;
+        loop
         {
-            println!("{}", points[p].x * points[q].x);
-            break
+            let grandparent = reps[reps[rp]];
+            if rp == grandparent { break }
+            reps[rp] = grandparent;
+            rp       = grandparent;
+        }
+
+        let mut rq = q;
+        loop
+        {
+            let grandparent = reps[reps[rq]];
+            if rq == grandparent { break }
+            reps[rq] = grandparent;
+            rq       = grandparent;
+        }
+
+        if rp != rq
+        {
+            reps[rq] = rp;
+            circuits[rp] += circuits[rq];
+
+            if circuits[rp] == points.len() as u32
+            {
+                println!("{}", points[p].x * points[q].x);
+                break
+            }
         }
     }
 }
