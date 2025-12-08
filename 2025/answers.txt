@@ -20,6 +20,8 @@ puzzle07:
   1550
   9897897326778
 puzzle08:
+  47040
+  4884971896
 puzzle09:
 puzzle10:
 puzzle11:
