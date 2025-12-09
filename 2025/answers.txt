@@ -23,6 +23,8 @@ puzzle08:
   47040
   4884971896
 puzzle09:
+  4776487744
+  1560299548
 puzzle10:
 puzzle11:
 puzzle12:
