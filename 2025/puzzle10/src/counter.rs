@@ -1,15 +1,16 @@
 pub struct Counter
 {
     values:   Vec<i32>,
-    max:      i32,
+    sum:      i32,
+    bound:    i32,
     finished: bool
 }
 
 impl Counter
 {
-    pub fn new(size : usize, max : i32) -> Counter
+    pub fn new(size : usize, bound : i32) -> Counter
     {
-        Counter { values: vec![0 ; size], max, finished: false }
+        Counter { values: vec![0 ; size], sum: 0, bound, finished: bound < 0 }
     }
 }
 
@@ -25,13 +26,15 @@ impl Iterator for Counter
         for v in self.values.iter_mut()
         {
             *v += 1;
-            if *v <= self.max
+            self.sum += 1;
+            if self.sum <= self.bound
             {
                 return Some(output)
             }
             else
             {
-                *v = 0
+                self.sum -= *v;
+                *v = 0;
             }
         }
         self.finished = true;
