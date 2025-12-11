@@ -8,10 +8,10 @@ fn main()
     for m in machines.iter()
     {
         let mut matrix = m.to_linear_system();
-        echelon_form(&mut matrix);
+        let _pivots = echelon_form(&mut matrix);
     }
 
-    // hard-coded for noow
+    // hard-coded for now
     // found via external LP solver
     println!("21696");
 }

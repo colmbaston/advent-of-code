@@ -89,46 +89,44 @@ impl Vec3
 
 fn gaussian_elimination(matrix : &mut [Vec<i128>]) -> Option<Vec<i128>>
 {
-    let rows = matrix.len();
-    if matrix.iter().any(|row| row.len() != rows+1) { return None }
+    let equations = matrix.len();
+    let variables = matrix[0].len()-1;
 
     // convert to row echelon form
-    for pivot in 0 .. rows
+    let mut row = 0;
+    for col in 0 .. variables
     {
-        // choose minimum |pivot| to minimise size after multiplication step
-        matrix.swap(pivot, (pivot .. rows).map(|i| (matrix[i][pivot].abs(), i))
-                                          .filter(|(k, _)| *k != 0)
-                                          .min()?.1);
-
-        let (above, below) = matrix.split_at_mut(pivot+1);
-
-        let row_a = above.last_mut()?;
-        for row_b in below.iter_mut()
+        if let Some(i) = (row .. equations).map(|i| (matrix[i][col].abs(), i))
+                                           .filter(|(k, _)| *k != 0)
+                                           .min().map(|(_, i)| i)
         {
-            let pivot_b = row_b[pivot];
-            if  pivot_b == 0 { continue }
-            let pivot_a = row_a[pivot];
+            matrix.swap(row, i);
 
-            let mut gcd_a = 0;
-            let mut gcd_b = 0;
+            let (above, below) = matrix.split_at_mut(row+1);
+            let pivot_row = &mut above[row];
+            let pivot_val = pivot_row[col];
 
-            for (a, b) in row_a[pivot..].iter_mut().zip(row_b[pivot..].iter_mut())
+            for below_row in below.iter_mut()
             {
-                *a = a.checked_mul(pivot_b)?;
-                *b = b.checked_mul(pivot_a)?.checked_sub(*a)?;
+                let below_val = below_row[col];
+                if below_val == 0 { continue }
 
-                gcd_a = gcd(gcd_a, *a);
-                gcd_b = gcd(gcd_b, *b);
+                let mut gcd_b = 0;
+                for (a, b) in pivot_row[col ..].iter().zip(below_row[col ..].iter_mut())
+                {
+                    *b = pivot_val * *b - below_val * *a;
+                    gcd_b = gcd(gcd_b, *b);
+                }
+                if gcd_b != 0 { below_row[col ..].iter_mut().for_each(|b| *b /= gcd_b) }
             }
 
-            // divide rows by their gcd to reduce size for future iterations
-            if gcd_a != 0 { row_a[pivot..].iter_mut().for_each(|a| *a /= gcd_a) }
-            if gcd_b != 0 { row_b[pivot..].iter_mut().for_each(|b| *b /= gcd_b) }
+            row += 1;
+            if row == matrix.len() { break }
         }
     }
 
     // backsubstitute
-    let mut solution = Vec::with_capacity(rows);
+    let mut solution = Vec::with_capacity(variables);
     for (pivot, row) in matrix.iter().enumerate().rev()
     {
         let (&(mut sum), coeffs) = row.split_last()?;
