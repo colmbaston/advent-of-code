@@ -1,26 +1,45 @@
 use std::collections::VecDeque;
+use itertools::Itertools;
 
 fn main()
 {
     let machines = include_str!("../input.txt").lines().map(Machine::parse).collect::<Vec<Machine>>();
     println!("{}", machines.iter().map(|m| m.bfs_lights()).sum::<u32>());
 
+    let mut sum  = 0;
+    let mut vars = Vec::new();
     for m in machines.iter()
     {
-        let mut matrix = m.to_linear_system();
-        let _pivots = echelon_form(&mut matrix);
-    }
+        let mut matrix     = m.to_linear_system();
+        let (pivots, free) = echelon_form(&mut matrix);
 
-    // hard-coded for now
-    // found via external LP solver
-    println!("21696");
+        let mut min  = i32::MAX;
+        for prod in free.iter()
+                        .map(|_| 0 ..= *m.joltages.iter().max().unwrap())
+                        .multi_cartesian_product()
+        {
+            vars.clear();
+            vars.resize(m.buttons.len(), 0);
+            for (&f, p) in free.iter().zip(prod.into_iter())
+            {
+                vars[f] = p
+            }
+
+            if back_substitute(&matrix, &pivots, &mut vars)
+            {
+                min = min.min(vars.iter().sum::<i32>())
+            }
+        }
+        sum += min
+    }
+    println!("{sum}");
 }
 
 struct Machine
 {
     lights:   Vec<bool>,
     buttons:  Vec<Vec<usize>>,
-    joltages: Vec<u32>
+    joltages: Vec<i32>
 }
 
 impl Machine
@@ -77,7 +96,7 @@ impl Machine
         for &j in self.joltages.iter()
         {
             let mut row = vec![0 ; self.buttons.len()];
-            row.push(j as i32);
+            row.push(j);
             rows.push(row);
         }
         for (i, b) in self.buttons.iter().enumerate()
@@ -91,42 +110,50 @@ impl Machine
     }
 }
 
-fn echelon_form(matrix : &mut Vec<Vec<i32>>) -> Vec<usize>
+fn echelon_form(matrix : &mut Vec<Vec<i32>>) -> (Vec<usize>, Vec<usize>)
 {
     let equations = matrix.len();
     let variables = matrix[0].len()-1;
 
     let mut row = 0;
     let mut pivots = Vec::new();
+    let mut free   = Vec::new();
     for col in 0 .. variables
     {
-        if let Some(i) = (row .. equations).map(|i| (matrix[i][col].abs(), i))
-                                           .filter(|(k, _)| *k != 0)
-                                           .min().map(|(_, i)| i)
+        match (row .. equations).map(|i| (matrix[i][col].abs(), i))
+                                .filter(|(k, _)| *k != 0)
+                                .min().map(|(_, i)| i)
         {
-            matrix.swap(row, i);
-
-            let (above, below) = matrix.split_at_mut(row+1);
-            let pivot_row = &mut above[row];
-            let pivot_val = pivot_row[col];
-
-            for below_row in below.iter_mut()
+            None    => free.push(col),
+            Some(i) =>
             {
-                let below_val = below_row[col];
-                if below_val == 0 { continue }
+                pivots.push(col);
+                matrix.swap(row, i);
 
-                let mut gcd_b = 0;
-                for (a, b) in pivot_row[col ..].iter().zip(below_row[col ..].iter_mut())
+                let (above, below) = matrix.split_at_mut(row+1);
+                let pivot_row = &mut above[row];
+                let pivot_val = pivot_row[col];
+                for below_row in below.iter_mut()
                 {
-                    *b = pivot_val * *b - below_val * *a;
-                    gcd_b = gcd(gcd_b, *b);
-                }
-                if gcd_b != 0 { below_row[col ..].iter_mut().for_each(|b| *b /= gcd_b) }
-            }
+                    let below_val = below_row[col];
+                    if below_val == 0 { continue }
 
-            pivots.push(col);
-            row += 1;
-            if row == matrix.len() { break }
+                    let mut gcd_b = 0;
+                    for (a, b) in pivot_row[col ..].iter().zip(below_row[col ..].iter_mut())
+                    {
+                        *b = pivot_val * *b - below_val * *a;
+                        gcd_b = gcd(gcd_b, *b);
+                    }
+                    if gcd_b != 0 { below_row[col ..].iter_mut().for_each(|b| *b /= gcd_b) }
+                }
+
+                row += 1;
+                if row == matrix.len()
+                {
+                    free.extend(col+1 .. variables);
+                    break
+                }
+            }
         }
     }
 
@@ -134,7 +161,26 @@ fn echelon_form(matrix : &mut Vec<Vec<i32>>) -> Vec<usize>
     {
         matrix.pop();
     }
-    pivots
+
+    (pivots, free)
+}
+
+fn back_substitute(matrix : &[Vec<i32>], pivots : &[usize], vars : &mut [i32]) -> bool
+{
+    for (row, &pivot) in matrix.iter().zip(pivots.iter()).rev()
+    {
+        let (&(mut sum), coeffs) = row.split_last().unwrap();
+        for (&c, &v) in coeffs[pivot+1 ..].iter().zip(vars[pivot+1 ..].iter())
+        {
+            sum -= c * v;
+        }
+
+        let quotient  = sum / row[pivot];
+        let remainder = sum % row[pivot];
+        if quotient < 0 || remainder != 0 { return false }
+        vars[pivot] = quotient;
+    }
+    true
 }
 
 fn gcd(a : i32, b : i32) -> i32
