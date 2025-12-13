@@ -1,5 +1,3 @@
-#![cfg_attr(feature = "permutations", feature(array_windows))]
-
 #[cfg(feature = "bounds")]
 pub mod bounds;
 

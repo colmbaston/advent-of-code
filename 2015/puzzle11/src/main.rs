@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 fn main()
 {
     let mut input = include_str!("../input.txt").trim_end().bytes().collect::<Vec<u8>>();

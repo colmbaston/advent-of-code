@@ -1,4 +1,3 @@
-
 fn main()
 {
     let input = include_str!("../input.txt").trim_end().bytes().map(|x| (x - b'0') as i64).collect::<Vec<_>>();

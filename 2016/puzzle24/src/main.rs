@@ -1,4 +1,3 @@
-#![feature(array_windows)]
 use std::collections::{ HashSet, HashMap };
 use aoc::{ direction::Direction, permutations::Permutations };
 

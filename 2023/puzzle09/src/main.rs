@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 fn main()
 {
     let mut seqs = include_str!("../input.txt").lines()

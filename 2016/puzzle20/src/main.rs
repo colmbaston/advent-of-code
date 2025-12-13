@@ -1,4 +1,3 @@
-#![feature(array_windows)]
 use std::ops::RangeInclusive;
 
 fn main()

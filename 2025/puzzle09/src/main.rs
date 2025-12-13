@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 fn main()
 {
     let polygon     = Polygon::parse(include_str!("../input.txt"));

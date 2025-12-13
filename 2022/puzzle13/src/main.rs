@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 mod packet;
 use packet::Packet;
 

@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 type Pos = (usize, usize);
 
 fn main()

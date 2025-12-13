@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 fn main()
 {
     let mut sum_one = 0;

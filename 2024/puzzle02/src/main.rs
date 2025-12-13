@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 fn main()
 {
     let reports = include_str!("../input.txt").lines()

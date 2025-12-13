@@ -1,4 +1,3 @@
-#![feature(array_windows)]
 use md5::{ Md5, Digest };
 use std::collections::VecDeque;
 

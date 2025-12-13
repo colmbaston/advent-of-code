@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 use std::collections::{ HashMap, BTreeSet };
 use aoc::permutations::Permutations;
 

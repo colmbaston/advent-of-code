@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 fn main()
 {
     let ips = include_str!("../input.txt").lines().collect::<Vec<&str>>();

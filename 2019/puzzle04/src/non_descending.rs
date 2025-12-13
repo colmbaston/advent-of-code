@@ -1,4 +1,3 @@
-
 pub const DIGITS : usize = 6;
 
 pub struct NonDescending

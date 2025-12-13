@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 use std::collections::HashMap;
 use aoc::direction::Direction;
 

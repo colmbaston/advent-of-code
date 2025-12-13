@@ -1,5 +1,3 @@
-#![feature(array_windows)]
-
 use std::{ ops::RangeInclusive, collections::HashSet };
 
 mod sensor;
